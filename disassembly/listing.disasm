@@ -1,0 +1,122 @@
+Disassembly Listing for VPC-32
+Generated From:
+C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.production.elf
+2013-08-20 08:44:07
+
+---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpc-32.c  -----------------------------------------------
+1:                   /* 
+2:                    * File:   vpc-32.c
+3:                    * Author: Jacques Deschênes
+4:                    *
+5:                    * Created on 18 août 2013, 21:37
+6:                    */
+7:                   
+8:                   
+9:                   #include <stdio.h>
+10:                  #include <stdlib.h>
+11:                  #include <plib.h>
+12:                  
+13:                  #define SYSCLK  30000000L
+14:                  
+15:                  
+16:                  
+17:                  // PIC32MX150F128B Configuration Bit Settings
+18:                  
+19:                  #include <xc.h>
+20:                  
+21:                  // DEVCFG3
+22:                  // USERID = No Setting
+23:                  #pragma config PMDL1WAY = ON            // Peripheral Module Disable Configuration (Allow only one reconfiguration)
+24:                  #pragma config IOL1WAY = ON             // Peripheral Pin Select Configuration (Allow only one reconfiguration)
+25:                  #pragma config FUSBIDIO = ON            // USB USID Selection (Controlled by the USB Module)
+26:                  #pragma config FVBUSONIO = ON           // USB VBUS ON Selection (Controlled by USB Module)
+27:                  
+28:                  // DEVCFG2
+29:                  #pragma config FPLLIDIV = DIV_5         // PLL Input Divider (5x Divider)
+30:                  #pragma config FPLLMUL = MUL_15         // PLL Multiplier (15x Multiplier)
+31:                  #pragma config FPLLODIV = DIV_1         // System PLL Output Clock Divider (PLL Divide by 1)
+32:                  
+33:                  // DEVCFG1
+34:                  #pragma config FNOSC = PRIPLL           // Oscillator Selection Bits (Primary Osc w/PLL (XT+,HS+,EC+PLL))
+35:                  #pragma config FSOSCEN = OFF            // Secondary Oscillator Enable (Disabled)
+36:                  #pragma config IESO = OFF               // Internal/External Switch Over (Disabled)
+37:                  #pragma config POSCMOD = OFF            // Primary Oscillator Configuration (Primary osc disabled)
+38:                  #pragma config OSCIOFNC = OFF            // CLKO Output Signal Active on the OSCO Pin (Enabled)
+39:                  #pragma config FPBDIV = DIV_1           // Peripheral Clock Divisor (Pb_Clk is Sys_Clk/8)
+40:                  #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Clock Switch Disable, FSCM Disabled)
+41:                  #pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
+42:                  #pragma config WINDIS = OFF             // Watchdog Timer Window Enable (Watchdog Timer is in Non-Window Mode)
+43:                  #pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
+44:                  #pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
+45:                  
+46:                  // DEVCFG0
+47:                  #pragma config JTAGEN = OFF             // JTAG Enable (JTAG Disabled)
+48:                  #pragma config ICESEL = ICS_PGx1        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+49:                  #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
+50:                  #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
+51:                  #pragma config CP = OFF                 // Code Protect (Protection Disabled)
+52:                  
+53:                  
+54:                  
+55:                  
+56:                  
+57:                  
+58:                  
+59:                  #define PWM_PERIOD 1904
+60:                  #define HSYNC 141
+61:                  
+62:                  volatile unsigned short ln_cnt=0;
+63:                  
+64:                  /*
+65:                   * 
+66:                   */
+67:                  void main() {
+9D000170  27BDFFF8   ADDIU SP, SP, -8
+9D000174  AFBE0004   SW S8, 4(SP)
+9D000178  03A0F021   ADDU S8, SP, ZERO
+68:                    /*
+69:                      SYSTEMConfigPerformance(SYSCLK);
+70:                      INTEnableSystemMultiVectoredInt();
+71:                      RPB7Rbits.RPB7R=0x5;  // OC1  sortie PWM pour SYNC
+72:                      RPB6Rbits.RPB6R=0x3;  // SDO1  sortie vidéo
+73:                      //configuration PWM sur OC1, utilisation TIMER2
+74:                      T2CON = 0;
+75:                      PR2=PWM_PERIOD;
+76:                      OC1CON = 6; // mode PWM sans protection
+77:                      OC1RS = PWM_PERIOD-HSYNC;
+78:                      OC1R = PWM_PERIOD-HSYNC;
+79:                      IFS0bits.T2IF=0;
+80:                      IEC0bits.T2IE=1;
+81:                      IPC2SET = (7<<2);// niveau de priorité interrution 7
+82:                      OC1CONSET=0x8000;  // activation
+83:                      T2CONSET=0x8000;  // activation
+84:                  */
+85:                       TRISBCLR = 1<<5;
+9D00017C  3C02BF88   LUI V0, -16504
+9D000180  24030020   ADDIU V1, ZERO, 32
+9D000184  AC436114   SW V1, 24852(V0)
+86:                       while(1){
+87:                           TRISBINV = 1<<5;
+9D000188  3C02BF88   LUI V0, -16504
+9D00018C  24030020   ADDIU V1, ZERO, 32
+9D000190  AC43611C   SW V1, 24860(V0)
+88:                       };
+9D000194  0B400062   J 0x9D000188
+9D000198  00000000   NOP
+89:                  }//main()
+90:                  
+91:                  /*
+92:                  void __ISR(_TIMER_2_VECTOR,IPL7SRS) tmr2_isr(void){
+93:                      ln_cnt++;
+94:                      switch (ln_cnt){
+95:                          case 3:
+96:                              OC2RS=HSYNC;
+97:                              break;
+98:                          case 263:
+99:                              OC2RS=PWM_PERIOD-HSYNC;
+100:                             ln_cnt=0;
+101:                             break;
+102:                     }//switch (ln_cnt)
+103:                     IFS0CLR = IFS0bits.OC2IF;
+104:                 }//tmr2_isr()
+105:                 */

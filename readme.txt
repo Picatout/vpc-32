@@ -1,0 +1,1 @@
+le projet VPC-32 consiste à fabriquer un petit ordinateur personnel avec un PIC32MX150F128B. Cet ordinateur aura des caractéristiques semblable à celle des ordinateurs comme le TRS-80 modèle 1 de la fin des années 70.
