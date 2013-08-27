@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 2013-08-25 22:04:50
+EESchema Schematic File Version 2  date 2013-08-27 09:48:55
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "26 aug 2013"
+Date "27 aug 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -1167,4 +1167,6 @@ Wire Wire Line
 	9750 2150 9600 2150
 Wire Wire Line
 	8550 1950 8550 2600
+Text Notes 7050 7050 0    59   ~ 0
+Copyright 2013, Jacques Deschênes\nlicence Creative Commons: CC BY-SA
 $EndSCHEMATC

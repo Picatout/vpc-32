@@ -3,7 +3,10 @@ le projet VPC-32 consiste à fabriquer un petit ordinateur personnel avec un PIC3
 
 Copyright 2013, Jacques Deschênes
 
-L'ensemble du projet sauf ce qui est sous droits réservés par Microchip ou autre ayant droit, est sous GPLv3
+L'ensemble du projet logiciel sauf ce qui est sous droits réservés par Microchip ou autre ayant droit, est sous GPLv3
 Lire copying.txt  au  sujet de GPLv3.
+
+Le projet KiCad est sous licence Creative Commons  CC BY-SA
+Lire à ce sujet: http://creativecommons.org/licenses/by-sa/2.0/legalcode
 
 jd_temp@yahoo.fr
