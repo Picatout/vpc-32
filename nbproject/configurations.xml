@@ -4,6 +4,14 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="hardware" projectFiles="true">
+        <itemPath>hardware/font.h</itemPath>
+        <itemPath>hardware/ntsc.h</itemPath>
+        <itemPath>hardware/HardwareProfile.h</itemPath>
+        <itemPath>hardware/serial_comm.h</itemPath>
+        <itemPath>hardware/QWERTY.h</itemPath>
+        <itemPath>hardware/keyboard.h</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -12,6 +20,12 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f1" displayName="hardware" projectFiles="true">
+        <itemPath>hardware/ntsc.c</itemPath>
+        <itemPath>hardware/HardwareProfile.c</itemPath>
+        <itemPath>hardware/serial_comm.c</itemPath>
+        <itemPath>hardware/keyboard.c</itemPath>
+      </logicalFolder>
       <itemPath>vpc-32.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -20,6 +34,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>hardware</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -28,7 +45,7 @@
         <targetDevice>PIC32MX150F128B</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>Simulator</platformTool>
+        <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.21</languageToolchainVersion>
         <platform>3</platform>
@@ -62,8 +79,9 @@
       </C32CPP>
       <C32Global>
       </C32Global>
-      <Simulator>
-      </Simulator>
+      <PICkit3PlatformTool>
+        <property key="firmware.download.all" value="false"/>
+      </PICkit3PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>

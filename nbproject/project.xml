@@ -2,12 +2,12 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>VPC-32</name>
-            <creation-uuid>ab9a8ca4-52b5-48f0-81cd-00682066fb39</creation-uuid>
+            <name>vpc-32</name>
+            <creation-uuid>d7593487-bf08-47c0-9e9f-6a3652e994cf</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
-            <header-extensions/>
+            <header-extensions>h</header-extensions>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
         </data>
