@@ -1,6 +1,24 @@
+/*
+* Copyright 2013, Jacques Deschênes
+* This file is part of VPC-32.
+*
+*     VPC-32 is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     VPC-32 is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 /* 
  * File:   vpc-32.c
- * Author: Jacques
+ * Author: Jacques Deschênes
  *
  * Created on 26 août 2013, 07:38
  */
@@ -12,6 +30,7 @@
 #include "hardware/ntsc.h"
 #include "hardware/font.h"
 #include "hardware/serial_comm.h"
+#include "hardware/keyboard.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -54,6 +73,7 @@ void put_char(int x, int y, char c){
         c -= 32;
     }
     c -=32;
+    if (c>64) return;
     b=x>>5;
     r=0;
     l=27-(x&0x1f);
@@ -102,15 +122,62 @@ void test_pattern(void){
     print(2,12,msg2);
 }//test_pattern()
 
+void digit(char d){
+    while (d--){
+        _status_on();
+        delay_ms(400);
+        _status_off();
+        delay_ms(300);
+    }
+}//digit()
+void error_code_status(int code){
+    char d;
+    code &= 255;
+    d=code/100;
+    digit(d);
+    delay_ms(500);
+    code = code % 100;
+    d= code/10;
+    digit(d);
+    delay_ms(500);
+    code = code % 10;
+    digit(code);
+}//error_code_status()
 
 void main(void) {
+    int code;
     HardwareInit();
     UartInit(STDIO,9600,DEFAULT_LINE_CTRL);
-    KeyboardInit();
     ln_cnt=0;
     video=0;
     test_pattern();
     VideoInit();
+    delay_ms(750);
+    if ((code=KeyboardInit())==1){
+        SetKbdLeds(F_NUM);
+        delay_ms(300);
+        SetKbdLeds(F_CAPS);
+        delay_ms(300);
+        SetKbdLeds(F_SCROLL);
+        delay_ms(300);
+        SetKbdLeds(0);
+    }else{
+        error_code_status(-code);
+    }
+    short scancode;
+    int x=20,y=20;
+    print(3, 40, "hello world");
     while(1){
+        if ((scancode=GetScancode())){
+            if (!(scancode & REL_BIT)){
+              put_char(x, y, GetKey(scancode)&127);
+              x += 6;
+            }
+        }
+//       _status_on();
+//       delay_ms(500);
+//       _status_off();
+//       delay_ms(500);
     }
 }
+

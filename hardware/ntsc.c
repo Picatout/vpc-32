@@ -1,3 +1,20 @@
+/*
+* Copyright 2013, Jacques Deschênes
+* This file is part of VPC-32.
+*
+*     VPC-32 is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     VPC-32 is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /* 
  * File:   test-ntsc.c
  * Author: Jacques Deschênes
@@ -36,10 +53,10 @@
 #if SYSCLK==40000000L
 #define SPI_DLY HSYNC+90 // délais en début de ligne avant l'envoie du signal vidéo.
 #else
-#define SPI_DLY HSYNC+35 // délais en début de ligne avant l'envoie du signal vidéo.
+#define SPI_DLY HSYNC+30 // délais en début de ligne avant l'envoie du signal vidéo.
 #endif
-#define _enable_video_out()  SPI1CONSET=(1<<15)
-#define _disable_video_out() SPI1CONCLR=(1<<15)
+#define _enable_video_out()  SPI1CONSET =(1<<15)
+#define _disable_video_out() SPI1CONCLR =(1<<15)
 
 unsigned int video_bmp[VRES][HRES/32]; // video bitmap 7168 octets
 volatile unsigned int ln_cnt;
@@ -87,8 +104,8 @@ void VideoInit(void){
 }//init_video()
 
 
-#define DLY 10
-void __ISR(_TIMER_2_VECTOR,IPL7SRS) tmr2_isr(void){
+
+void __ISR(_TIMER_2_VECTOR,IPL7AUTO) tmr2_isr(void){
     _disable_video_out();
     ln_cnt++;
     switch (ln_cnt){
@@ -112,7 +129,6 @@ void __ISR(_TIMER_2_VECTOR,IPL7SRS) tmr2_isr(void){
         default:
             if (video){
                 _enable_video_out();
-                //SPI1BUF=0;
                 IFS1bits.SPI1TXIF=1;
                 DCH0SSA=KVA_TO_PA((void *)DmaSrc);
                 DmaSrc +=HRES/32;

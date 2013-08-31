@@ -1,6 +1,23 @@
+/*
+* Copyright 2013, Jacques Deschênes
+* This file is part of VPC-32.
+*
+*     VPC-32 is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     VPC-32 is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /* 
  * File:   HardwareProfile.h
- * Author: Jacques
+ * Author: Jacques Deschênes
  * Description: configuration hardware spécifique
  * Created on 17 avril 2013, 14:41
  */
@@ -26,14 +43,21 @@
 #define mGetSystemClock() (SYSCLK)
 #define mGetPeripheralClock() (mGetSystemClock())
 #define CORE_TICK_RATE (mGetSystemClock()/2/1000) // system tick 1msec
-#define CLK_PER_USEC SYSCLK/1000000L
+#define CLK_PER_USEC (SYSCLK/1000000L)
 
-volatile unsigned long  sys_tick; // compteur pour les milli-secondes
+#define STATUS_LED BIT_3
+#define _status_on()  (LATBSET = STATUS_LED)
+#define _status_off() (LATBCLR = STATUS_LED)
+
+#define USE_CORE_TIMER  // metter en commentaire si on n'utilise pas le core timer
+
 
 void HardwareInit();
-long ticks(void);
-void delay_ms(int msec);
-void delay_us(int usec);
+#ifdef USE_CORE_TIMER
+unsigned int ticks(void);
+#endif
+void delay_us(unsigned int usec);
+void delay_ms(unsigned int msec);
 
 #endif	/* HARDWAREPROFILE_H */
 

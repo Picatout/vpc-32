@@ -1,6 +1,24 @@
 /*
+* Copyright 2013, Jacques Deschênes
+* This file is part of VPC-32.
+*
+*     VPC-32 is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     VPC-32 is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/*
  * File:   HardwareProfile.h
- * Author: Jacques
+ * Author: Jacques Deschênes
  * Description: configuration hardware spécifique, assignation des périphériques
  *     UART2 assigné à PB10,PB11
  * Created on 17 avril 2013, 14:41
@@ -10,13 +28,25 @@
 #include "HardwareProfile.h"
 #include <plib.h>
 
-void HardwareInit(){
-    SYSTEMConfig(mGetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-    // configure coretimer pour le sys_tick
-   OpenCoreTimer(CORE_TICK_RATE);
-   mConfigIntCoreTimer((CT_INT_ON | CT_INT_PRIOR_2 | CT_INT_SUB_PRIOR_0));
-   INTEnableSystemMultiVectoredInt();
+volatile unsigned int  sys_tick; // compteur pour les milli-secondes
 
+
+void HardwareInit(){
+   SYSTEMConfig(mGetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
+   INTEnableSystemMultiVectoredInt();
+   // activation du PROXIMITY TIMER pour les interruption inférieures à IPL=7
+//   INTCONbits.TPC=0;
+//   IPTMRCLR=0xFFFFFFFF;
+//   INTCONbits.TPC=7;
+//   IPTMR=CORE_TICK_RATE/2;
+    // configure coretimer pour le sys_tick
+#ifdef USE_CORE_TIMER
+   OpenCoreTimer(CORE_TICK_RATE);
+   mConfigIntCoreTimer((CT_INT_ON | CT_INT_PRIOR_1 | CT_INT_SUB_PRIOR_0));
+#endif
+   // désactivation de toutes les entrée analogiques.
+   ANSELBCLR=0xFFFFFFFF;
+   ANSELACLR=0xFFFFFFFF;
     // configuration PB10 sortie et PB11 entrée
    mPORTBSetBits(TX); // mettre à Vdd pour ne pas généré un faux start bit.
    mPORTBSetPinsDigitalOut(TX);      // sortie PB10(Tx), transmission UART2
@@ -24,6 +54,13 @@ void HardwareInit(){
    // assignation des périphériques aux broches
    // l'information se trouve dans pps.h
    PPSUnLock;                     // déverrouillage configuration assignation périphérique
+   //clavier
+   I2C1CONbits.DISSLW=1; // voir pic32mx1xxx/2xxx-errata.pdf rev. E, point 9
+   RPA0R=0;  // pas de périphérique sur RA0 (keyboard clock)
+   RPA1R=0;  // pas de périphérique sur RA1 (keyboard data)
+   RPB3R=0; //  pas de périphérique sur RB3 (status LED)
+   TRISBCLR=STATUS_LED; // broche status LED en sortie
+   _status_off();
    PPSOutput(4, RPB10, U2TX);  // assignation U2TX sur PB10, (groupe, pin, fonction)
    PPSInput (2, U2RX, RPB11);  // assignation U2RX sur PB11, (groupe, fonction, pin)
    PPSOutput(2,RPB5,OC2); // 5=OC2  sur PB5 sortie synchronistaiton ntsc
@@ -33,23 +70,34 @@ void HardwareInit(){
    PPSLock;                       // reverrouille pour éviter assignation accidentelle.
 }
 
-inline long ticks(void){
+inline unsigned int ticks(void){
     return sys_tick;
 } //ticks()
 
-void delay_ms(int msec){
-    long t0;
-    t0=ticks()+msec;
-    while (ticks<t0);
+inline void delay_us(unsigned int usec){
+    for (usec=usec*(CLK_PER_USEC/3);usec;usec--);
+}//delay_us()
+
+void delay_ms(unsigned int msec){
+#ifdef USE_CORE_TIMER
+    unsigned int t0;
+    t0=sys_tick+msec;
+    while (sys_tick<t0);
+#else
+    while (msec--)
+        delay_us(1000);
+#endif
 } // delay_ms()
 
-inline void delay_us(int usec){
-    for(usec=(usec*CLK_PER_USEC)>>1;usec;usec--);
-} // delay_us()
-
+#ifdef USE_CORE_TIMER
   //déclaration du gestionnaire d'interruption
-   void __ISR(_CORE_TIMER_VECTOR, ipl2auto) CoreTimerHandler(void){
+   void __ISR(_CORE_TIMER_VECTOR, IPL1SOFT)  CoreTimerHandler(void){
        sys_tick++;
-       UpdateCoreTimer(CORE_TICK_RATE);
+       __asm__("addiu $v0, $zero, 0");
+       __asm__("mtc0 $v0, $9");
+       __asm__("addiu $v0,$zero,%0"::"I"(CORE_TICK_RATE));
+       __asm__("mtc0 $v0, $11");
        mCTClearIntFlag();
    };
+#endif
+

@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 2013-08-27 09:48:55
+EESchema Schematic File Version 2  date 2013-08-28 16:27:26
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "27 aug 2013"
+Date "28 aug 2013"
 Rev ""
 Comp ""
 Comment1 ""
@@ -543,7 +543,7 @@ Wire Wire Line
 	4400 6000 4400 6200
 Connection ~ 4400 6150
 Wire Wire Line
-	2850 6150 4400 6150
+	2850 6150 4550 6150
 Wire Wire Line
 	8500 4700 8500 4900
 Wire Wire Line
@@ -1077,7 +1077,7 @@ $EndComp
 Text GLabel 6250 5700 0    39   Input ~ 0
 RB0
 Text GLabel 6250 5800 0    39   Input ~ 0
-RB3
+RB1
 Text GLabel 6250 5900 0    39   Input ~ 0
 RB8
 Text GLabel 6250 6000 0    39   Input ~ 0
@@ -1101,7 +1101,7 @@ Wire Wire Line
 Text Notes 7550 7550 0    59   ~ 0
 VPC-32
 Text Notes 10700 7650 0    59   ~ 0
-1
+2
 $Comp
 L R R8
 U 1 1 521AAC05
@@ -1146,10 +1146,6 @@ Wire Wire Line
 	7850 1400 7850 1600
 Wire Wire Line
 	7850 1600 8050 1600
-Text GLabel 4950 3650 0    39   Input ~ 0
-~U2RTS
-Wire Wire Line
-	4950 3650 5100 3650
 $Comp
 L RJ11 J?
 U 1 1 521AB1B3
@@ -1169,4 +1165,86 @@ Wire Wire Line
 	8550 1950 8550 2600
 Text Notes 7050 7050 0    59   ~ 0
 Copyright 2013, Jacques Deschênes\nlicence Creative Commons: CC BY-SA
+$Comp
+L LED D?
+U 1 1 521E10B9
+P 5150 6350
+F 0 "D?" H 5150 6450 50  0000 C CNN
+F 1 "Power" H 5150 6250 50  0000 C CNN
+F 2 "" H 5150 6350 60  0000 C CNN
+F 3 "" H 5150 6350 60  0000 C CNN
+	1    5150 6350
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 521E10C8
+P 4800 6150
+F 0 "R?" V 4880 6150 50  0000 C CNN
+F 1 "150R" V 4800 6150 50  0000 C CNN
+F 2 "" H 4800 6150 60  0000 C CNN
+F 3 "" H 4800 6150 60  0000 C CNN
+	1    4800 6150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 521E10D5
+P 5150 6650
+F 0 "#PWR?" H 5150 6650 30  0001 C CNN
+F 1 "GND" H 5150 6580 30  0001 C CNN
+F 2 "" H 5150 6650 60  0000 C CNN
+F 3 "" H 5150 6650 60  0000 C CNN
+	1    5150 6650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5050 6150 5150 6150
+Wire Wire Line
+	5150 6550 5150 6650
+$Comp
+L LED D?
+U 1 1 521E127D
+P 4200 5350
+F 0 "D?" H 4200 5450 50  0000 C CNN
+F 1 "Status LED" H 4200 5250 50  0000 C CNN
+F 2 "" H 4200 5350 60  0000 C CNN
+F 3 "" H 4200 5350 60  0000 C CNN
+	1    4200 5350
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 521E128C
+P 3950 5000
+F 0 "R?" V 4030 5000 50  0000 C CNN
+F 1 "220R" V 3950 5000 50  0000 C CNN
+F 2 "" H 3950 5000 60  0000 C CNN
+F 3 "" H 3950 5000 60  0000 C CNN
+	1    3950 5000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 521E12A3
+P 4200 5650
+F 0 "#PWR?" H 4200 5650 30  0001 C CNN
+F 1 "GND" H 4200 5580 30  0001 C CNN
+F 2 "" H 4200 5650 60  0000 C CNN
+F 3 "" H 4200 5650 60  0000 C CNN
+	1    4200 5650
+	1    0    0    -1  
+$EndComp
+Text GLabel 5050 3650 0    39   Input ~ 0
+STATUS
+Wire Wire Line
+	5100 3650 5050 3650
+Text GLabel 3600 5000 0    39   Input ~ 0
+STATUS
+Wire Wire Line
+	4200 5550 4200 5650
+Wire Wire Line
+	4200 5000 4200 5150
+Wire Wire Line
+	3700 5000 3600 5000
 $EndSCHEMATC
