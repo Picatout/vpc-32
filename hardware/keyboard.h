@@ -47,8 +47,12 @@ typedef struct scan2key{
 #define NUM_LOCK		0x77
 #define SCROLL_LOCK		0x7E
 #define LSHIFT			0x12
+#define RSHIFT                  0x59
 #define LCTRL			0x14
+#define RCTRL                   XT_BIT|0x14
 #define LALT			0x11
+#define RALT                    XT_BIT|0x11
+#define BKSP                    0x66
 #define KEY_ESC			0x76
 #define F1			0x05
 #define F2			0x06

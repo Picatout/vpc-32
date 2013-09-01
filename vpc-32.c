@@ -69,11 +69,8 @@
 
 void put_char(int x, int y, char c){
     register int i,l,r,b;
-    if (c>='a'){
-        c -= 32;
-    }
+    if (c<32) return;
     c -=32;
-    if (c>64) return;
     b=x>>5;
     r=0;
     l=27-(x&0x1f);
@@ -82,10 +79,13 @@ void put_char(int x, int y, char c){
     }
     for (i=0;i<7;i++){
         if (r){
+            video_bmp[y][b] &= ~(0x1f>>r);
             video_bmp[y][b] |= font[c][i]>>r;
+            video_bmp[y][b+1] &= ~(0x1f<<32-r);
             video_bmp[y][b+1] |= font[c][i]<<(32-r);
             y++;
         } else{
+            video_bmp[y][b] &= ~(0x1f<<l);
             video_bmp[y++][b] |= font[c][i]<<l;
         }
     }
@@ -164,20 +164,51 @@ void main(void) {
     }else{
         error_code_status(-code);
     }
-    short scancode;
-    int x=20,y=20;
-    print(3, 40, "hello world");
+    short scancode,key;
+    int x=1,y=20;
     while(1){
         if ((scancode=GetScancode())){
-            if (!(scancode & REL_BIT)){
-              put_char(x, y, GetKey(scancode)&127);
-              x += 6;
+            if (scancode>0){
+                switch (scancode){
+                    case LSHIFT:
+                    case RSHIFT:
+                        rx_flags |= F_SHIFT;
+                        break;
+                    case BKSP:
+                        x -= 6;
+                        put_char(x,y,32);
+                        break;
+                    default:
+                        put_char(x, y, GetKey(scancode)&127);
+                        x += 6;
+                        if (x>=(53*6+1)){
+                            y +=8;
+                            x=1;
+                        }
+                }
+            }else switch (scancode&511){
+                case LSHIFT:
+                case RSHIFT:
+                    rx_flags &= ~F_SHIFT;
+                    break;
+                case LCTRL:
+                case RCTRL:
+                    break;
+                case LALT:
+                case RALT:
+                    break;
+                case NUM_LOCK:
+                    kbd_leds ^= F_NUM;
+                    SetKbdLeds(kbd_leds);
+                    break;
+                case CAPS_LOCK:
+                    kbd_leds ^= F_CAPS;
+                    rx_flags ^= F_CAPS;
+                    SetKbdLeds(kbd_leds);
+                    break;
+
             }
         }
-//       _status_on();
-//       delay_ms(500);
-//       _status_off();
-//       delay_ms(500);
     }
 }
 

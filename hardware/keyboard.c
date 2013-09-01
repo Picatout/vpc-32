@@ -145,7 +145,7 @@ short GetKey(short scancode){  // obtient la transcription du code en ASCII
 			}
 			i++;
 		} // while (xt_char[i].code)
-	}else if (rx_flags & (F_SHIFT|F_CAPS)){
+	}else if (rx_flags & F_SHIFT){
 		i=0;
 		while (shifted_key[i].code){
 			if (shifted_key[i].code==(scancode&0xff)){
@@ -176,7 +176,7 @@ short GetKey(short scancode){  // obtient la transcription du code en ASCII
 			}
 			i++;
 		}// while (translate.code)
-		if (a>='a' && a<='z'){
+		if (a>='a' && a<='z' && (rx_flags & F_CAPS)){
 			a -=32;
 		}
 	}
