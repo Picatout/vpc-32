@@ -132,8 +132,7 @@ void __ISR(_TIMER_2_VECTOR,IPL7AUTO) tmr2_isr(void){
                 IFS1bits.SPI1TXIF=1;
                 DCH0SSA=KVA_TO_PA((void *)DmaSrc);
                 DmaSrc +=HRES/32;
-                DCH0CON |=128;
-                //DmaChnEnable(0);
+                DCH0CON |=128; // remplace DmaChnEnable(0); réduit le temps de latence
             }
     }//switch (ln_cnt)
     mT2ClearIntFlag();
