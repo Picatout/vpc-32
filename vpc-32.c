@@ -154,6 +154,7 @@ void main(void) {
     VideoInit();
     delay_ms(750);
     if ((code=KeyboardInit())==1){
+        _status_on();
         SetKbdLeds(F_NUM);
         delay_ms(300);
         SetKbdLeds(F_CAPS);
@@ -161,6 +162,7 @@ void main(void) {
         SetKbdLeds(F_SCROLL);
         delay_ms(300);
         SetKbdLeds(0);
+        _status_off();
     }else{
         error_code_status(-code);
     }
@@ -178,6 +180,9 @@ void main(void) {
                         x -= 6;
                         put_char(x,y,32);
                         break;
+                    case ENTER:
+                        x=1;
+                        y += 8;
                     default:
                         put_char(x, y, GetKey(scancode)&127);
                         x += 6;

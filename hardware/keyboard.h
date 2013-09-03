@@ -43,6 +43,7 @@ typedef struct scan2key{
 #define REL_BIT (1<<15) // indicateur touche relâchée
 
 // touches spéciales
+#define ENTER                   0x5A
 #define CAPS_LOCK		0x58
 #define NUM_LOCK		0x77
 #define SCROLL_LOCK		0x7E
