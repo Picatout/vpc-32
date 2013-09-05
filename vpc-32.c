@@ -166,8 +166,21 @@ void main(void) {
     }else{
         error_code_status(-code);
     }
+   // MediaInitialize();
     short scancode,key;
     int x=1,y=20;
+    UartPrint(STDOUT,"OK\r\n");
+//    while (1){ // test interface RS-232
+//        if ((key=UartGetch(STDIN))>0){
+//            put_char(x,y,key);
+//            x+=6;
+//            if (x>=(53*6+1)){
+//                x=1;
+//                y += 8;
+//            }
+//            UartPrint(STDOUT,"OK\r\n");
+//        }
+//    }
     while(1){
         if ((scancode=GetScancode())){
             if (scancode>0){

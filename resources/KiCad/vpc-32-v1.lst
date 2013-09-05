@@ -1,104 +1,106 @@
-eeschema (2013-03-19 BZR 4004)-stable  >> Creation date: 2013-08-31 10:11:52
+eeschema (2013-03-19 BZR 4004)-stable  >> Creation date: 2013-09-03 19:28:29
 #Cmp ( ordre = Référence )
-| C1         1µF        
-| C2         100nF       
+| C1         47µF       
+| C2         22pF        
 | C3         22pF        
-| C4         22pF        
+| C4         100nF       
 | C5         100nF       
-| C6         47µF       
+| C6         100nF       
 | C7         100nF       
-| C8         100nF       
+| C8         10µF       
 | C9         4,7nF       
-| C10        10µF       
-| C11        2,2nF       
-| D1         1N4148      
-| D2         1N4001      
-| D3         1N4148      
-| D?         Power       
-| J1         video out   
-| J2         SD_SOCKET   
-| J3         PS/2        
-| J4         audio out   
-| J?         RJ11        
+| C10        2,2nF       
+| D1         1N4001      
+| D2         Status LED  
+| D3         Power       
+| D4         1N4148      
+| D5         1N4148      
+| J1         SD_SOCKET   
+| J2         PS/2        
+| J3         video out   
+| J4         RJ11        
+| J5         audio out   
 | K1         jumper      
 | P1         CONN_2      
 | P2         ICSP        
 | P3         XBUS        
 | Q1         2N3906      
 | Q2         2N3094      
-| R1         1K          
-| R2         10k         
-| R3         680R        
-| R4         10R         
-| R5         120R        
+| R1         22k         
+| R2         22k         
+| R3         10k         
+| R4         10k         
+| R5         220R        
 | R6         10k         
-| R7         10k         
-| R8         10k         
-| R9         10k         
-| R10        10k         
-| R11        4k7         
-| R12        4k7         
+| R7         150R        
+| R8         1K          
+| R9         680R        
+| R10        10R         
+| R11        10k         
+| R12        120R        
 | R13        4k7         
-| R14        10k         
+| R14        4k7         
 | R15        10k         
-| R16        1k          
-| R17        3k3         
-| R?         150R        
+| R16        4k7         
+| R17        10k         
+| R18        3k3         
+| R19        1k          
 | SW1        reset       
-| U1         PIC32MX150F128B
-| U2         LM3940-3.3  
+| U1         LM3940-3.3  
+| U2         PIC32MX150F128B
 | X1         10Mhz       
 #End Cmp
 
 #Cmp ( ordre = Valeur )
+| 22pF         C2        
 | 22pF         C3        
-| 22pF         C4        
-| 2,2nF        C11       
+| 2,2nF        C10       
 | 4,7nF        C9        
-| 100nF        C2        
+| 100nF        C4        
 | 100nF        C5        
+| 100nF        C6        
 | 100nF        C7        
-| 100nF        C8        
-| 1µF         C1        
-| 47µF        C6        
-| 10µF        C10       
-| 1N4148       D1        
-| 1N4001       D2        
-| 1N4148       D3        
-| SD_SOCKET    J2        
-| PS/2         J3        
-| video out    J1        
-| audio out    J4        
+| 47µF        C1        
+| 10µF        C8        
+| 1N4001       D1        
+| Status LED   D2        
+| Power        D3        
+| 1N4148       D4        
+| 1N4148       D5        
+| SD_SOCKET    J1        
+| PS/2         J2        
+| RJ11         J4        
+| video out    J3        
+| audio out    J5        
 | jumper       K1        
 | CONN_2       P1        
 | ICSP         P2        
 | XBUS         P3        
-| 150R         R?        
 | 2N3906       Q1        
 | 2N3094       Q2        
-| 10R          R4        
-| 120R         R5        
-| 680R         R3        
-| 1K           R1        
-| 1k           R16       
-| 3k3          R17       
-| 4k7          R11       
-| 4k7          R12       
+| 10R          R10       
+| 120R         R12       
+| 150R         R7        
+| 220R         R5        
+| 680R         R9        
+| 1K           R8        
+| 1k           R19       
+| 3k3          R18       
 | 4k7          R13       
-| 10k          R2        
+| 4k7          R14       
+| 4k7          R16       
+| 10k          R3        
+| 10k          R4        
 | 10k          R6        
-| 10k          R7        
-| 10k          R8        
-| 10k          R9        
-| 10k          R10       
-| 10k          R14       
+| 10k          R11       
 | 10k          R15       
+| 10k          R17       
+| 22k          R1        
+| 22k          R2        
 | reset        SW1       
-| PIC32MX150F128B U1        
-| LM3940-3.3   U2        
-| RJ11         J?        
+| LM3940-3.3   U1        
+| PIC32MX150F128B U2        
 | 10Mhz        X1        
-| Power        D?        
 #End Cmp
 
 #End List

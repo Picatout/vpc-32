@@ -67,6 +67,8 @@ void HardwareInit(){
    PPSOutput(1,RPB4,OC1);  // 5=OC1 impulsion déclenchant SPI , Fsync vidéo
    PPSOutput(3,RPB6,SDO1); // 3=SDO1 sortie SPI1 (vidéo)
    PPSInput(1,SS1,RPB7); // entrée Fsync sur RPB7
+   PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD
+   PPSOutput(2,RPB8,SDO2); // sortie commande carte SD
    PPSLock;                       // reverrouille pour éviter assignation accidentelle.
 }
 

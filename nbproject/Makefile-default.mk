@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c
+SOURCEFILES_QUOTED_IF_SPACED=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/sdcard.c hardware/spi4sdcard.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/sdcard.o ${OBJECTDIR}/hardware/spi4sdcard.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d ${OBJECTDIR}/hardware/sdcard.o.d ${OBJECTDIR}/hardware/spi4sdcard.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o
+OBJECTFILES=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/sdcard.o ${OBJECTDIR}/hardware/spi4sdcard.o
 
 # Source Files
-SOURCEFILES=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c
+SOURCEFILES=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/sdcard.c hardware/spi4sdcard.c
 
 
 CFLAGS=
@@ -116,6 +116,16 @@ ${OBJECTDIR}/hardware/keyboard.o: hardware/keyboard.c  nbproject/Makefile-${CND_
 	@${RM} ${OBJECTDIR}/hardware/keyboard.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/keyboard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/keyboard.o.d" -o ${OBJECTDIR}/hardware/keyboard.o hardware/keyboard.c   
 	
+${OBJECTDIR}/hardware/sdcard.o: hardware/sdcard.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware 
+	@${RM} ${OBJECTDIR}/hardware/sdcard.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/sdcard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/sdcard.o.d" -o ${OBJECTDIR}/hardware/sdcard.o hardware/sdcard.c   
+	
+${OBJECTDIR}/hardware/spi4sdcard.o: hardware/spi4sdcard.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware 
+	@${RM} ${OBJECTDIR}/hardware/spi4sdcard.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/spi4sdcard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/spi4sdcard.o.d" -o ${OBJECTDIR}/hardware/spi4sdcard.o hardware/spi4sdcard.c   
+	
 else
 ${OBJECTDIR}/hardware/ntsc.o: hardware/ntsc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/hardware 
@@ -141,6 +151,16 @@ ${OBJECTDIR}/hardware/keyboard.o: hardware/keyboard.c  nbproject/Makefile-${CND_
 	@${MKDIR} ${OBJECTDIR}/hardware 
 	@${RM} ${OBJECTDIR}/hardware/keyboard.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/keyboard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/keyboard.o.d" -o ${OBJECTDIR}/hardware/keyboard.o hardware/keyboard.c   
+	
+${OBJECTDIR}/hardware/sdcard.o: hardware/sdcard.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware 
+	@${RM} ${OBJECTDIR}/hardware/sdcard.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/sdcard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/sdcard.o.d" -o ${OBJECTDIR}/hardware/sdcard.o hardware/sdcard.c   
+	
+${OBJECTDIR}/hardware/spi4sdcard.o: hardware/spi4sdcard.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware 
+	@${RM} ${OBJECTDIR}/hardware/spi4sdcard.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/spi4sdcard.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/spi4sdcard.o.d" -o ${OBJECTDIR}/hardware/spi4sdcard.o hardware/spi4sdcard.c   
 	
 endif
 
