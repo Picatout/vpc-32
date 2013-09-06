@@ -59,6 +59,7 @@ void HardwareInit(){
    RPA0R=0;  // pas de périphérique sur RA0 (keyboard clock)
    RPA1R=0;  // pas de périphérique sur RA1 (keyboard data)
    RPB3R=0; //  pas de périphérique sur RB3 (status LED)
+   RPB15R=0; // pad de périphérique sur RB15
    TRISBCLR=STATUS_LED; // broche status LED en sortie
    _status_off();
    PPSOutput(4, RPB10, U2TX);  // assignation U2TX sur PB10, (groupe, pin, fonction)
@@ -95,9 +96,8 @@ void delay_ms(unsigned int msec){
   //déclaration du gestionnaire d'interruption
    void __ISR(_CORE_TIMER_VECTOR, IPL1SOFT)  CoreTimerHandler(void){
        sys_tick++;
-       __asm__("addiu $v0, $zero, 0");
-       __asm__("mtc0 $v0, $9");
-       __asm__("addiu $v0,$zero,%0"::"I"(CORE_TICK_RATE));
+       __asm__("mfc0 $v0, $11");
+       __asm__("addiu $v0,$v0,%0"::"I"(CORE_TICK_RATE));
        __asm__("mtc0 $v0, $11");
        mCTClearIntFlag();
    };

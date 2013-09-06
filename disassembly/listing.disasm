@@ -1,7 +1,7 @@
 Disassembly Listing for vpc-32
 Generated From:
 C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.production.elf
-2013-09-03 13:53:10
+2013-09-05 13:39:02
 
 ---  c:/program files (x86)/microchip/xc32/v1.21/pic32mx/include/peripheral/uart.h  ---------------------
 1:                   /*******************************************************************************
@@ -804,19 +804,19 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 798:                 extern inline BOOL __attribute__ ((always_inline)) UARTTransmitterIsReady ( UART_MODULE id )
 799:                 {
 800:                     return (BOOL)(!(uartReg[id]->sta.reg & _U1STA_UTXBF_MASK));
-9D0014C8  00042080   SLL A0, A0, 2
-9D0014CC  3C029D00   LUI V0, -25344
-9D0014D0  2442288C   ADDIU V0, V0, 10380
-9D0014D4  00822021   ADDU A0, A0, V0
-9D0014D8  8C830000   LW V1, 0(A0)
-9D0014DC  8C620010   LW V0, 16(V1)
-9D0014E0  30420200   ANDI V0, V0, 512
-9D0015B4  3C029D00   LUI V0, -25344
-9D0015B8  2442288C   ADDIU V0, V0, 10380
-9D0015BC  00621021   ADDU V0, V1, V0
-9D0015C0  8C430000   LW V1, 0(V0)
-9D0015C4  8C620010   LW V0, 16(V1)
-9D0015C8  30420200   ANDI V0, V0, 512
+9D00182C  00042080   SLL A0, A0, 2
+9D001830  3C029D00   LUI V0, -25344
+9D001834  24422E04   ADDIU V0, V0, 11780
+9D001838  00822021   ADDU A0, A0, V0
+9D00183C  8C830000   LW V1, 0(A0)
+9D001840  8C620010   LW V0, 16(V1)
+9D001844  30420200   ANDI V0, V0, 512
+9D001918  3C029D00   LUI V0, -25344
+9D00191C  24422E04   ADDIU V0, V0, 11780
+9D001920  00621021   ADDU V0, V1, V0
+9D001924  8C430000   LW V1, 0(V0)
+9D001928  8C620010   LW V0, 16(V1)
+9D00192C  30420200   ANDI V0, V0, 512
 801:                 }
 802:                 
 803:                 
@@ -864,10 +864,10 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 845:                 extern inline void __attribute__((always_inline)) UARTSendDataByte ( UART_MODULE id, BYTE data )
 846:                 {
 847:                     uartReg[id]->tx.reg = data;
-9D0014EC  30A500FF   ANDI A1, A1, 255
-9D0014F0  AC650020   SW A1, 32(V1)
-9D0015D8  30C600FF   ANDI A2, A2, 255
-9D0015DC  AC660020   SW A2, 32(V1)
+9D001850  30A500FF   ANDI A1, A1, 255
+9D001854  AC650020   SW A1, 32(V1)
+9D00193C  30C600FF   ANDI A2, A2, 255
+9D001940  AC660020   SW A2, 32(V1)
 848:                 }
 849:                 
 850:                 
@@ -953,13 +953,13 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 930:                 extern inline BOOL __attribute__((always_inline)) UARTTransmissionHasCompleted ( UART_MODULE id )
 931:                 {
 932:                     return (BOOL)(_U1STA_TRMT_MASK == (uartReg[id]->sta.reg & _U1STA_TRMT_MASK));
-9D0015EC  00042080   SLL A0, A0, 2
-9D0015F0  3C029D00   LUI V0, -25344
-9D0015F4  2442288C   ADDIU V0, V0, 10380
-9D0015F8  00822021   ADDU A0, A0, V0
-9D0015FC  8C830000   LW V1, 0(A0)
-9D001600  8C620010   LW V0, 16(V1)
-9D001604  30420100   ANDI V0, V0, 256
+9D001950  00042080   SLL A0, A0, 2
+9D001954  3C029D00   LUI V0, -25344
+9D001958  24422E04   ADDIU V0, V0, 11780
+9D00195C  00822021   ADDU A0, A0, V0
+9D001960  8C830000   LW V1, 0(A0)
+9D001964  8C620010   LW V0, 16(V1)
+9D001968  30420100   ANDI V0, V0, 256
 933:                 }
 934:                 
 935:                 
@@ -1003,37 +1003,37 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 973:                 extern inline BOOL __attribute__((always_inline)) UARTReceivedDataIsAvailable ( UART_MODULE id )
 974:                 {
 975:                     return (BOOL)(_U1STA_URXDA_MASK == (uartReg[id]->sta.reg & _U1STA_URXDA_MASK));
-9D001490  00042080   SLL A0, A0, 2
-9D001494  3C029D00   LUI V0, -25344
-9D001498  2442288C   ADDIU V0, V0, 10380
-9D00149C  00822021   ADDU A0, A0, V0
-9D0014A0  8C830000   LW V1, 0(A0)
-9D0014A4  8C640010   LW A0, 16(V1)
-9D0014A8  30840001   ANDI A0, A0, 1
-9D001518  00048080   SLL S0, A0, 2
-9D00151C  3C029D00   LUI V0, -25344
-9D001520  2442288C   ADDIU V0, V0, 10380
-9D001524  02028021   ADDU S0, S0, V0
-9D001528  8E030000   LW V1, 0(S0)
-9D00152C  8C620010   LW V0, 16(V1)
-9D001530  30420001   ANDI V0, V0, 1
-9D001550  3C029D00   LUI V0, -25344
-9D001554  2442288C   ADDIU V0, V0, 10380
-9D001560  8C430010   LW V1, 16(V0)
-9D001564  30630001   ANDI V1, V1, 1
-9D001648  00041080   SLL V0, A0, 2
-9D00164C  3C129D00   LUI S2, -25344
-9D001650  2652288C   ADDIU S2, S2, 10380
-9D001654  00529021   ADDU S2, V0, S2
-9D001660  8C430010   LW V1, 16(V0)
-9D001664  30630001   ANDI V1, V1, 1
-9D00171C  00042080   SLL A0, A0, 2
-9D001720  3C029D00   LUI V0, -25344
-9D001724  2442288C   ADDIU V0, V0, 10380
-9D001728  00822021   ADDU A0, A0, V0
-9D00172C  8C830000   LW V1, 0(A0)
-9D001730  8C640010   LW A0, 16(V1)
-9D001734  30840001   ANDI A0, A0, 1
+9D0017F4  00042080   SLL A0, A0, 2
+9D0017F8  3C029D00   LUI V0, -25344
+9D0017FC  24422E04   ADDIU V0, V0, 11780
+9D001800  00822021   ADDU A0, A0, V0
+9D001804  8C830000   LW V1, 0(A0)
+9D001808  8C640010   LW A0, 16(V1)
+9D00180C  30840001   ANDI A0, A0, 1
+9D00187C  00048080   SLL S0, A0, 2
+9D001880  3C029D00   LUI V0, -25344
+9D001884  24422E04   ADDIU V0, V0, 11780
+9D001888  02028021   ADDU S0, S0, V0
+9D00188C  8E030000   LW V1, 0(S0)
+9D001890  8C620010   LW V0, 16(V1)
+9D001894  30420001   ANDI V0, V0, 1
+9D0018B4  3C029D00   LUI V0, -25344
+9D0018B8  24422E04   ADDIU V0, V0, 11780
+9D0018C4  8C430010   LW V1, 16(V0)
+9D0018C8  30630001   ANDI V1, V1, 1
+9D0019AC  00041080   SLL V0, A0, 2
+9D0019B0  3C129D00   LUI S2, -25344
+9D0019B4  26522E04   ADDIU S2, S2, 11780
+9D0019B8  00529021   ADDU S2, V0, S2
+9D0019C4  8C430010   LW V1, 16(V0)
+9D0019C8  30630001   ANDI V1, V1, 1
+9D001A80  00042080   SLL A0, A0, 2
+9D001A84  3C029D00   LUI V0, -25344
+9D001A88  24422E04   ADDIU V0, V0, 11780
+9D001A8C  00822021   ADDU A0, A0, V0
+9D001A90  8C830000   LW V1, 0(A0)
+9D001A94  8C640010   LW A0, 16(V1)
+9D001A98  30840001   ANDI A0, A0, 1
 976:                 }
 977:                 
 978:                 
@@ -1075,11 +1075,11 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 1014:                extern inline BYTE __attribute__((always_inline)) UARTGetDataByte ( UART_MODULE id )
 1015:                {
 1016:                    return (BYTE)uartReg[id]->rx.reg;
-9D0014B4  8C620030   LW V0, 48(V1)
-9D00153C  8C620030   LW V0, 48(V1)
-9D001570  8C420030   LW V0, 48(V0)
-9D001670  8C450030   LW A1, 48(V0)
-9D001740  8C630030   LW V1, 48(V1)
+9D001818  8C620030   LW V0, 48(V1)
+9D0018A0  8C620030   LW V0, 48(V1)
+9D0018D4  8C420030   LW V0, 48(V0)
+9D0019D4  8C450030   LW A1, 48(V0)
+9D001AA4  8C630030   LW V1, 48(V1)
 1017:                }
 1018:                
 1019:                
@@ -1700,13 +1700,13 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 339:                 #endif
 340:                 
 341:                     int_status=INTDisableInterrupts();
-9D001D98  0F400A21   JAL INTDisableInterrupts
-9D001D9C  00000000   NOP
+9D002100  0F400B7F   JAL INTDisableInterrupts
+9D002104  00000000   NOP
 342:                 
 343:                     mBMXDisableDRMWaitState();
-9D001DA0  24040040   ADDIU A0, ZERO, 64
-9D001DA4  3C03BF88   LUI V1, -16504
-9D001DA8  AC642004   SW A0, 8196(V1)
+9D002108  24040040   ADDIU A0, ZERO, 64
+9D00210C  3C03BF88   LUI V1, -16504
+9D002110  AC642004   SW A0, 8196(V1)
 344:                 
 345:                     if(flags & SYS_CFG_WAIT_STATES)
 346:                     {
@@ -1731,12 +1731,12 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 365:                 
 366:                     pb_clk = sys_clock;
 367:                     pb_clk >>= OSCCONbits.PBDIV;
-9D001DAC  3C03BF81   LUI V1, -16511
-9D001DB0  8C63F000   LW V1, -4096(V1)
+9D002114  3C03BF81   LUI V1, -16511
+9D002118  8C63F000   LW V1, -4096(V1)
 368:                 
 369:                     INTRestoreInterrupts(int_status);
-9D001DB4  0F400A06   JAL INTRestoreInterrupts
-9D001DB8  00402021   ADDU A0, V0, ZERO
+9D00211C  0F400B64   JAL INTRestoreInterrupts
+9D002120  00402021   ADDU A0, V0, ZERO
 370:                 
 371:                     return pb_clk;
 372:                 
@@ -1828,7 +1828,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D0009CC  24020007   ADDIU V0, ZERO, 7
 9D0009D0  70C23802   MUL A3, A2, V0
 9D0009D4  3C089D00   LUI T0, -25344
-9D0009D8  25081AA4   ADDIU T0, T0, 6820
+9D0009D8  25081E0C   ADDIU T0, T0, 7692
 9D0009DC  01071021   ADDU V0, T0, A3
 9D0009E0  25080007   ADDIU T0, T0, 7
 9D0009E4  01073821   ADDU A3, T0, A3
@@ -2026,13 +2026,13 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000B9C  24110008   ADDIU S1, ZERO, 8
 9D000BA8  AE516138   SW S1, 24888(S2)
 128:                         delay_ms(400);
-9D000BAC  0F4007C8   JAL delay_ms
+9D000BAC  0F4008AA   JAL delay_ms
 9D000BB0  24040190   ADDIU A0, ZERO, 400
 129:                         _status_off();
 9D000BA0  3C13BF88   LUI S3, -16504
 9D000BB4  AE716134   SW S1, 24884(S3)
 130:                         delay_ms(300);
-9D000BB8  0F4007C8   JAL delay_ms
+9D000BB8  0F4008AA   JAL delay_ms
 9D000BBC  2404012C   ADDIU A0, ZERO, 300
 131:                     }
 132:                 }//digit()
@@ -2061,7 +2061,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000C14  0F4002DB   JAL digit
 9D000C18  7C022420   SEB A0, V0
 138:                     delay_ms(500);
-9D000C1C  0F4007C8   JAL delay_ms
+9D000C1C  0F4008AA   JAL delay_ms
 9D000C20  240401F4   ADDIU A0, ZERO, 500
 139:                     code = code % 100;
 140:                     d= code/10;
@@ -2073,7 +2073,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000C34  0F4002DB   JAL digit
 9D000C38  00002012   MFLO A0, 0
 142:                     delay_ms(500);
-9D000C3C  0F4007C8   JAL delay_ms
+9D000C3C  0F4008AA   JAL delay_ms
 9D000C40  240401F4   ADDIU A0, ZERO, 500
 143:                     code = code % 10;
 144:                     digit(code);
@@ -2096,12 +2096,12 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000C78  AFB10014   SW S1, 20(SP)
 148:                     int code;
 149:                     HardwareInit();
-9D000C7C  0F400764   JAL HardwareInit
+9D000C7C  0F40083E   JAL HardwareInit
 9D000C80  AFB00010   SW S0, 16(SP)
 150:                     UartInit(STDIO,9600,DEFAULT_LINE_CTRL);
 9D000C84  24040001   ADDIU A0, ZERO, 1
 9D000C88  24052580   ADDIU A1, ZERO, 9600
-9D000C8C  0F400507   JAL UartInit
+9D000C8C  0F4005E0   JAL UartInit
 9D000C90  00003021   ADDU A2, ZERO, ZERO
 151:                     ln_cnt=0;
 9D000C94  AF808028   SW ZERO, -32728(GP)
@@ -2111,207 +2111,355 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000C9C  0F4002A9   JAL test_pattern
 9D000CA0  00000000   NOP
 154:                     VideoInit();
-9D000CA4  0F4005D9   JAL VideoInit
+9D000CA4  0F4006B2   JAL VideoInit
 9D000CA8  00000000   NOP
 155:                     delay_ms(750);
-9D000CAC  0F4007C8   JAL delay_ms
+9D000CAC  0F4008AA   JAL delay_ms
 9D000CB0  240402EE   ADDIU A0, ZERO, 750
 156:                     if ((code=KeyboardInit())==1){
 9D000CB4  0F400196   JAL KeyboardInit
 9D000CB8  00000000   NOP
 9D000CBC  24030001   ADDIU V1, ZERO, 1
-9D000CC0  1443001C   BNE V0, V1, 0x9D000D34
-9D000CC4  00000000   NOP
+9D000CC0  14430015   BNE V0, V1, 0x9D000D18
+9D000CC4  24100008   ADDIU S0, ZERO, 8
 157:                         _status_on();
-9D000CC8  24100008   ADDIU S0, ZERO, 8
-9D000CCC  3C02BF88   LUI V0, -16504
-9D000CD0  AC506138   SW S0, 24888(V0)
+9D000CC8  3C02BF88   LUI V0, -16504
+9D000CCC  AC506138   SW S0, 24888(V0)
 158:                         SetKbdLeds(F_NUM);
-9D000CD4  0F4001D0   JAL SetKbdLeds
-9D000CD8  24040002   ADDIU A0, ZERO, 2
+9D000CD0  0F4001D0   JAL SetKbdLeds
+9D000CD4  24040002   ADDIU A0, ZERO, 2
 159:                         delay_ms(300);
-9D000CDC  0F4007C8   JAL delay_ms
-9D000CE0  2404012C   ADDIU A0, ZERO, 300
+9D000CD8  0F4008AA   JAL delay_ms
+9D000CDC  2404012C   ADDIU A0, ZERO, 300
 160:                         SetKbdLeds(F_CAPS);
-9D000CE4  0F4001D0   JAL SetKbdLeds
-9D000CE8  24040004   ADDIU A0, ZERO, 4
+9D000CE0  0F4001D0   JAL SetKbdLeds
+9D000CE4  24040004   ADDIU A0, ZERO, 4
 161:                         delay_ms(300);
-9D000CEC  0F4007C8   JAL delay_ms
-9D000CF0  2404012C   ADDIU A0, ZERO, 300
+9D000CE8  0F4008AA   JAL delay_ms
+9D000CEC  2404012C   ADDIU A0, ZERO, 300
 162:                         SetKbdLeds(F_SCROLL);
-9D000CF4  0F4001D0   JAL SetKbdLeds
-9D000CF8  24040001   ADDIU A0, ZERO, 1
+9D000CF0  0F4001D0   JAL SetKbdLeds
+9D000CF4  24040001   ADDIU A0, ZERO, 1
 163:                         delay_ms(300);
-9D000CFC  0F4007C8   JAL delay_ms
-9D000D00  2404012C   ADDIU A0, ZERO, 300
+9D000CF8  0F4008AA   JAL delay_ms
+9D000CFC  2404012C   ADDIU A0, ZERO, 300
 164:                         SetKbdLeds(0);
-9D000D04  0F4001D0   JAL SetKbdLeds
-9D000D08  00002021   ADDU A0, ZERO, ZERO
+9D000D00  0F4001D0   JAL SetKbdLeds
+9D000D04  00002021   ADDU A0, ZERO, ZERO
 165:                         _status_off();
-9D000D0C  3C02BF88   LUI V0, -16504
-9D000D10  AC506134   SW S0, 24884(V0)
+9D000D08  3C02BF88   LUI V0, -16504
+9D000D0C  AC506134   SW S0, 24884(V0)
 166:                     }else{
 167:                         error_code_status(-code);
-9D000D34  0F4002FC   JAL error_code_status
-9D000D38  00022023   SUBU A0, ZERO, V0
+9D000D18  0F4002FC   JAL error_code_status
+9D000D1C  00022023   SUBU A0, ZERO, V0
 168:                     }
-169:                     short scancode,key;
-170:                     int x=1,y=20;
-171:                     while(1){
-172:                         if ((scancode=GetScancode())){
-9D000D44  0F400008   JAL GetScancode
-9D000D48  00000000   NOP
-9D000D4C  1040FFFD   BEQ V0, ZERO, 0x9D000D44
+169:                    // MediaInitialize();
+170:                     short scancode,key;
+171:                     int x=1,y=20;
+9D000D30  24110014   ADDIU S1, ZERO, 20
+9D000D34  24100001   ADDIU S0, ZERO, 1
+172:                     UartPrint(STDOUT,"OK\r");
+9D000D10  0B400349   J 0x9D000D24
+9D000D14  24040001   ADDIU A0, ZERO, 1
+9D000D20  24040001   ADDIU A0, ZERO, 1
+9D000D24  3C059D00   LUI A1, -25344
+9D000D28  0F400643   JAL UartPrint
+9D000D2C  24A51E08   ADDIU A1, A1, 7688
+173:                 //    while (1){ // test interface RS-232
+174:                 //        if ((key=UartGetch(STDIN))>0){
+175:                 //            put_char(x,y,key);
+176:                 //            x+=6;
+177:                 //            if (x>=(53*6+1)){
+178:                 //                x=1;
+179:                 //                y += 8;
+180:                 //            }
+181:                 //            UartPrint(STDOUT,"OK\r\n");
+182:                 //        }
+183:                 //    }
+184:                     while(1){
+185:                         if ((scancode=GetScancode())){
+9D000D4C  0F400008   JAL GetScancode
 9D000D50  00000000   NOP
-173:                             if (scancode>0){
-9D000D54  58400031   BLEZL V0, 0x9D000E1C
-9D000D58  304201FF   ANDI V0, V0, 511
-174:                                 switch (scancode){
-9D000D5C  1052000D   BEQ V0, S2, 0x9D000D94
-9D000D60  2843005A   SLTI V1, V0, 90
-9D000D64  10600005   BEQ V1, ZERO, 0x9D000D7C
-9D000D68  2403005A   ADDIU V1, ZERO, 90
-9D000D6C  1453001E   BNE V0, S3, 0x9D000DE8
-9D000D70  00000000   NOP
-9D000D74  0B400365   J 0x9D000D94
+9D000D54  1040FFFD   BEQ V0, ZERO, 0x9D000D4C
+9D000D58  00000000   NOP
+186:                             if (scancode>0){
+9D000D5C  58400031   BLEZL V0, 0x9D000E24
+9D000D60  304201FF   ANDI V0, V0, 511
+187:                                 switch (scancode){
+9D000D64  1052000D   BEQ V0, S2, 0x9D000D9C
+9D000D68  2843005A   SLTI V1, V0, 90
+9D000D6C  10600005   BEQ V1, ZERO, 0x9D000D84
+9D000D70  2403005A   ADDIU V1, ZERO, 90
+9D000D74  1453001E   BNE V0, S3, 0x9D000DF0
 9D000D78  00000000   NOP
-9D000D7C  10430011   BEQ V0, V1, 0x9D000DC4
-9D000D80  24030066   ADDIU V1, ZERO, 102
-9D000D84  14430018   BNE V0, V1, 0x9D000DE8
-9D000D88  00000000   NOP
-175:                                     case LSHIFT:
-176:                                     case RSHIFT:
-177:                                         rx_flags |= F_SHIFT;
-9D000D94  9382801E   LBU V0, -32738(GP)
-9D000D98  304200FF   ANDI V0, V0, 255
-9D000D9C  34420008   ORI V0, V0, 8
-9D000DA0  A382801E   SB V0, -32738(GP)
-178:                                         break;
-9D000DA4  0B400351   J 0x9D000D44
-9D000DA8  00000000   NOP
-179:                                     case BKSP:
-180:                                         x -= 6;
-9D000D8C  0B40036B   J 0x9D000DAC
-9D000D90  2610FFFA   ADDIU S0, S0, -6
-181:                                         put_char(x,y,32);
-9D000DAC  02002021   ADDU A0, S0, ZERO
-9D000DB0  02202821   ADDU A1, S1, ZERO
-9D000DB4  0F400257   JAL put_char
-9D000DB8  24060020   ADDIU A2, ZERO, 32
-182:                                         break;
-9D000DBC  0B400351   J 0x9D000D44
-9D000DC0  00000000   NOP
-183:                                     case ENTER:
-184:                                         x=1;
-185:                                         y += 8;
-9D000DC4  26310008   ADDIU S1, S1, 8
-186:                                     default:
-187:                                         put_char(x, y, GetKey(scancode)&127);
-9D000DC8  0F400098   JAL GetKey
-9D000DCC  2404005A   ADDIU A0, ZERO, 90
-9D000DD0  24040001   ADDIU A0, ZERO, 1
-9D000DD4  02202821   ADDU A1, S1, ZERO
-9D000DD8  0F400257   JAL put_char
-9D000DDC  3046007F   ANDI A2, V0, 127
-9D000DE8  0F400098   JAL GetKey
-9D000DEC  00402021   ADDU A0, V0, ZERO
-9D000DF0  02002021   ADDU A0, S0, ZERO
-9D000DF4  02202821   ADDU A1, S1, ZERO
-9D000DF8  0F400257   JAL put_char
-9D000DFC  3046007F   ANDI A2, V0, 127
-188:                                         x += 6;
-9D000D14  24110014   ADDIU S1, ZERO, 20
-9D000D18  24100001   ADDIU S0, ZERO, 1
-9D000D3C  0B400346   J 0x9D000D18
-9D000D40  24110014   ADDIU S1, ZERO, 20
-9D000DE0  0B400351   J 0x9D000D44
-9D000DE4  24100007   ADDIU S0, ZERO, 7
-9D000E00  26100006   ADDIU S0, S0, 6
-189:                                         if (x>=(53*6+1)){
-9D000E04  2A02013F   SLTI V0, S0, 319
-9D000E08  1440FFCE   BNE V0, ZERO, 0x9D000D44
-9D000E0C  00000000   NOP
-190:                                             y +=8;
-9D000E10  26310008   ADDIU S1, S1, 8
-191:                                             x=1;
-9D000E14  0B400351   J 0x9D000D44
-9D000E18  24100001   ADDIU S0, ZERO, 1
-192:                                         }
-193:                                 }
-194:                             }else switch (scancode&511){
-9D000D1C  24140058   ADDIU S4, ZERO, 88
-9D000D24  24120059   ADDIU S2, ZERO, 89
-9D000D28  24150077   ADDIU S5, ZERO, 119
-9D000D2C  0B400351   J 0x9D000D44
-9D000D30  24130012   ADDIU S3, ZERO, 18
-9D000E1C  1054001C   BEQ V0, S4, 0x9D000E90
-9D000E20  28430059   SLTI V1, V0, 89
-9D000E24  10600005   BEQ V1, ZERO, 0x9D000E3C
-9D000E28  00000000   NOP
-9D000E2C  1453FFC5   BNE V0, S3, 0x9D000D44
+9D000D7C  0B400367   J 0x9D000D9C
+9D000D80  00000000   NOP
+9D000D84  10430011   BEQ V0, V1, 0x9D000DCC
+9D000D88  24030066   ADDIU V1, ZERO, 102
+9D000D8C  14430018   BNE V0, V1, 0x9D000DF0
+9D000D90  00000000   NOP
+188:                                     case LSHIFT:
+189:                                     case RSHIFT:
+190:                                         rx_flags |= F_SHIFT;
+9D000D9C  9382801E   LBU V0, -32738(GP)
+9D000DA0  304200FF   ANDI V0, V0, 255
+9D000DA4  34420008   ORI V0, V0, 8
+9D000DA8  A382801E   SB V0, -32738(GP)
+191:                                         break;
+9D000DAC  0B400353   J 0x9D000D4C
+9D000DB0  00000000   NOP
+192:                                     case BKSP:
+193:                                         x -= 6;
+9D000D94  0B40036D   J 0x9D000DB4
+9D000D98  2610FFFA   ADDIU S0, S0, -6
+194:                                         put_char(x,y,32);
+9D000DB4  02002021   ADDU A0, S0, ZERO
+9D000DB8  02202821   ADDU A1, S1, ZERO
+9D000DBC  0F400257   JAL put_char
+9D000DC0  24060020   ADDIU A2, ZERO, 32
+195:                                         break;
+9D000DC4  0B400353   J 0x9D000D4C
+9D000DC8  00000000   NOP
+196:                                     case ENTER:
+197:                                         x=1;
+198:                                         y += 8;
+9D000DCC  26310008   ADDIU S1, S1, 8
+199:                                     default:
+200:                                         put_char(x, y, GetKey(scancode)&127);
+9D000DD0  0F400098   JAL GetKey
+9D000DD4  2404005A   ADDIU A0, ZERO, 90
+9D000DD8  24040001   ADDIU A0, ZERO, 1
+9D000DDC  02202821   ADDU A1, S1, ZERO
+9D000DE0  0F400257   JAL put_char
+9D000DE4  3046007F   ANDI A2, V0, 127
+9D000DF0  0F400098   JAL GetKey
+9D000DF4  00402021   ADDU A0, V0, ZERO
+9D000DF8  02002021   ADDU A0, S0, ZERO
+9D000DFC  02202821   ADDU A1, S1, ZERO
+9D000E00  0F400257   JAL put_char
+9D000E04  3046007F   ANDI A2, V0, 127
+201:                                         x += 6;
+9D000DE8  0B400353   J 0x9D000D4C
+9D000DEC  24100007   ADDIU S0, ZERO, 7
+9D000E08  26100006   ADDIU S0, S0, 6
+202:                                         if (x>(53*6)){
+9D000E0C  2A02013F   SLTI V0, S0, 319
+9D000E10  1440FFCE   BNE V0, ZERO, 0x9D000D4C
+9D000E14  00000000   NOP
+203:                                             y +=8;
+9D000E18  26310008   ADDIU S1, S1, 8
+204:                                             x=1;
+9D000E1C  0B400353   J 0x9D000D4C
+9D000E20  24100001   ADDIU S0, ZERO, 1
+205:                                         }
+206:                                 }
+207:                             }else switch (scancode&511){
+9D000D38  24140058   ADDIU S4, ZERO, 88
+9D000D40  24120059   ADDIU S2, ZERO, 89
+9D000D44  24150077   ADDIU S5, ZERO, 119
+9D000D48  24130012   ADDIU S3, ZERO, 18
+9D000E24  1054001C   BEQ V0, S4, 0x9D000E98
+9D000E28  28430059   SLTI V1, V0, 89
+9D000E2C  10600005   BEQ V1, ZERO, 0x9D000E44
 9D000E30  00000000   NOP
-9D000E34  0B400395   J 0x9D000E54
+9D000E34  1453FFC5   BNE V0, S3, 0x9D000D4C
 9D000E38  00000000   NOP
-9D000E3C  10520005   BEQ V0, S2, 0x9D000E54
+9D000E3C  0B400397   J 0x9D000E5C
 9D000E40  00000000   NOP
-9D000E44  1455FFBF   BNE V0, S5, 0x9D000D44
+9D000E44  10520005   BEQ V0, S2, 0x9D000E5C
 9D000E48  00000000   NOP
-9D000E4C  0B40039B   J 0x9D000E6C
+9D000E4C  1455FFBF   BNE V0, S5, 0x9D000D4C
 9D000E50  00000000   NOP
-195:                                 case LSHIFT:
-196:                                 case RSHIFT:
-197:                                     rx_flags &= ~F_SHIFT;
-9D000D20  2416FFF7   ADDIU S6, ZERO, -9
-9D000E54  9382801E   LBU V0, -32738(GP)
-9D000E58  304200FF   ANDI V0, V0, 255
-9D000E5C  00561024   AND V0, V0, S6
-9D000E60  A382801E   SB V0, -32738(GP)
-198:                                     break;
-9D000E64  0B400351   J 0x9D000D44
-9D000E68  00000000   NOP
-199:                                 case LCTRL:
-200:                                 case RCTRL:
-201:                                     break;
-202:                                 case LALT:
-203:                                 case RALT:
-204:                                     break;
-205:                                 case NUM_LOCK:
-206:                                     kbd_leds ^= F_NUM;
-9D000E6C  9382801F   LBU V0, -32737(GP)
-9D000E70  304200FF   ANDI V0, V0, 255
-9D000E74  38420002   XORI V0, V0, 2
-9D000E78  A382801F   SB V0, -32737(GP)
-207:                                     SetKbdLeds(kbd_leds);
-9D000E7C  9384801F   LBU A0, -32737(GP)
-9D000E80  0F4001D0   JAL SetKbdLeds
-9D000E84  308400FF   ANDI A0, A0, 255
-208:                                     break;
-9D000E88  0B400351   J 0x9D000D44
-9D000E8C  00000000   NOP
-209:                                 case CAPS_LOCK:
-210:                                     kbd_leds ^= F_CAPS;
-9D000E90  9382801F   LBU V0, -32737(GP)
-9D000E94  304200FF   ANDI V0, V0, 255
-9D000E98  38420004   XORI V0, V0, 4
-9D000E9C  A382801F   SB V0, -32737(GP)
-211:                                     rx_flags ^= F_CAPS;
-9D000EA0  9382801E   LBU V0, -32738(GP)
-9D000EA4  304200FF   ANDI V0, V0, 255
-9D000EA8  38420004   XORI V0, V0, 4
-9D000EAC  A382801E   SB V0, -32738(GP)
-212:                                     SetKbdLeds(kbd_leds);
-9D000EB0  9384801F   LBU A0, -32737(GP)
-9D000EB4  0F4001D0   JAL SetKbdLeds
-9D000EB8  308400FF   ANDI A0, A0, 255
-9D000EBC  0B400351   J 0x9D000D44
-9D000EC0  00000000   NOP
-213:                                     break;
-214:                 
-215:                             }
-216:                         }
-217:                     }
-218:                 }
-219:                 
+9D000E54  0B40039D   J 0x9D000E74
+9D000E58  00000000   NOP
+208:                                 case LSHIFT:
+209:                                 case RSHIFT:
+210:                                     rx_flags &= ~F_SHIFT;
+9D000D3C  2416FFF7   ADDIU S6, ZERO, -9
+9D000E5C  9382801E   LBU V0, -32738(GP)
+9D000E60  304200FF   ANDI V0, V0, 255
+9D000E64  00561024   AND V0, V0, S6
+9D000E68  A382801E   SB V0, -32738(GP)
+211:                                     break;
+9D000E6C  0B400353   J 0x9D000D4C
+9D000E70  00000000   NOP
+212:                                 case LCTRL:
+213:                                 case RCTRL:
+214:                                     break;
+215:                                 case LALT:
+216:                                 case RALT:
+217:                                     break;
+218:                                 case NUM_LOCK:
+219:                                     kbd_leds ^= F_NUM;
+9D000E74  9382801F   LBU V0, -32737(GP)
+9D000E78  304200FF   ANDI V0, V0, 255
+9D000E7C  38420002   XORI V0, V0, 2
+9D000E80  A382801F   SB V0, -32737(GP)
+220:                                     SetKbdLeds(kbd_leds);
+9D000E84  9384801F   LBU A0, -32737(GP)
+9D000E88  0F4001D0   JAL SetKbdLeds
+9D000E8C  308400FF   ANDI A0, A0, 255
+221:                                     break;
+9D000E90  0B400353   J 0x9D000D4C
+9D000E94  00000000   NOP
+222:                                 case CAPS_LOCK:
+223:                                     kbd_leds ^= F_CAPS;
+9D000E98  9382801F   LBU V0, -32737(GP)
+9D000E9C  304200FF   ANDI V0, V0, 255
+9D000EA0  38420004   XORI V0, V0, 4
+9D000EA4  A382801F   SB V0, -32737(GP)
+224:                                     rx_flags ^= F_CAPS;
+9D000EA8  9382801E   LBU V0, -32738(GP)
+9D000EAC  304200FF   ANDI V0, V0, 255
+9D000EB0  38420004   XORI V0, V0, 4
+9D000EB4  A382801E   SB V0, -32738(GP)
+225:                                     SetKbdLeds(kbd_leds);
+9D000EB8  9384801F   LBU A0, -32737(GP)
+9D000EBC  0F4001D0   JAL SetKbdLeds
+9D000EC0  308400FF   ANDI A0, A0, 255
+9D000EC4  0B400353   J 0x9D000D4C
+9D000EC8  00000000   NOP
+226:                                     break;
+227:                 
+228:                             }
+229:                         }
+230:                     }
+231:                 }
+232:                 
+---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/spi4sdcard.c  ----------------------------------
+1:                   #include <plib.h>
+2:                   #include <xc.h>
+3:                   #include "spi4sdcard.h"
+4:                   
+5:                   #pragma code
+6:                   
+7:                   void writespi(unsigned char data_out)
+8:                   {
+9D002354  308400FF   ANDI A0, A0, 255
+9:                      SPI2BUF = data_out;        // Send the data
+9D002358  3C02BF80   LUI V0, -16512
+9D00235C  AC445A20   SW A0, 23072(V0)
+10:                     while(!SPI2STATbits.SPIRBF);   // While emtpy wait
+9D002360  3C03BF80   LUI V1, -16512
+9D002364  8C625A10   LW V0, 23056(V1)
+9D002368  30420001   ANDI V0, V0, 1
+9D00236C  1040FFFD   BEQ V0, ZERO, 0x9D002364
+9D002370  3C02BF80   LUI V0, -16512
+11:                     data_out = SPI2BUF;        // Essential avoid overflow i.e. receive dummy byte
+9D002374  8C425A20   LW V0, 23072(V0)
+12:                     while(SPI2STATbits.SPIRBF);    // While full wait
+9D002378  3C03BF80   LUI V1, -16512
+9D00237C  8C625A10   LW V0, 23056(V1)
+9D002380  30420001   ANDI V0, V0, 1
+9D002384  1440FFFD   BNE V0, ZERO, 0x9D00237C
+9D002388  00000000   NOP
+13:                     _nop();
+9D00238C  00000040   SSNOP
+14:                     _nop();
+9D002390  00000040   SSNOP
+15:                     _nop();
+9D002394  00000040   SSNOP
+16:                     _nop();
+9D002398  00000040   SSNOP
+17:                     _nop();
+9D00239C  00000040   SSNOP
+18:                     _nop();
+9D0023A0  00000040   SSNOP
+19:                     _nop();
+9D0023A4  00000040   SSNOP
+20:                     _nop();
+9D0023A8  00000040   SSNOP
+21:                     _nop();
+9D0023AC  00000040   SSNOP
+22:                  }
+9D0023B0  03E00008   JR RA
+9D0023B4  00000000   NOP
+23:                  
+24:                  unsigned char readspi(void)
+25:                  {
+26:                   unsigned char TempVar;
+27:                     IFS1bits.SPI2TXIF = 0;       // Make certain interrupt flag is  clear
+9D0023B8  3C02BF88   LUI V0, -16504
+9D0023BC  8C431040   LW V1, 4160(V0)
+9D0023C0  7C03A504   INS V1, ZERO, 20, 1
+9D0023C4  AC431040   SW V1, 4160(V0)
+28:                     TempVar = SPI2BUF;         // Make certain BF is clear.
+9D0023C8  3C02BF80   LUI V0, -16512
+9D0023CC  8C435A20   LW V1, 23072(V0)
+29:                     SPI2BUF = 0xff;            // initiate bus cycle
+9D0023D0  240300FF   ADDIU V1, ZERO, 255
+9D0023D4  AC435A20   SW V1, 23072(V0)
+30:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D0023D8  3C04BF88   LUI A0, -16504
+9D0023DC  3C030010   LUI V1, 16
+9D0023E0  8C821040   LW V0, 4160(A0)
+9D0023E4  00431024   AND V0, V0, V1
+9D0023E8  1040FFFD   BEQ V0, ZERO, 0x9D0023E0
+9D0023EC  00000000   NOP
+31:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D0023F0  3C04BF88   LUI A0, -16504
+9D0023F4  3C030010   LUI V1, 16
+9D0023F8  8C821040   LW V0, 4160(A0)
+9D0023FC  00431024   AND V0, V0, V1
+9D002400  1040FFFD   BEQ V0, ZERO, 0x9D0023F8
+9D002404  00000000   NOP
+32:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002408  3C04BF88   LUI A0, -16504
+9D00240C  3C030010   LUI V1, 16
+9D002410  8C821040   LW V0, 4160(A0)
+9D002414  00431024   AND V0, V0, V1
+9D002418  1040FFFD   BEQ V0, ZERO, 0x9D002410
+9D00241C  00000000   NOP
+33:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002420  3C04BF88   LUI A0, -16504
+9D002424  3C030010   LUI V1, 16
+9D002428  8C821040   LW V0, 4160(A0)
+9D00242C  00431024   AND V0, V0, V1
+9D002430  1040FFFD   BEQ V0, ZERO, 0x9D002428
+9D002434  00000000   NOP
+34:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002438  3C04BF88   LUI A0, -16504
+9D00243C  3C030010   LUI V1, 16
+9D002440  8C821040   LW V0, 4160(A0)
+9D002444  00431024   AND V0, V0, V1
+9D002448  1040FFFD   BEQ V0, ZERO, 0x9D002440
+9D00244C  00000000   NOP
+35:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002450  3C04BF88   LUI A0, -16504
+9D002454  3C030010   LUI V1, 16
+9D002458  8C821040   LW V0, 4160(A0)
+9D00245C  00431024   AND V0, V0, V1
+9D002460  1040FFFD   BEQ V0, ZERO, 0x9D002458
+9D002464  00000000   NOP
+36:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002468  3C04BF88   LUI A0, -16504
+9D00246C  3C030010   LUI V1, 16
+9D002470  8C821040   LW V0, 4160(A0)
+9D002474  00431024   AND V0, V0, V1
+9D002478  1040FFFD   BEQ V0, ZERO, 0x9D002470
+9D00247C  00000000   NOP
+37:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002480  3C04BF88   LUI A0, -16504
+9D002484  3C030010   LUI V1, 16
+9D002488  8C821040   LW V0, 4160(A0)
+9D00248C  00431024   AND V0, V0, V1
+9D002490  1040FFFD   BEQ V0, ZERO, 0x9D002488
+9D002494  00000000   NOP
+38:                     while(!IFS1bits.SPI2TXIF);   // wait until bus cycle complete
+9D002498  3C04BF88   LUI A0, -16504
+9D00249C  3C030010   LUI V1, 16
+9D0024A0  8C821040   LW V0, 4160(A0)
+9D0024A4  00431024   AND V0, V0, V1
+9D0024A8  1040FFFD   BEQ V0, ZERO, 0x9D0024A0
+9D0024AC  3C02BF80   LUI V0, -16512
+39:                   return(SPI2BUF);             // return with byte read
+9D0024B0  8C425A20   LW V0, 23072(V0)
+40:                  
+41:                  }
+9D0024B4  03E00008   JR RA
+9D0024B8  304200FF   ANDI V0, V0, 255
+42:                  
 ---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/serial_comm.c  ---------------------------------
 1:                   /*
 2:                   * Copyright 2013, Jacques Deschênes
@@ -2344,44 +2492,44 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 29:                  static char unget;
 30:                  
 31:                  void UartInit(UART_MODULE channel, int baudrate, UART_LINE_CONTROL_MODE LineCtrl){
-9D00141C  27BDFFE0   ADDIU SP, SP, -32
-9D001420  AFBF001C   SW RA, 28(SP)
-9D001424  AFB20018   SW S2, 24(SP)
-9D001428  AFB10014   SW S1, 20(SP)
-9D00142C  AFB00010   SW S0, 16(SP)
-9D001430  00808021   ADDU S0, A0, ZERO
-9D001434  00A09021   ADDU S2, A1, ZERO
-9D001438  00C08821   ADDU S1, A2, ZERO
+9D001780  27BDFFE0   ADDIU SP, SP, -32
+9D001784  AFBF001C   SW RA, 28(SP)
+9D001788  AFB20018   SW S2, 24(SP)
+9D00178C  AFB10014   SW S1, 20(SP)
+9D001790  AFB00010   SW S0, 16(SP)
+9D001794  00808021   ADDU S0, A0, ZERO
+9D001798  00A09021   ADDU S2, A1, ZERO
+9D00179C  00C08821   ADDU S1, A2, ZERO
 32:                  /*initialise le périphérique UART*/
 33:                     // Configure UART, information dans uart.h
 34:                     UARTConfigure(channel, UART_ENABLE_PINS_TX_RX_ONLY); // pas de contrôle de flux matériel.
-9D00143C  0F400946   JAL UARTConfigure
-9D001440  00002821   ADDU A1, ZERO, ZERO
+9D0017A0  0F400AA4   JAL UARTConfigure
+9D0017A4  00002821   ADDU A1, ZERO, ZERO
 35:                     UARTSetLineControl(channel, LineCtrl);
-9D001444  02002021   ADDU A0, S0, ZERO
-9D001448  0F4009D4   JAL UARTSetLineControl
-9D00144C  02202821   ADDU A1, S1, ZERO
+9D0017A8  02002021   ADDU A0, S0, ZERO
+9D0017AC  0F400B32   JAL UARTSetLineControl
+9D0017B0  02202821   ADDU A1, S1, ZERO
 36:                     UARTSetDataRate(channel, mGetPeripheralClock(), baudrate);
-9D001450  02002021   ADDU A0, S0, ZERO
-9D001454  3C05023C   LUI A1, 572
-9D001458  24A53460   ADDIU A1, A1, 13408
-9D00145C  0F4008D8   JAL UARTSetDataRate
-9D001460  02403021   ADDU A2, S2, ZERO
+9D0017B4  02002021   ADDU A0, S0, ZERO
+9D0017B8  3C05023C   LUI A1, 572
+9D0017BC  24A53460   ADDIU A1, A1, 13408
+9D0017C0  0F400A36   JAL UARTSetDataRate
+9D0017C4  02403021   ADDU A2, S2, ZERO
 37:                     // activation du périphérique
 38:                     UARTEnable(channel, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_RX | UART_TX));
-9D001464  02002021   ADDU A0, S0, ZERO
-9D001468  0F4008B8   JAL UARTEnable
-9D00146C  24050087   ADDIU A1, ZERO, 135
+9D0017C8  02002021   ADDU A0, S0, ZERO
+9D0017CC  0F400A16   JAL UARTEnable
+9D0017D0  24050087   ADDIU A1, ZERO, 135
 39:                     unget=-1;
-9D001470  2402FFFF   ADDIU V0, ZERO, -1
-9D001474  A3828018   SB V0, -32744(GP)
+9D0017D4  2402FFFF   ADDIU V0, ZERO, -1
+9D0017D8  A3828018   SB V0, -32744(GP)
 40:                  };
-9D001478  8FBF001C   LW RA, 28(SP)
-9D00147C  8FB20018   LW S2, 24(SP)
-9D001480  8FB10014   LW S1, 20(SP)
-9D001484  8FB00010   LW S0, 16(SP)
-9D001488  03E00008   JR RA
-9D00148C  27BD0020   ADDIU SP, SP, 32
+9D0017DC  8FBF001C   LW RA, 28(SP)
+9D0017E0  8FB20018   LW S2, 24(SP)
+9D0017E4  8FB10014   LW S1, 20(SP)
+9D0017E8  8FB00010   LW S0, 16(SP)
+9D0017EC  03E00008   JR RA
+9D0017F0  27BD0020   ADDIU SP, SP, 32
 41:                  
 42:                  char UartGetch(UART_MODULE channel){
 43:                  /*lecture d'un caractère retourne -1 si aucun disponible*/
@@ -2392,35 +2540,35 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 48:                          return ch;
 49:                      }else{
 50:                          if (UARTReceivedDataIsAvailable (channel)){
-9D0014AC  10800003   BEQ A0, ZERO, 0x9D0014BC
-9D0014B0  2402FFFF   ADDIU V0, ZERO, -1
+9D001810  10800003   BEQ A0, ZERO, 0x9D001820
+9D001814  2402FFFF   ADDIU V0, ZERO, -1
 51:                                 return UARTGetDataByte(channel);
-9D0014B8  7C021420   SEB V0, V0
+9D00181C  7C021420   SEB V0, V0
 52:                          }else{
 53:                              return -1;
 54:                          }
 55:                      }
 56:                  };
-9D0014BC  03E00008   JR RA
-9D0014C0  00000000   NOP
+9D001820  03E00008   JR RA
+9D001824  00000000   NOP
 57:                  
 58:                  void UartPutch(UART_MODULE channel, char c){
-9D0014C4  7C052C20   SEB A1, A1
+9D001828  7C052C20   SEB A1, A1
 59:                  /*Envoie d'un caractère*/
 60:                      while(!UARTTransmitterIsReady(channel));
-9D0014E4  1440FFFD   BNE V0, ZERO, 0x9D0014DC
-9D0014E8  00000000   NOP
+9D001848  1440FFFD   BNE V0, ZERO, 0x9D001840
+9D00184C  00000000   NOP
 61:                        UARTSendDataByte(channel, c);
 62:                  };
-9D0014F4  03E00008   JR RA
-9D0014F8  00000000   NOP
+9D001858  03E00008   JR RA
+9D00185C  00000000   NOP
 63:                  
 64:                  char UartWaitch(UART_MODULE channel, int delay){
-9D0014FC  27BDFFE0   ADDIU SP, SP, -32
-9D001500  AFBF001C   SW RA, 28(SP)
-9D001504  AFB10018   SW S1, 24(SP)
-9D001508  AFB00014   SW S0, 20(SP)
-9D00150C  00808021   ADDU S0, A0, ZERO
+9D001860  27BDFFE0   ADDIU SP, SP, -32
+9D001864  AFBF001C   SW RA, 28(SP)
+9D001868  AFB10018   SW S1, 24(SP)
+9D00186C  AFB00014   SW S0, 20(SP)
+9D001870  00808021   ADDU S0, A0, ZERO
 65:                  /*attend un caractère pour un temps spécifié par delay
 66:                  *retourne -1 si aucun reçu avant expiration du délais
 67:                  */
@@ -2432,79 +2580,79 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 73:                          return unget;
 74:                      }
 75:                      if (!delay) while (1) if (UARTReceivedDataIsAvailable(channel)) return UARTGetDataByte(channel);
-9D001510  14A0000D   BNE A1, ZERO, 0x9D001548
-9D001514  00A08821   ADDU S1, A1, ZERO
-9D001534  1040FFFD   BEQ V0, ZERO, 0x9D00152C
-9D001538  00000000   NOP
-9D001540  0B400565   J 0x9D001594
-9D001544  7C021420   SEB V0, V0
+9D001874  14A0000D   BNE A1, ZERO, 0x9D0018AC
+9D001878  00A08821   ADDU S1, A1, ZERO
+9D001898  1040FFFD   BEQ V0, ZERO, 0x9D001890
+9D00189C  00000000   NOP
+9D0018A4  0B40063E   J 0x9D0018F8
+9D0018A8  7C021420   SEB V0, V0
 76:                      t=ticks()+delay;
-9D001548  0F4007BD   JAL ticks
-9D00154C  00108080   SLL S0, S0, 2
+9D0018AC  0F40089F   JAL ticks
+9D0018B0  00108080   SLL S0, S0, 2
 77:                      while (ticks()<delay){
-9D001558  0B40055F   J 0x9D00157C
-9D00155C  02028021   ADDU S0, S0, V0
-9D00157C  0F4007BD   JAL ticks
-9D001580  00000000   NOP
-9D001584  0051102B   SLTU V0, V0, S1
-9D001588  5440FFF5   BNEL V0, ZERO, 0x9D001560
-9D00158C  8E020000   LW V0, 0(S0)
+9D0018BC  0B400638   J 0x9D0018E0
+9D0018C0  02028021   ADDU S0, S0, V0
+9D0018E0  0F40089F   JAL ticks
+9D0018E4  00000000   NOP
+9D0018E8  0051102B   SLTU V0, V0, S1
+9D0018EC  5440FFF5   BNEL V0, ZERO, 0x9D0018C4
+9D0018F0  8E020000   LW V0, 0(S0)
 78:                         if (UARTReceivedDataIsAvailable(channel)) return UARTGetDataByte(channel);
-9D001568  10600004   BEQ V1, ZERO, 0x9D00157C
-9D00156C  00000000   NOP
-9D001574  0B400565   J 0x9D001594
-9D001578  7C021420   SEB V0, V0
+9D0018CC  10600004   BEQ V1, ZERO, 0x9D0018E0
+9D0018D0  00000000   NOP
+9D0018D8  0B40063E   J 0x9D0018F8
+9D0018DC  7C021420   SEB V0, V0
 79:                      }
 80:                      return -1;
-9D001590  2402FFFF   ADDIU V0, ZERO, -1
+9D0018F4  2402FFFF   ADDIU V0, ZERO, -1
 81:                  }
-9D001594  8FBF001C   LW RA, 28(SP)
-9D001598  8FB10018   LW S1, 24(SP)
-9D00159C  8FB00014   LW S0, 20(SP)
-9D0015A0  03E00008   JR RA
-9D0015A4  27BD0020   ADDIU SP, SP, 32
+9D0018F8  8FBF001C   LW RA, 28(SP)
+9D0018FC  8FB10018   LW S1, 24(SP)
+9D001900  8FB00014   LW S0, 20(SP)
+9D001904  03E00008   JR RA
+9D001908  27BD0020   ADDIU SP, SP, 32
 82:                  
 83:                  void UartPrint(UART_MODULE channel, const char* str){
 84:                  /* envoie la chaine de caractère str via le UART */
 85:                     while(*str != (char)0)
-9D0015A8  80A60000   LB A2, 0(A1)
-9D0015AC  10C0000F   BEQ A2, ZERO, 0x9D0015EC
-9D0015B0  00041880   SLL V1, A0, 2
-9D0015E0  80A60000   LB A2, 0(A1)
-9D0015E4  14C0FFF7   BNE A2, ZERO, 0x9D0015C4
-9D0015E8  00000000   NOP
+9D00190C  80A60000   LB A2, 0(A1)
+9D001910  10C0000F   BEQ A2, ZERO, 0x9D001950
+9D001914  00041880   SLL V1, A0, 2
+9D001944  80A60000   LB A2, 0(A1)
+9D001948  14C0FFF7   BNE A2, ZERO, 0x9D001928
+9D00194C  00000000   NOP
 86:                     {
 87:                        while(!UARTTransmitterIsReady(channel));
-9D0015CC  1440FFFD   BNE V0, ZERO, 0x9D0015C4
-9D0015D0  00000000   NOP
+9D001930  1440FFFD   BNE V0, ZERO, 0x9D001928
+9D001934  00000000   NOP
 88:                        UARTSendDataByte(channel, *str++);
-9D0015D4  24A50001   ADDIU A1, A1, 1
+9D001938  24A50001   ADDIU A1, A1, 1
 89:                     }
 90:                     while(!UARTTransmissionHasCompleted(channel));
-9D001608  1040FFFD   BEQ V0, ZERO, 0x9D001600
-9D00160C  00000000   NOP
+9D00196C  1040FFFD   BEQ V0, ZERO, 0x9D001964
+9D001970  00000000   NOP
 91:                  };
-9D001610  03E00008   JR RA
-9D001614  00000000   NOP
+9D001974  03E00008   JR RA
+9D001978  00000000   NOP
 92:                  
 93:                  int UartReadln(UART_MODULE channel, char *buffer, int buff_len){
-9D001618  27BDFFD0   ADDIU SP, SP, -48
-9D00161C  AFBF002C   SW RA, 44(SP)
-9D001620  AFB50028   SW S5, 40(SP)
-9D001624  AFB40024   SW S4, 36(SP)
-9D001628  AFB30020   SW S3, 32(SP)
-9D00162C  AFB2001C   SW S2, 28(SP)
-9D001630  AFB10018   SW S1, 24(SP)
-9D001634  AFB00014   SW S0, 20(SP)
-9D001638  00809821   ADDU S3, A0, ZERO
-9D00163C  00A0A021   ADDU S4, A1, ZERO
-9D001640  00C08821   ADDU S1, A2, ZERO
+9D00197C  27BDFFD0   ADDIU SP, SP, -48
+9D001980  AFBF002C   SW RA, 44(SP)
+9D001984  AFB50028   SW S5, 40(SP)
+9D001988  AFB40024   SW S4, 36(SP)
+9D00198C  AFB30020   SW S3, 32(SP)
+9D001990  AFB2001C   SW S2, 28(SP)
+9D001994  AFB10018   SW S1, 24(SP)
+9D001998  AFB00014   SW S0, 20(SP)
+9D00199C  00809821   ADDU S3, A0, ZERO
+9D0019A0  00A0A021   ADDU S4, A1, ZERO
+9D0019A4  00C08821   ADDU S1, A2, ZERO
 94:                  /* lecture d'une chaine se terminant par '\r'
 95:                   *  complète la chaine avec un zéro
 96:                   *  retourne le nombre de caractère dans le buffer.
 97:                   */
 98:                      int count=0;
-9D001644  00008021   ADDU S0, ZERO, ZERO
+9D0019A8  00008021   ADDU S0, ZERO, ZERO
 99:                      char c;
 100:                     if (!unget==-1){
 101:                         c=unget;
@@ -2513,93 +2661,411 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 104:                         if (c==CR) return;
 105:                     }
 106:                     while (count < (buff_len-1)){
-9D001658  0B4005B0   J 0x9D0016C0
-9D00165C  3C159D00   LUI S5, -25344
-9D0016A8  0B4005B1   J 0x9D0016C4
-9D0016AC  2622FFFF   ADDIU V0, S1, -1
-9D0016C0  2622FFFF   ADDIU V0, S1, -1
-9D0016C4  0202102A   SLT V0, S0, V0
-9D0016C8  5440FFE5   BNEL V0, ZERO, 0x9D001660
-9D0016CC  8E420000   LW V0, 0(S2)
+9D0019BC  0B400689   J 0x9D001A24
+9D0019C0  3C159D00   LUI S5, -25344
+9D001A0C  0B40068A   J 0x9D001A28
+9D001A10  2622FFFF   ADDIU V0, S1, -1
+9D001A24  2622FFFF   ADDIU V0, S1, -1
+9D001A28  0202102A   SLT V0, S0, V0
+9D001A2C  5440FFE5   BNEL V0, ZERO, 0x9D0019C4
+9D001A30  8E420000   LW V0, 0(S2)
 107:                         if (UARTReceivedDataIsAvailable(channel)){
-9D001668  50600016   BEQL V1, ZERO, 0x9D0016C4
-9D00166C  2622FFFF   ADDIU V0, S1, -1
+9D0019CC  50600016   BEQL V1, ZERO, 0x9D001A28
+9D0019D0  2622FFFF   ADDIU V0, S1, -1
 108:                             c = UARTGetDataByte(channel);
-9D001674  7C052C20   SEB A1, A1
+9D0019D8  7C052C20   SEB A1, A1
 109:                             if (c==CR) break;
-9D001678  2402000D   ADDIU V0, ZERO, 13
-9D00167C  10A20014   BEQ A1, V0, 0x9D0016D0
-9D001680  24020008   ADDIU V0, ZERO, 8
+9D0019DC  2402000D   ADDIU V0, ZERO, 13
+9D0019E0  10A20014   BEQ A1, V0, 0x9D001A34
+9D0019E4  24020008   ADDIU V0, ZERO, 8
 110:                             if (c==BS){
-9D001684  54A2000A   BNEL A1, V0, 0x9D0016B0
-9D001688  A2850000   SB A1, 0(S4)
+9D0019E8  54A2000A   BNEL A1, V0, 0x9D001A14
+9D0019EC  A2850000   SB A1, 0(S4)
 111:                                 if (count){
-9D00168C  5200000D   BEQL S0, ZERO, 0x9D0016C4
-9D001690  2622FFFF   ADDIU V0, S1, -1
+9D0019F0  5200000D   BEQL S0, ZERO, 0x9D001A28
+9D0019F4  2622FFFF   ADDIU V0, S1, -1
 112:                                     buffer--;
-9D001694  2694FFFF   ADDIU S4, S4, -1
+9D0019F8  2694FFFF   ADDIU S4, S4, -1
 113:                                     count--;
-9D001698  2610FFFF   ADDIU S0, S0, -1
+9D0019FC  2610FFFF   ADDIU S0, S0, -1
 114:                                     UartPrint(channel,"\b \b");
-9D00169C  02602021   ADDU A0, S3, ZERO
-9D0016A0  0F40056A   JAL UartPrint
-9D0016A4  26A528AC   ADDIU A1, S5, 10412
+9D001A00  02602021   ADDU A0, S3, ZERO
+9D001A04  0F400643   JAL UartPrint
+9D001A08  26A52E24   ADDIU A1, S5, 11812
 115:                                 }
 116:                             }else{
 117:                                 *buffer++=c;
-9D0016B0  26940001   ADDIU S4, S4, 1
+9D001A14  26940001   ADDIU S4, S4, 1
 118:                                 count++;
-9D0016B4  26100001   ADDIU S0, S0, 1
+9D001A18  26100001   ADDIU S0, S0, 1
 119:                                 UartPutch(channel,c);
-9D0016B8  0F400531   JAL UartPutch
-9D0016BC  02602021   ADDU A0, S3, ZERO
+9D001A1C  0F40060A   JAL UartPutch
+9D001A20  02602021   ADDU A0, S3, ZERO
 120:                             }
 121:                             
 122:                         }
 123:                     }
 124:                     if (count) *buffer = (char)0;
-9D0016D0  56000001   BNEL S0, ZERO, 0x9D0016D8
-9D0016D4  A2800000   SB ZERO, 0(S4)
+9D001A34  56000001   BNEL S0, ZERO, 0x9D001A3C
+9D001A38  A2800000   SB ZERO, 0(S4)
 125:                     UartPutch(channel,'\r');
-9D0016D8  02602021   ADDU A0, S3, ZERO
-9D0016DC  0F400531   JAL UartPutch
-9D0016E0  2405000D   ADDIU A1, ZERO, 13
+9D001A3C  02602021   ADDU A0, S3, ZERO
+9D001A40  0F40060A   JAL UartPutch
+9D001A44  2405000D   ADDIU A1, ZERO, 13
 126:                     return count;
 127:                 }
-9D0016E4  02001021   ADDU V0, S0, ZERO
-9D0016E8  8FBF002C   LW RA, 44(SP)
-9D0016EC  8FB50028   LW S5, 40(SP)
-9D0016F0  8FB40024   LW S4, 36(SP)
-9D0016F4  8FB30020   LW S3, 32(SP)
-9D0016F8  8FB2001C   LW S2, 28(SP)
-9D0016FC  8FB10018   LW S1, 24(SP)
-9D001700  8FB00014   LW S0, 20(SP)
-9D001704  03E00008   JR RA
-9D001708  27BD0030   ADDIU SP, SP, 48
+9D001A48  02001021   ADDU V0, S0, ZERO
+9D001A4C  8FBF002C   LW RA, 44(SP)
+9D001A50  8FB50028   LW S5, 40(SP)
+9D001A54  8FB40024   LW S4, 36(SP)
+9D001A58  8FB30020   LW S3, 32(SP)
+9D001A5C  8FB2001C   LW S2, 28(SP)
+9D001A60  8FB10018   LW S1, 24(SP)
+9D001A64  8FB00014   LW S0, 20(SP)
+9D001A68  03E00008   JR RA
+9D001A6C  27BD0030   ADDIU SP, SP, 48
 128:                 
 129:                 int UartReceivedBreak(UART_MODULE channel){
 130:                    char ch;
 131:                    if (unget==-1 && UARTReceivedDataIsAvailable(channel)) {
-9D00170C  83858018   LB A1, -32744(GP)
-9D001710  2403FFFF   ADDIU V1, ZERO, -1
-9D001714  14A30011   BNE A1, V1, 0x9D00175C
-9D001718  00001021   ADDU V0, ZERO, ZERO
-9D001738  10800008   BEQ A0, ZERO, 0x9D00175C
-9D00173C  00001021   ADDU V0, ZERO, ZERO
+9D001A70  83858018   LB A1, -32744(GP)
+9D001A74  2403FFFF   ADDIU V1, ZERO, -1
+9D001A78  14A30011   BNE A1, V1, 0x9D001AC0
+9D001A7C  00001021   ADDU V0, ZERO, ZERO
+9D001A9C  10800008   BEQ A0, ZERO, 0x9D001AC0
+9D001AA0  00001021   ADDU V0, ZERO, ZERO
 132:                        ch=UARTGetDataByte(channel);
-9D001744  7C031C20   SEB V1, V1
+9D001AA8  7C031C20   SEB V1, V1
 133:                        if (ch==ESC) return 1; else unget=ch;
-9D001748  2404001B   ADDIU A0, ZERO, 27
-9D00174C  10640003   BEQ V1, A0, 0x9D00175C
-9D001750  24020001   ADDIU V0, ZERO, 1
-9D001754  A3838018   SB V1, -32744(GP)
+9D001AAC  2404001B   ADDIU A0, ZERO, 27
+9D001AB0  10640003   BEQ V1, A0, 0x9D001AC0
+9D001AB4  24020001   ADDIU V0, ZERO, 1
+9D001AB8  A3838018   SB V1, -32744(GP)
 134:                    }
 135:                    return 0;
-9D001758  00001021   ADDU V0, ZERO, ZERO
+9D001ABC  00001021   ADDU V0, ZERO, ZERO
 136:                 }
-9D00175C  03E00008   JR RA
-9D001760  00000000   NOP
+9D001AC0  03E00008   JR RA
+9D001AC4  00000000   NOP
 137:                 
+---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/sdcard.c  --------------------------------------
+1:                   #include "sdcard.h"
+2:                   #include "spi4sdcard.h"
+3:                   #include "HardwareProfile.h"
+4:                   
+5:                   unsigned char SendSDCCmd(unsigned char cmd, unsigned int address, unsigned char crc, unsigned char more)
+6:                   {
+9D001424  27BDFFD8   ADDIU SP, SP, -40
+9D001428  AFBF0024   SW RA, 36(SP)
+9D00142C  AFB30020   SW S3, 32(SP)
+9D001430  AFB2001C   SW S2, 28(SP)
+9D001434  AFB10018   SW S1, 24(SP)
+9D001438  AFB00014   SW S0, 20(SP)
+9D00143C  00A08021   ADDU S0, A1, ZERO
+9D001440  309100FF   ANDI S1, A0, 255
+9D001444  30D200FF   ANDI S2, A2, 255
+9D001448  30F300FF   ANDI S3, A3, 255
+7:                     unsigned int timeout=0;
+8:                     unsigned char response=0;
+9:                   
+10:                     CARDSELECT=0;
+9D00144C  3C02BF88   LUI V0, -16504
+9D001450  8C436130   LW V1, 24880(V0)
+9D001454  7C031084   INS V1, ZERO, 2, 1
+9D001458  AC436130   SW V1, 24880(V0)
+11:                     writespi(0xFF);
+9D00145C  0F4008D5   JAL writespi
+9D001460  240400FF   ADDIU A0, ZERO, 255
+12:                     writespi(0xFF);
+9D001464  0F4008D5   JAL writespi
+9D001468  240400FF   ADDIU A0, ZERO, 255
+13:                     writespi(0xFF);
+9D00146C  0F4008D5   JAL writespi
+9D001470  240400FF   ADDIU A0, ZERO, 255
+14:                  
+15:                     writespi(cmd);
+9D001474  0F4008D5   JAL writespi
+9D001478  02202021   ADDU A0, S1, ZERO
+16:                     writespi(((address&0xFF000000)>>24));
+9D00147C  0F4008D5   JAL writespi
+9D001480  00102602   SRL A0, S0, 24
+17:                     writespi(((address&0x00FF0000)>>16));
+9D001484  0F4008D5   JAL writespi
+9D001488  7E043C00   EXT A0, S0, 16, 8
+18:                     writespi(((address&0x0000FF00)>>8));
+9D00148C  0F4008D5   JAL writespi
+9D001490  7E043A00   EXT A0, S0, 8, 8
+19:                     writespi((address&0x000000FF));
+9D001494  0F4008D5   JAL writespi
+9D001498  320400FF   ANDI A0, S0, 255
+20:                     writespi(crc);
+9D00149C  0F4008D5   JAL writespi
+9D0014A0  02402021   ADDU A0, S2, ZERO
+21:                  
+22:                     timeout=8;
+9D0014A4  24110008   ADDIU S1, ZERO, 8
+23:                     do {
+24:                       response=readspi();
+9D0014A8  0F4008EE   JAL readspi
+9D0014AC  00000000   NOP
+9D0014B0  00408021   ADDU S0, V0, ZERO
+25:                       timeout--;
+26:                     }while((response&0x80)&&(timeout!=0));
+9D0014B4  7C021420   SEB V0, V0
+9D0014B8  04410003   BGEZ V0, 0x9D0014C8
+9D0014BC  2631FFFF   ADDIU S1, S1, -1
+9D0014C0  1620FFF9   BNE S1, ZERO, 0x9D0014A8
+9D0014C4  00000000   NOP
+27:                  
+28:                     writespi(0xFF);
+9D0014C8  0F4008D5   JAL writespi
+9D0014CC  240400FF   ADDIU A0, ZERO, 255
+29:                  
+30:                     if(!more) {
+9D0014D0  1660000D   BNE S3, ZERO, 0x9D001508
+9D0014D4  02001021   ADDU V0, S0, ZERO
+31:                       CARDSELECT=1;
+9D0014D8  3C02BF88   LUI V0, -16504
+9D0014DC  8C436130   LW V1, 24880(V0)
+9D0014E0  24040001   ADDIU A0, ZERO, 1
+9D0014E4  7C831084   INS V1, A0, 2, 1
+9D0014E8  AC436130   SW V1, 24880(V0)
+32:                       writespi(0xFF);
+9D0014EC  0F4008D5   JAL writespi
+9D0014F0  240400FF   ADDIU A0, ZERO, 255
+33:                       writespi(0xFF);
+9D0014F4  0F4008D5   JAL writespi
+9D0014F8  240400FF   ADDIU A0, ZERO, 255
+34:                       writespi(0xFF);
+9D0014FC  0F4008D5   JAL writespi
+9D001500  240400FF   ADDIU A0, ZERO, 255
+35:                     }
+36:                  
+37:                   return(response);
+38:                  }
+9D001504  02001021   ADDU V0, S0, ZERO
+9D001508  8FBF0024   LW RA, 36(SP)
+9D00150C  8FB30020   LW S3, 32(SP)
+9D001510  8FB2001C   LW S2, 28(SP)
+9D001514  8FB10018   LW S1, 24(SP)
+9D001518  8FB00014   LW S0, 20(SP)
+9D00151C  03E00008   JR RA
+9D001520  27BD0028   ADDIU SP, SP, 40
+39:                  
+40:                  void MediaInitialize(void)
+41:                  {
+9D001524  27BDFFE0   ADDIU SP, SP, -32
+9D001528  AFBF001C   SW RA, 28(SP)
+9D00152C  AFB10018   SW S1, 24(SP)
+9D001530  AFB00014   SW S0, 20(SP)
+42:                    unsigned int timeout=0;
+43:                    unsigned char response=0;
+44:                  
+45:                      _status_on();
+9D001534  24030008   ADDIU V1, ZERO, 8
+9D001538  3C02BF88   LUI V0, -16504
+9D00153C  AC436138   SW V1, 24888(V0)
+46:                      TRIS_CARDSELECT=0;
+9D001540  3C03BF88   LUI V1, -16504
+9D001544  8C626110   LW V0, 24848(V1)
+9D001548  7C021084   INS V0, ZERO, 2, 1
+9D00154C  AC626110   SW V0, 24848(V1)
+47:                      CARDSELECT=1;
+9D001550  3C02BF88   LUI V0, -16504
+9D001554  8C446130   LW A0, 24880(V0)
+9D001558  24060001   ADDIU A2, ZERO, 1
+9D00155C  7CC41084   INS A0, A2, 2, 1
+9D001560  AC446130   SW A0, 24880(V0)
+48:                  
+49:                      mSPI_MasterInitialize();
+9D001564  3C04BF88   LUI A0, -16504
+9D001568  8C856010   LW A1, 24592(A0)
+9D00156C  7CC52104   INS A1, A2, 4, 1
+9D001570  AC856010   SW A1, 24592(A0)
+9D001574  8C646110   LW A0, 24848(V1)
+9D001578  7C044204   INS A0, ZERO, 8, 1
+9D00157C  AC646110   SW A0, 24848(V1)
+9D001580  8C446130   LW A0, 24880(V0)
+9D001584  7C044204   INS A0, ZERO, 8, 1
+9D001588  AC446130   SW A0, 24880(V0)
+9D00158C  8C646110   LW A0, 24848(V1)
+9D001590  7C047BC4   INS A0, ZERO, 15, 1
+9D001594  AC646110   SW A0, 24848(V1)
+9D001598  8C446130   LW A0, 24880(V0)
+9D00159C  7C047BC4   INS A0, ZERO, 15, 1
+9D0015A0  AC446130   SW A0, 24880(V0)
+9D0015A4  8C646110   LW A0, 24848(V1)
+9D0015A8  7C041084   INS A0, ZERO, 2, 1
+9D0015AC  AC646110   SW A0, 24848(V1)
+9D0015B0  8C436130   LW V1, 24880(V0)
+9D0015B4  7C031084   INS V1, ZERO, 2, 1
+9D0015B8  AC436130   SW V1, 24880(V0)
+50:                      SpiChnOpen(SPI_CHANNEL2,SPI_OPEN_MSTEN|SPI_OPEN_MODE8|SPI_OPEN_ON,PBCLK/(2*400000L));
+9D0015BC  24040002   ADDIU A0, ZERO, 2
+9D0015C0  34058020   ORI A1, ZERO, -32736
+9D0015C4  0F4009F3   JAL SpiChnOpen
+9D0015C8  2406002E   ADDIU A2, ZERO, 46
+9D0015CC  2410000A   ADDIU S0, ZERO, 10
+51:                      for(timeout=0;timeout<=9;timeout++) { writespi(0xFF); }
+9D0015D0  0F4008D5   JAL writespi
+9D0015D4  240400FF   ADDIU A0, ZERO, 255
+9D0015D8  2610FFFF   ADDIU S0, S0, -1
+9D0015DC  1600FFFC   BNE S0, ZERO, 0x9D0015D0
+9D0015E0  24110001   ADDIU S1, ZERO, 1
+9D0015E4  3C10000F   LUI S0, 15
+9D0015E8  3610FFFF   ORI S0, S0, -1
+52:                  
+53:                      timeout=0xFFFFF;
+54:                      do {
+55:                        response=SendSDCCmd(0x40,0x0,0x95,0);
+9D0015EC  24040040   ADDIU A0, ZERO, 64
+9D0015F0  00002821   ADDU A1, ZERO, ZERO
+9D0015F4  24060095   ADDIU A2, ZERO, 149
+9D0015F8  0F400509   JAL SendSDCCmd
+9D0015FC  00003821   ADDU A3, ZERO, ZERO
+56:                        timeout--;
+57:                      }while((response!=0x01)&&(timeout!=0));
+9D001600  10510006   BEQ V0, S1, 0x9D00161C
+9D001604  2610FFFF   ADDIU S0, S0, -1
+9D001608  1600FFF9   BNE S0, ZERO, 0x9D0015F0
+9D00160C  24040040   ADDIU A0, ZERO, 64
+9D001610  3C10000F   LUI S0, 15
+9D001614  0B400589   J 0x9D001624
+9D001618  3610FFFF   ORI S0, S0, -1
+9D00161C  3C10000F   LUI S0, 15
+9D001620  3610FFFF   ORI S0, S0, -1
+58:                  
+59:                      timeout=0xFFFFF;
+60:                      do {
+61:                        response=SendSDCCmd(0x41,0x0,0xF9,0);
+9D001624  24040041   ADDIU A0, ZERO, 65
+9D001628  00002821   ADDU A1, ZERO, ZERO
+9D00162C  240600F9   ADDIU A2, ZERO, 249
+9D001630  0F400509   JAL SendSDCCmd
+9D001634  00003821   ADDU A3, ZERO, ZERO
+62:                        timeout--;
+63:                      }while((response!=0x00)&&(timeout!=0));
+9D001638  10400006   BEQ V0, ZERO, 0x9D001654
+9D00163C  2610FFFF   ADDIU S0, S0, -1
+9D001640  1600FFF9   BNE S0, ZERO, 0x9D001628
+9D001644  24040041   ADDIU A0, ZERO, 65
+9D001648  3C10000F   LUI S0, 15
+9D00164C  0B400597   J 0x9D00165C
+9D001650  3610FFFF   ORI S0, S0, -1
+9D001654  3C10000F   LUI S0, 15
+9D001658  3610FFFF   ORI S0, S0, -1
+64:                  
+65:                      timeout=0xFFFFF;
+66:                      do {
+67:                        response=SendSDCCmd(0x50,0x00000200,0xFF,0);
+9D00165C  24040050   ADDIU A0, ZERO, 80
+9D001660  24050200   ADDIU A1, ZERO, 512
+9D001664  240600FF   ADDIU A2, ZERO, 255
+9D001668  0F400509   JAL SendSDCCmd
+9D00166C  00003821   ADDU A3, ZERO, ZERO
+68:                        timeout--;
+69:                      }while((response!=0x00)&&(timeout!=0));
+9D001670  10400005   BEQ V0, ZERO, 0x9D001688
+9D001674  2610FFFF   ADDIU S0, S0, -1
+9D001678  1600FFF9   BNE S0, ZERO, 0x9D001660
+9D00167C  24040050   ADDIU A0, ZERO, 80
+70:                      if (!response) {
+71:                          SPI2BRG=0;
+9D001688  3C02BF80   LUI V0, -16512
+9D00168C  AC405A30   SW ZERO, 23088(V0)
+72:                          _status_off();
+9D001690  24030008   ADDIU V1, ZERO, 8
+9D001694  3C02BF88   LUI V0, -16504
+9D001698  AC436134   SW V1, 24884(V0)
+73:                      }
+74:                  }
+9D001680  0B4005A8   J 0x9D0016A0
+9D001684  8FBF001C   LW RA, 28(SP)
+9D00169C  8FBF001C   LW RA, 28(SP)
+9D0016A0  8FB10018   LW S1, 24(SP)
+9D0016A4  8FB00014   LW S0, 20(SP)
+9D0016A8  03E00008   JR RA
+9D0016AC  27BD0020   ADDIU SP, SP, 32
+75:                  
+76:                  void SECTORread(unsigned long long sector_addr, unsigned char* buffer)
+9D0016F8  0B4005C3   J 0x9D00170C
+9D0016FC  26300200   ADDIU S0, S1, 512
+77:                  {
+9D0016B0  27BDFFE0   ADDIU SP, SP, -32
+9D0016B4  AFBF001C   SW RA, 28(SP)
+9D0016B8  AFB20018   SW S2, 24(SP)
+9D0016BC  AFB10014   SW S1, 20(SP)
+9D0016C0  AFB00010   SW S0, 16(SP)
+9D0016C4  00C08821   ADDU S1, A2, ZERO
+78:                    unsigned int timeout=0;
+79:                    unsigned char response=0;
+80:                  
+81:                      SendSDCCmd(0x51,(sector_addr<<9),0xFF,1);
+9D0016C8  00042A40   SLL A1, A0, 9
+9D0016CC  24040051   ADDIU A0, ZERO, 81
+9D0016D0  240600FF   ADDIU A2, ZERO, 255
+9D0016D4  0F400509   JAL SendSDCCmd
+9D0016D8  24070001   ADDIU A3, ZERO, 1
+82:                  
+83:                      timeout=0xFFFFF;
+9D0016DC  3C10000F   LUI S0, 15
+9D0016E0  3610FFFF   ORI S0, S0, -1
+84:                      do {
+85:                        response=readspi();
+9D0016E8  0F4008EE   JAL readspi
+9D0016EC  00000000   NOP
+86:                        timeout--;
+87:                      }while((response!=0xFE)&&(timeout!=0));
+9D0016E4  241200FE   ADDIU S2, ZERO, 254
+9D0016F0  54520003   BNEL V0, S2, 0x9D001700
+9D0016F4  2610FFFF   ADDIU S0, S0, -1
+9D001700  1600FFF9   BNE S0, ZERO, 0x9D0016E8
+9D001704  00000000   NOP
+9D001708  26300200   ADDIU S0, S1, 512
+88:                  
+89:                      for(timeout=0;timeout<512;timeout++) {
+9D00171C  1630FFFB   BNE S1, S0, 0x9D00170C
+9D001720  00000000   NOP
+90:                        *buffer=readspi();
+9D00170C  0F4008EE   JAL readspi
+9D001710  00000000   NOP
+9D001714  A2220000   SB V0, 0(S1)
+91:                        buffer++;
+9D001718  26310001   ADDIU S1, S1, 1
+92:                      }
+93:                      writespi(0xFF);
+9D001724  0F4008D5   JAL writespi
+9D001728  240400FF   ADDIU A0, ZERO, 255
+94:                      writespi(0xFF);
+9D00172C  0F4008D5   JAL writespi
+9D001730  240400FF   ADDIU A0, ZERO, 255
+95:                  
+96:                      writespi(0xFF);
+9D001734  0F4008D5   JAL writespi
+9D001738  240400FF   ADDIU A0, ZERO, 255
+97:                  
+98:                      CARDSELECT=1;
+9D00173C  3C02BF88   LUI V0, -16504
+9D001740  8C436130   LW V1, 24880(V0)
+9D001744  24040001   ADDIU A0, ZERO, 1
+9D001748  7C831084   INS V1, A0, 2, 1
+9D00174C  AC436130   SW V1, 24880(V0)
+99:                      writespi(0xFF);
+9D001750  0F4008D5   JAL writespi
+9D001754  240400FF   ADDIU A0, ZERO, 255
+100:                     writespi(0xFF);
+9D001758  0F4008D5   JAL writespi
+9D00175C  240400FF   ADDIU A0, ZERO, 255
+101:                     writespi(0xFF);
+9D001760  0F4008D5   JAL writespi
+9D001764  240400FF   ADDIU A0, ZERO, 255
+102:                 }
+9D001768  8FBF001C   LW RA, 28(SP)
+9D00176C  8FB20018   LW S2, 24(SP)
+9D001770  8FB10014   LW S1, 20(SP)
+9D001774  8FB00010   LW S0, 16(SP)
+9D001778  03E00008   JR RA
+9D00177C  27BD0020   ADDIU SP, SP, 32
 ---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/ntsc.c  ----------------------------------------
 1:                   /*
 2:                   * Copyright 2013, Jacques Deschênes
@@ -2669,285 +3135,285 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 66:                  
 67:                  
 68:                  void VideoInit(void){
-9D001764  27BDFFD8   ADDIU SP, SP, -40
-9D001768  AFBF0024   SW RA, 36(SP)
-9D00176C  AFB20020   SW S2, 32(SP)
-9D001770  AFB1001C   SW S1, 28(SP)
-9D001774  AFB00018   SW S0, 24(SP)
+9D001AC8  27BDFFD8   ADDIU SP, SP, -40
+9D001ACC  AFBF0024   SW RA, 36(SP)
+9D001AD0  AFB20020   SW S2, 32(SP)
+9D001AD4  AFB1001C   SW S1, 28(SP)
+9D001AD8  AFB00018   SW S0, 24(SP)
 69:                      //configuration PWM sur OC2 pour SYNC, utilisation TIMER2
 70:                      T2CON = 0;
-9D001778  3C02BF80   LUI V0, -16512
-9D00177C  AC400800   SW ZERO, 2048(V0)
+9D001ADC  3C02BF80   LUI V0, -16512
+9D001AE0  AC400800   SW ZERO, 2048(V0)
 71:                      PR2=PWM_PERIOD;
-9D001780  2403094C   ADDIU V1, ZERO, 2380
-9D001784  3C02BF80   LUI V0, -16512
-9D001788  AC430820   SW V1, 2080(V0)
+9D001AE4  2403094C   ADDIU V1, ZERO, 2380
+9D001AE8  3C02BF80   LUI V0, -16512
+9D001AEC  AC430820   SW V1, 2080(V0)
 72:                      OC2CONbits.OCM = 5; // mode train d'impulsion
-9D00178C  3C02BF80   LUI V0, -16512
-9D001790  8C433200   LW V1, 12800(V0)
-9D001794  24120005   ADDIU S2, ZERO, 5
-9D001798  7E431004   INS V1, S2, 0, 3
-9D00179C  AC433200   SW V1, 12800(V0)
+9D001AF0  3C02BF80   LUI V0, -16512
+9D001AF4  8C433200   LW V1, 12800(V0)
+9D001AF8  24120005   ADDIU S2, ZERO, 5
+9D001AFC  7E431004   INS V1, S2, 0, 3
+9D001B00  AC433200   SW V1, 12800(V0)
 73:                      OC2RS = 0; 
-9D0017A0  3C03BF80   LUI V1, -16512
-9D0017A4  AC603220   SW ZERO, 12832(V1)
+9D001B04  3C03BF80   LUI V1, -16512
+9D001B08  AC603220   SW ZERO, 12832(V1)
 74:                      OC2R = HSYNC;
-9D0017A8  240400B0   ADDIU A0, ZERO, 176
-9D0017AC  3C03BF80   LUI V1, -16512
-9D0017B0  AC643210   SW A0, 12816(V1)
+9D001B0C  240400B0   ADDIU A0, ZERO, 176
+9D001B10  3C03BF80   LUI V1, -16512
+9D001B14  AC643210   SW A0, 12816(V1)
 75:                      IFS0bits.T2IF=0;
-9D0017B4  3C03BF88   LUI V1, -16504
-9D0017B8  8C641030   LW A0, 4144(V1)
-9D0017BC  7C044A44   INS A0, ZERO, 9, 1
-9D0017C0  AC641030   SW A0, 4144(V1)
+9D001B18  3C03BF88   LUI V1, -16504
+9D001B1C  8C641030   LW A0, 4144(V1)
+9D001B20  7C044A44   INS A0, ZERO, 9, 1
+9D001B24  AC641030   SW A0, 4144(V1)
 76:                      IEC0bits.T2IE=1;
-9D0017C4  3C03BF88   LUI V1, -16504
-9D0017C8  8C641060   LW A0, 4192(V1)
-9D0017CC  24110001   ADDIU S1, ZERO, 1
-9D0017D0  7E244A44   INS A0, S1, 9, 1
-9D0017D4  AC641060   SW A0, 4192(V1)
+9D001B28  3C03BF88   LUI V1, -16504
+9D001B2C  8C641060   LW A0, 4192(V1)
+9D001B30  24110001   ADDIU S1, ZERO, 1
+9D001B34  7E244A44   INS A0, S1, 9, 1
+9D001B38  AC641060   SW A0, 4192(V1)
 77:                      IPC2bits.T2IP=7;
-9D0017D8  3C03BF88   LUI V1, -16504
-9D0017DC  8C6410B0   LW A0, 4272(V1)
-9D0017E0  24050007   ADDIU A1, ZERO, 7
-9D0017E4  7CA42084   INS A0, A1, 2, 3
-9D0017E8  AC6410B0   SW A0, 4272(V1)
+9D001B3C  3C03BF88   LUI V1, -16504
+9D001B40  8C6410B0   LW A0, 4272(V1)
+9D001B44  24050007   ADDIU A1, ZERO, 7
+9D001B48  7CA42084   INS A0, A1, 2, 3
+9D001B4C  AC6410B0   SW A0, 4272(V1)
 78:                      IPC2bits.T2IS=3;
-9D0017EC  8C6410B0   LW A0, 4272(V1)
-9D0017F0  24050003   ADDIU A1, ZERO, 3
-9D0017F4  7CA40804   INS A0, A1, 0, 2
-9D0017F8  AC6410B0   SW A0, 4272(V1)
+9D001B50  8C6410B0   LW A0, 4272(V1)
+9D001B54  24050003   ADDIU A1, ZERO, 3
+9D001B58  7CA40804   INS A0, A1, 0, 2
+9D001B5C  AC6410B0   SW A0, 4272(V1)
 79:                      OC2CONbits.ON =1;  // activation
-9D0017FC  8C433200   LW V1, 12800(V0)
-9D001800  7E237BC4   INS V1, S1, 15, 1
-9D001804  AC433200   SW V1, 12800(V0)
+9D001B60  8C433200   LW V1, 12800(V0)
+9D001B64  7E237BC4   INS V1, S1, 15, 1
+9D001B68  AC433200   SW V1, 12800(V0)
 80:                      T2CONbits.ON=1;  // activation
-9D001808  3C02BF80   LUI V0, -16512
-9D00180C  8C430800   LW V1, 2048(V0)
-9D001810  7E237BC4   INS V1, S1, 15, 1
-9D001814  AC430800   SW V1, 2048(V0)
+9D001B6C  3C02BF80   LUI V0, -16512
+9D001B70  8C430800   LW V1, 2048(V0)
+9D001B74  7E237BC4   INS V1, S1, 15, 1
+9D001B78  AC430800   SW V1, 2048(V0)
 81:                      //configuration PWM sur OC1 puor délais vidéo, utilisation TIMER2
 82:                      OC1CONbits.OCM = 5; //mode train d'impulsion
-9D001818  3C02BF80   LUI V0, -16512
-9D00181C  8C433000   LW V1, 12288(V0)
-9D001820  7E431004   INS V1, S2, 0, 3
-9D001824  AC433000   SW V1, 12288(V0)
+9D001B7C  3C02BF80   LUI V0, -16512
+9D001B80  8C433000   LW V1, 12288(V0)
+9D001B84  7E431004   INS V1, S2, 0, 3
+9D001B88  AC433000   SW V1, 12288(V0)
 83:                      OC1RS=0;
-9D001828  3C03BF80   LUI V1, -16512
-9D00182C  AC603020   SW ZERO, 12320(V1)
+9D001B8C  3C03BF80   LUI V1, -16512
+9D001B90  AC603020   SW ZERO, 12320(V1)
 84:                      OC1R=HSYNC+SPI_DLY;
-9D001830  2404017E   ADDIU A0, ZERO, 382
-9D001834  3C03BF80   LUI V1, -16512
-9D001838  AC643010   SW A0, 12304(V1)
+9D001B94  2404017E   ADDIU A0, ZERO, 382
+9D001B98  3C03BF80   LUI V1, -16512
+9D001B9C  AC643010   SW A0, 12304(V1)
 85:                      OC1CONbits.ON=1;
-9D00183C  8C433000   LW V1, 12288(V0)
-9D001840  7E237BC4   INS V1, S1, 15, 1
-9D001844  AC433000   SW V1, 12288(V0)
+9D001BA0  8C433000   LW V1, 12288(V0)
+9D001BA4  7E237BC4   INS V1, S1, 15, 1
+9D001BA8  AC433000   SW V1, 12288(V0)
 86:                      // configuration SPI pour sortie vidéo
 87:                      // configure le DMA
 88:                      DmaChnOpen(0,0,DMA_OPEN_DEFAULT);
-9D001848  00002021   ADDU A0, ZERO, ZERO
-9D00184C  00002821   ADDU A1, ZERO, ZERO
-9D001850  0F4007F4   JAL DmaChnOpen
-9D001854  00003021   ADDU A2, ZERO, ZERO
+9D001BAC  00002021   ADDU A0, ZERO, ZERO
+9D001BB0  00002821   ADDU A1, ZERO, ZERO
+9D001BB4  0F40092F   JAL DmaChnOpen
+9D001BB8  00003021   ADDU A2, ZERO, ZERO
 89:                      DmaChnSetEventControl(0,DMA_EV_START_IRQ_EN|
-9D001858  00002021   ADDU A0, ZERO, ZERO
-9D00185C  0F4009A9   JAL DmaChnWriteEventControlFlags
-9D001860  24052610   ADDIU A1, ZERO, 9744
+9D001BBC  00002021   ADDU A0, ZERO, ZERO
+9D001BC0  0F400B07   JAL DmaChnWriteEventControlFlags
+9D001BC4  24052610   ADDIU A1, ZERO, 9744
 90:                                            DMA_EV_START_IRQ(_SPI1_TX_IRQ));
 91:                      DmaChnSetTxfer(0,(void *)DmaSrc,(void *)&SPI1BUF,HRES/8,4,4);
-9D001864  24020004   ADDIU V0, ZERO, 4
-9D001868  AFA20010   SW V0, 16(SP)
-9D00186C  AFA20014   SW V0, 20(SP)
-9D001870  00002021   ADDU A0, ZERO, ZERO
-9D001874  8F858020   LW A1, -32736(GP)
-9D001878  3C06BF80   LUI A2, -16512
-9D00187C  24C65820   ADDIU A2, A2, 22560
-9D001880  0F400892   JAL DmaChnSetTxfer
-9D001884  24070028   ADDIU A3, ZERO, 40
+9D001BC8  24020004   ADDIU V0, ZERO, 4
+9D001BCC  AFA20010   SW V0, 16(SP)
+9D001BD0  AFA20014   SW V0, 20(SP)
+9D001BD4  00002021   ADDU A0, ZERO, ZERO
+9D001BD8  8F858020   LW A1, -32736(GP)
+9D001BDC  3C06BF80   LUI A2, -16512
+9D001BE0  24C65820   ADDIU A2, A2, 22560
+9D001BE4  0F4009CD   JAL DmaChnSetTxfer
+9D001BE8  24070028   ADDIU A3, ZERO, 40
 92:                      // configuration du SPI canal 1
 93:                      SPI1CONbits.DISSDI=1; // SDI n'est pas utilisé.
-9D001888  3C10BF80   LUI S0, -16512
-9D00188C  8E025800   LW V0, 22528(S0)
-9D001890  7E222104   INS V0, S1, 4, 1
-9D001894  AE025800   SW V0, 22528(S0)
+9D001BEC  3C10BF80   LUI S0, -16512
+9D001BF0  8E025800   LW V0, 22528(S0)
+9D001BF4  7E222104   INS V0, S1, 4, 1
+9D001BF8  AE025800   SW V0, 22528(S0)
 94:                      SPI1CONbits.FRMEN=1; // frame mode
-9D001898  8E025800   LW V0, 22528(S0)
-9D00189C  7E22FFC4   INS V0, S1, 31, 1
-9D0018A0  AE025800   SW V0, 22528(S0)
+9D001BFC  8E025800   LW V0, 22528(S0)
+9D001C00  7E22FFC4   INS V0, S1, 31, 1
+9D001C04  AE025800   SW V0, 22528(S0)
 95:                      SPI1CONbits.FRMCNT=5; // 32 octets par frame.
-9D0018A4  8E025800   LW V0, 22528(S0)
-9D0018A8  7E42D604   INS V0, S2, 24, 3
-9D0018AC  AE025800   SW V0, 22528(S0)
+9D001C08  8E025800   LW V0, 22528(S0)
+9D001C0C  7E42D604   INS V0, S2, 24, 3
+9D001C10  AE025800   SW V0, 22528(S0)
 96:                      SPI1CONbits.FRMPOL=1; // sync sur transition montante
-9D0018B0  8E025800   LW V0, 22528(S0)
-9D0018B4  7E22EF44   INS V0, S1, 29, 1
-9D0018B8  AE025800   SW V0, 22528(S0)
+9D001C14  8E025800   LW V0, 22528(S0)
+9D001C18  7E22EF44   INS V0, S1, 29, 1
+9D001C1C  AE025800   SW V0, 22528(S0)
 97:                      SPI1CONbits.FRMSYNC=1; // synchronisation esclave
-9D0018BC  8E025800   LW V0, 22528(S0)
-9D0018C0  7E22F784   INS V0, S1, 30, 1
-9D0018C4  AE025800   SW V0, 22528(S0)
+9D001C20  8E025800   LW V0, 22528(S0)
+9D001C24  7E22F784   INS V0, S1, 30, 1
+9D001C28  AE025800   SW V0, 22528(S0)
 98:                      SPI1CONbits.MSTEN=1; // SPI maître
-9D0018C8  8E025800   LW V0, 22528(S0)
-9D0018CC  7E222944   INS V0, S1, 5, 1
-9D0018D0  AE025800   SW V0, 22528(S0)
+9D001C2C  8E025800   LW V0, 22528(S0)
+9D001C30  7E222944   INS V0, S1, 5, 1
+9D001C34  AE025800   SW V0, 22528(S0)
 99:                     // SPI1CONbits.SPIFE=1; // synchronisation sur clock premier bit.
 100:                     SPI1CONbits.MODE32=1; // mode 32 bits
-9D0018D4  8E025800   LW V0, 22528(S0)
-9D0018D8  7E225AC4   INS V0, S1, 11, 1
-9D0018DC  AE025800   SW V0, 22528(S0)
+9D001C38  8E025800   LW V0, 22528(S0)
+9D001C3C  7E225AC4   INS V0, S1, 11, 1
+9D001C40  AE025800   SW V0, 22528(S0)
 101:                     SPI1CONbits.STXISEL=1; // interruption sur TBE
-9D0018E0  8E025800   LW V0, 22528(S0)
-9D0018E4  7E221884   INS V0, S1, 2, 2
-9D0018E8  AE025800   SW V0, 22528(S0)
+9D001C44  8E025800   LW V0, 22528(S0)
+9D001C48  7E221884   INS V0, S1, 2, 2
+9D001C4C  AE025800   SW V0, 22528(S0)
 102:                     SpiChnSetBitRate(SPI_CHANNEL1, PBCLK, BITCLK);
-9D0018EC  24040001   ADDIU A0, ZERO, 1
-9D0018F0  3C05023C   LUI A1, 572
-9D0018F4  24A53460   ADDIU A1, A1, 13408
-9D0018F8  3C06005D   LUI A2, 93
-9D0018FC  0F400937   JAL SpiChnSetBitRate
-9D001900  34C6E676   ORI A2, A2, -6538
+9D001C50  24040001   ADDIU A0, ZERO, 1
+9D001C54  3C05023C   LUI A1, 572
+9D001C58  24A53460   ADDIU A1, A1, 13408
+9D001C5C  3C06005D   LUI A2, 93
+9D001C60  0F400A95   JAL SpiChnSetBitRate
+9D001C64  34C6E676   ORI A2, A2, -6538
 103:                     SPI1CONbits.ON=1;
-9D001904  8E025800   LW V0, 22528(S0)
-9D001908  7E227BC4   INS V0, S1, 15, 1
-9D00190C  AE025800   SW V0, 22528(S0)
+9D001C68  8E025800   LW V0, 22528(S0)
+9D001C6C  7E227BC4   INS V0, S1, 15, 1
+9D001C70  AE025800   SW V0, 22528(S0)
 104:                 }//init_video()
-9D001910  8FBF0024   LW RA, 36(SP)
-9D001914  8FB20020   LW S2, 32(SP)
-9D001918  8FB1001C   LW S1, 28(SP)
-9D00191C  8FB00018   LW S0, 24(SP)
-9D001920  03E00008   JR RA
-9D001924  27BD0028   ADDIU SP, SP, 40
+9D001C74  8FBF0024   LW RA, 36(SP)
+9D001C78  8FB20020   LW S2, 32(SP)
+9D001C7C  8FB1001C   LW S1, 28(SP)
+9D001C80  8FB00018   LW S0, 24(SP)
+9D001C84  03E00008   JR RA
+9D001C88  27BD0028   ADDIU SP, SP, 40
 105:                 
 106:                 
 107:                 
 108:                 void __ISR(_TIMER_2_VECTOR,IPL7AUTO) tmr2_isr(void){
-9D001928  415DE800   RDPGPR SP, SP
-9D00192C  401B7000   MFC0 K1, EPC
-9D001930  401A6002   MFC0 K0, SRSCtl
-9D001934  27BDFFE0   ADDIU SP, SP, -32
-9D001938  401B6000   MFC0 K1, Status
-9D00193C  AFBA001C   SW K0, 28(SP)
-9D001940  AFBB0018   SW K1, 24(SP)
-9D001944  7C1B7844   INS K1, ZERO, 1, 15
-9D001948  377B1C00   ORI K1, K1, 7168
-9D00194C  409B6000   MTC0 K1, Status
-9D001950  AFA30008   SW V1, 8(SP)
-9D001954  AFA20004   SW V0, 4(SP)
-9D001958  AFA4000C   SW A0, 12(SP)
+9D001C8C  415DE800   RDPGPR SP, SP
+9D001C90  401B7000   MFC0 K1, EPC
+9D001C94  401A6002   MFC0 K0, SRSCtl
+9D001C98  27BDFFE0   ADDIU SP, SP, -32
+9D001C9C  401B6000   MFC0 K1, Status
+9D001CA0  AFBA001C   SW K0, 28(SP)
+9D001CA4  AFBB0018   SW K1, 24(SP)
+9D001CA8  7C1B7844   INS K1, ZERO, 1, 15
+9D001CAC  377B1C00   ORI K1, K1, 7168
+9D001CB0  409B6000   MTC0 K1, Status
+9D001CB4  AFA30008   SW V1, 8(SP)
+9D001CB8  AFA20004   SW V0, 4(SP)
+9D001CBC  AFA4000C   SW A0, 12(SP)
 109:                     _disable_video_out();
-9D00195C  34038000   ORI V1, ZERO, -32768
-9D001960  3C02BF80   LUI V0, -16512
-9D001964  AC435804   SW V1, 22532(V0)
+9D001CC0  34038000   ORI V1, ZERO, -32768
+9D001CC4  3C02BF80   LUI V0, -16512
+9D001CC8  AC435804   SW V1, 22532(V0)
 110:                     ln_cnt++;
-9D001968  8F828028   LW V0, -32728(GP)
-9D00196C  24420001   ADDIU V0, V0, 1
-9D001970  AF828028   SW V0, -32728(GP)
+9D001CCC  8F828028   LW V0, -32728(GP)
+9D001CD0  24420001   ADDIU V0, V0, 1
+9D001CD4  AF828028   SW V0, -32728(GP)
 111:                     switch (ln_cnt){
-9D001974  8F828028   LW V0, -32728(GP)
-9D001978  2403001A   ADDIU V1, ZERO, 26
-9D00197C  1043001C   BEQ V0, V1, 0x9D0019F0
-9D001980  2C43001B   SLTIU V1, V0, 27
-9D001984  10600009   BEQ V1, ZERO, 0x9D0019AC
-9D001988  24030101   ADDIU V1, ZERO, 257
-9D00198C  24030001   ADDIU V1, ZERO, 1
-9D001990  1043000D   BEQ V0, V1, 0x9D0019C8
-9D001994  2403089C   ADDIU V1, ZERO, 2204
-9D001998  24030004   ADDIU V1, ZERO, 4
-9D00199C  1443001D   BNE V0, V1, 0x9D001A14
-9D0019A0  240300B0   ADDIU V1, ZERO, 176
-9D0019AC  10430016   BEQ V0, V1, 0x9D001A08
-9D0019B0  00000000   NOP
-9D0019B4  24030106   ADDIU V1, ZERO, 262
-9D0019B8  14430016   BNE V0, V1, 0x9D001A14
-9D0019BC  00000000   NOP
-9D0019C0  0B400679   J 0x9D0019E4
-9D0019C4  00000000   NOP
+9D001CD8  8F828028   LW V0, -32728(GP)
+9D001CDC  2403001A   ADDIU V1, ZERO, 26
+9D001CE0  1043001C   BEQ V0, V1, 0x9D001D54
+9D001CE4  2C43001B   SLTIU V1, V0, 27
+9D001CE8  10600009   BEQ V1, ZERO, 0x9D001D10
+9D001CEC  24030101   ADDIU V1, ZERO, 257
+9D001CF0  24030001   ADDIU V1, ZERO, 1
+9D001CF4  1043000D   BEQ V0, V1, 0x9D001D2C
+9D001CF8  2403089C   ADDIU V1, ZERO, 2204
+9D001CFC  24030004   ADDIU V1, ZERO, 4
+9D001D00  1443001D   BNE V0, V1, 0x9D001D78
+9D001D04  240300B0   ADDIU V1, ZERO, 176
+9D001D10  10430016   BEQ V0, V1, 0x9D001D6C
+9D001D14  00000000   NOP
+9D001D18  24030106   ADDIU V1, ZERO, 262
+9D001D1C  14430016   BNE V0, V1, 0x9D001D78
+9D001D20  00000000   NOP
+9D001D24  0B400752   J 0x9D001D48
+9D001D28  00000000   NOP
 112:                         case 1:  // début vsync
 113:                             OC2R=PWM_PERIOD-HSYNC;
-9D0019C8  3C02BF80   LUI V0, -16512
-9D0019CC  AC433210   SW V1, 12816(V0)
+9D001D2C  3C02BF80   LUI V0, -16512
+9D001D30  AC433210   SW V1, 12816(V0)
 114:                             break;
-9D0019D0  0B40069A   J 0x9D001A68
-9D0019D4  24030200   ADDIU V1, ZERO, 512
+9D001D34  0B400773   J 0x9D001DCC
+9D001D38  24030200   ADDIU V1, ZERO, 512
 115:                         case 4: // fin vsync
 116:                             OC2R=HSYNC;
-9D0019A4  0B400676   J 0x9D0019D8
-9D0019A8  3C02BF80   LUI V0, -16512
-9D0019D8  AC433210   SW V1, 12816(V0)
+9D001D08  0B40074F   J 0x9D001D3C
+9D001D0C  3C02BF80   LUI V0, -16512
+9D001D3C  AC433210   SW V1, 12816(V0)
 117:                             break;
-9D0019DC  0B40069A   J 0x9D001A68
-9D0019E0  24030200   ADDIU V1, ZERO, 512
+9D001D40  0B400773   J 0x9D001DCC
+9D001D44  24030200   ADDIU V1, ZERO, 512
 118:                         case 262:  //fin du frame
 119:                             ln_cnt=0;
-9D0019E4  AF808028   SW ZERO, -32728(GP)
+9D001D48  AF808028   SW ZERO, -32728(GP)
 120:                             break;
-9D0019E8  0B40069A   J 0x9D001A68
-9D0019EC  24030200   ADDIU V1, ZERO, 512
+9D001D4C  0B400773   J 0x9D001DCC
+9D001D50  24030200   ADDIU V1, ZERO, 512
 121:                   
 122:                         case FIRST_LINE-1:
 123:                             video=1;
-9D0019F0  24020001   ADDIU V0, ZERO, 1
-9D0019F4  AF828024   SW V0, -32732(GP)
+9D001D54  24020001   ADDIU V0, ZERO, 1
+9D001D58  AF828024   SW V0, -32732(GP)
 124:                             DmaSrc=(void*)&video_bmp[0];
-9D0019F8  3C02A000   LUI V0, -24576
-9D0019FC  24420020   ADDIU V0, V0, 32
+9D001D5C  3C02A000   LUI V0, -24576
+9D001D60  24420020   ADDIU V0, V0, 32
 125:                             break;
-9D001A00  0B400699   J 0x9D001A64
-9D001A04  AF828020   SW V0, -32736(GP)
+9D001D64  0B400772   J 0x9D001DC8
+9D001D68  AF828020   SW V0, -32736(GP)
 126:                         case LAST_LINE+1:
 127:                             video=0;
-9D001A08  AF808024   SW ZERO, -32732(GP)
+9D001D6C  AF808024   SW ZERO, -32732(GP)
 128:                             break;
-9D001A0C  0B40069A   J 0x9D001A68
-9D001A10  24030200   ADDIU V1, ZERO, 512
+9D001D70  0B400773   J 0x9D001DCC
+9D001D74  24030200   ADDIU V1, ZERO, 512
 129:                         default:
 130:                             if (video){
-9D001A14  8F828024   LW V0, -32732(GP)
-9D001A18  10400012   BEQ V0, ZERO, 0x9D001A64
-9D001A1C  34038000   ORI V1, ZERO, -32768
+9D001D78  8F828024   LW V0, -32732(GP)
+9D001D7C  10400012   BEQ V0, ZERO, 0x9D001DC8
+9D001D80  34038000   ORI V1, ZERO, -32768
 131:                                 _enable_video_out();
-9D001A20  3C02BF80   LUI V0, -16512
-9D001A24  AC435808   SW V1, 22536(V0)
+9D001D84  3C02BF80   LUI V0, -16512
+9D001D88  AC435808   SW V1, 22536(V0)
 132:                                 IFS1bits.SPI1TXIF=1;
-9D001A28  3C02BF88   LUI V0, -16504
-9D001A2C  8C431040   LW V1, 4160(V0)
-9D001A30  24040001   ADDIU A0, ZERO, 1
-9D001A34  7C833184   INS V1, A0, 6, 1
-9D001A38  AC431040   SW V1, 4160(V0)
+9D001D8C  3C02BF88   LUI V0, -16504
+9D001D90  8C431040   LW V1, 4160(V0)
+9D001D94  24040001   ADDIU A0, ZERO, 1
+9D001D98  7C833184   INS V1, A0, 6, 1
+9D001D9C  AC431040   SW V1, 4160(V0)
 133:                                 DCH0SSA=KVA_TO_PA((void *)DmaSrc);
-9D001A3C  8F828020   LW V0, -32736(GP)
-9D001A40  7C44E000   EXT A0, V0, 0, 29
-9D001A44  3C03BF88   LUI V1, -16504
-9D001A48  AC643090   SW A0, 12432(V1)
+9D001DA0  8F828020   LW V0, -32736(GP)
+9D001DA4  7C44E000   EXT A0, V0, 0, 29
+9D001DA8  3C03BF88   LUI V1, -16504
+9D001DAC  AC643090   SW A0, 12432(V1)
 134:                                 DmaSrc +=HRES/32;
-9D001A4C  24420028   ADDIU V0, V0, 40
-9D001A50  AF828020   SW V0, -32736(GP)
+9D001DB0  24420028   ADDIU V0, V0, 40
+9D001DB4  AF828020   SW V0, -32736(GP)
 135:                                 DCH0CON |=128; // remplace DmaChnEnable(0); réduit le temps de latence
-9D001A54  3C02BF88   LUI V0, -16504
-9D001A58  8C433060   LW V1, 12384(V0)
-9D001A5C  34630080   ORI V1, V1, 128
-9D001A60  AC433060   SW V1, 12384(V0)
+9D001DB8  3C02BF88   LUI V0, -16504
+9D001DBC  8C433060   LW V1, 12384(V0)
+9D001DC0  34630080   ORI V1, V1, 128
+9D001DC4  AC433060   SW V1, 12384(V0)
 136:                             }
 137:                     }//switch (ln_cnt)
 138:                     mT2ClearIntFlag();
-9D001A64  24030200   ADDIU V1, ZERO, 512
-9D001A68  3C02BF88   LUI V0, -16504
-9D001A6C  AC431034   SW V1, 4148(V0)
+9D001DC8  24030200   ADDIU V1, ZERO, 512
+9D001DCC  3C02BF88   LUI V0, -16504
+9D001DD0  AC431034   SW V1, 4148(V0)
 139:                 }//tmr2_isr()
-9D001A70  8FA2001C   LW V0, 28(SP)
-9D001A74  3042000F   ANDI V0, V0, 15
-9D001A78  14400004   BNE V0, ZERO, 0x9D001A8C
-9D001A7C  8FBB0018   LW K1, 24(SP)
-9D001A80  8FA4000C   LW A0, 12(SP)
-9D001A84  8FA30008   LW V1, 8(SP)
-9D001A88  8FA20004   LW V0, 4(SP)
-9D001A8C  8FBA001C   LW K0, 28(SP)
-9D001A90  27BD0020   ADDIU SP, SP, 32
-9D001A94  409A6002   MTC0 K0, SRSCtl
-9D001A98  41DDE800   WRPGPR SP, SP
-9D001A9C  409B6000   MTC0 K1, Status
-9D001AA0  42000018   ERET
+9D001DD4  8FA2001C   LW V0, 28(SP)
+9D001DD8  3042000F   ANDI V0, V0, 15
+9D001DDC  14400004   BNE V0, ZERO, 0x9D001DF0
+9D001DE0  8FBB0018   LW K1, 24(SP)
+9D001DE4  8FA4000C   LW A0, 12(SP)
+9D001DE8  8FA30008   LW V1, 8(SP)
+9D001DEC  8FA20004   LW V0, 4(SP)
+9D001DF0  8FBA001C   LW K0, 28(SP)
+9D001DF4  27BD0020   ADDIU SP, SP, 32
+9D001DF8  409A6002   MTC0 K0, SRSCtl
+9D001DFC  41DDE800   WRPGPR SP, SP
+9D001E00  409B6000   MTC0 K1, Status
+9D001E04  42000018   ERET
 140:                 
 ---  C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/keyboard.c  ------------------------------------
 1:                   /*
@@ -3302,7 +3768,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 141:                 		while (xt_char[i].code){
 9D000280  3C059D00   LUI A1, -25344
 9D000284  0B4000AE   J 0x9D0002B8
-9D000288  24A52240   ADDIU A1, A1, 8768
+9D000288  24A5272C   ADDIU A1, A1, 10028
 9D0002BC  00021840   SLL V1, V0, 1
 9D0002C0  00651821   ADDU V1, V1, A1
 9D0002C4  90630000   LBU V1, 0(V1)
@@ -3320,7 +3786,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000298  00021040   SLL V0, V0, 1
 9D0002A0  00021040   SLL V0, V0, 1
 9D0002A4  3C039D00   LUI V1, -25344
-9D0002A8  24632240   ADDIU V1, V1, 8768
+9D0002A8  2463272C   ADDIU V1, V1, 10028
 9D0002AC  00431021   ADDU V0, V0, V1
 144:                 				break;
 9D0002B0  0B400111   J 0x9D000444
@@ -3338,7 +3804,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 150:                 		while (shifted_key[i].code){
 9D00030C  3C069D00   LUI A2, -25344
 9D000310  0B4000D3   J 0x9D00034C
-9D000314  24C62214   ADDIU A2, A2, 8724
+9D000314  24C62700   ADDIU A2, A2, 9984
 9D000350  00021840   SLL V1, V0, 1
 9D000354  00661821   ADDU V1, V1, A2
 9D000358  90630000   LBU V1, 0(V1)
@@ -3355,7 +3821,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000324  00021040   SLL V0, V0, 1
 9D000328  00021040   SLL V0, V0, 1
 9D00032C  3C039D00   LUI V1, -25344
-9D000330  24632214   ADDIU V1, V1, 8724
+9D000330  24632700   ADDIU V1, V1, 9984
 9D000334  00431021   ADDU V0, V0, V1
 9D000338  90420001   LBU V0, 1(V0)
 153:                 				break;
@@ -3369,7 +3835,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 158:                 			i=0;
 159:                 			while (translate[i].code){
 9D000374  0B4000EE   J 0x9D0003B8
-9D000378  24C6218C   ADDIU A2, A2, 8588
+9D000378  24C62678   ADDIU A2, A2, 9848
 9D0003BC  00021840   SLL V1, V0, 1
 9D0003C0  00661821   ADDU V1, V1, A2
 9D0003C4  90630000   LBU V1, 0(V1)
@@ -3392,7 +3858,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D000388  00021040   SLL V0, V0, 1
 9D000390  00021040   SLL V0, V0, 1
 9D000394  3C039D00   LUI V1, -25344
-9D000398  2463218C   ADDIU V1, V1, 8588
+9D000398  24632678   ADDIU V1, V1, 9848
 9D00039C  00431021   ADDU V0, V0, V1
 9D0003A0  90420001   LBU V0, 1(V0)
 162:                 					break;
@@ -3414,7 +3880,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 172:                 		while (translate[i].code){
 9D0002F4  3C069D00   LUI A2, -25344
 9D0002F8  0B400105   J 0x9D000414
-9D0002FC  24C6218C   ADDIU A2, A2, 8588
+9D0002FC  24C62678   ADDIU A2, A2, 9848
 9D000418  00021840   SLL V1, V0, 1
 9D00041C  00661821   ADDU V1, V1, A2
 9D000420  90630000   LBU V1, 0(V1)
@@ -3433,7 +3899,7 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 9D0003E4  00021040   SLL V0, V0, 1
 9D0003E8  00021040   SLL V0, V0, 1
 9D0003EC  3C039D00   LUI V1, -25344
-9D0003F0  2463218C   ADDIU V1, V1, 8588
+9D0003F0  24632678   ADDIU V1, V1, 9848
 9D0003F4  00431021   ADDU V0, V0, V1
 9D0003F8  90420001   LBU V0, 1(V0)
 175:                 				break;
@@ -3855,12 +4321,12 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 32:                  
 33:                  
 34:                  void HardwareInit(){
-9D001D90  27BDFFE8   ADDIU SP, SP, -24
-9D001D94  AFBF0014   SW RA, 20(SP)
+9D0020F8  27BDFFE8   ADDIU SP, SP, -24
+9D0020FC  AFBF0014   SW RA, 20(SP)
 35:                     SYSTEMConfig(mGetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
 36:                     INTEnableSystemMultiVectoredInt();
-9D001DBC  0F40099C   JAL INTEnableSystemMultiVectoredInt
-9D001DC0  00000000   NOP
+9D002124  0F400AFA   JAL INTEnableSystemMultiVectoredInt
+9D002128  00000000   NOP
 37:                     // activation du PROXIMITY TIMER pour les interruption inférieures à IPL=7
 38:                  //   INTCONbits.TPC=0;
 39:                  //   IPTMRCLR=0xFFFFFFFF;
@@ -3869,193 +4335,201 @@ C:/Users/Jacques/Documents/GitHub/VPC-32.X/dist/default/production/VPC-32.X.prod
 42:                      // configure coretimer pour le sys_tick
 43:                  #ifdef USE_CORE_TIMER
 44:                     OpenCoreTimer(CORE_TICK_RATE);
-9D001DC4  0F400A18   JAL OpenCoreTimer
-9D001DC8  2404493E   ADDIU A0, ZERO, 18750
+9D00212C  0F400B76   JAL OpenCoreTimer
+9D002130  2404493E   ADDIU A0, ZERO, 18750
 45:                     mConfigIntCoreTimer((CT_INT_ON | CT_INT_PRIOR_1 | CT_INT_SUB_PRIOR_0));
-9D001DCC  24020001   ADDIU V0, ZERO, 1
-9D001DD0  3C03BF88   LUI V1, -16504
-9D001DD4  AC621034   SW V0, 4148(V1)
-9D001DD8  3C05BF88   LUI A1, -16504
-9D001DDC  2403001C   ADDIU V1, ZERO, 28
-9D001DE0  ACA31094   SW V1, 4244(A1)
-9D001DE4  3C04BF88   LUI A0, -16504
-9D001DE8  24060004   ADDIU A2, ZERO, 4
-9D001DEC  AC861098   SW A2, 4248(A0)
-9D001DF0  24030003   ADDIU V1, ZERO, 3
-9D001DF4  ACA31094   SW V1, 4244(A1)
-9D001DF8  AC801098   SW ZERO, 4248(A0)
-9D001DFC  3C04BF88   LUI A0, -16504
-9D001E00  AC821064   SW V0, 4196(A0)
-9D001E04  3C04BF88   LUI A0, -16504
-9D001E08  AC821068   SW V0, 4200(A0)
+9D002134  24020001   ADDIU V0, ZERO, 1
+9D002138  3C03BF88   LUI V1, -16504
+9D00213C  AC621034   SW V0, 4148(V1)
+9D002140  3C06BF88   LUI A2, -16504
+9D002144  2403001C   ADDIU V1, ZERO, 28
+9D002148  ACC31094   SW V1, 4244(A2)
+9D00214C  3C05BF88   LUI A1, -16504
+9D002150  24030004   ADDIU V1, ZERO, 4
+9D002154  ACA31098   SW V1, 4248(A1)
+9D002158  24040003   ADDIU A0, ZERO, 3
+9D00215C  ACC41094   SW A0, 4244(A2)
+9D002160  ACA01098   SW ZERO, 4248(A1)
+9D002164  3C05BF88   LUI A1, -16504
+9D002168  ACA21064   SW V0, 4196(A1)
+9D00216C  3C05BF88   LUI A1, -16504
+9D002170  ACA21068   SW V0, 4200(A1)
 46:                  #endif
 47:                     // désactivation de toutes les entrée analogiques.
 48:                     ANSELBCLR=0xFFFFFFFF;
-9D001E0C  3C04BF88   LUI A0, -16504
-9D001E10  2405FFFF   ADDIU A1, ZERO, -1
-9D001E14  AC856104   SW A1, 24836(A0)
+9D002174  3C05BF88   LUI A1, -16504
+9D002178  2406FFFF   ADDIU A2, ZERO, -1
+9D00217C  ACA66104   SW A2, 24836(A1)
 49:                     ANSELACLR=0xFFFFFFFF;
-9D001E18  3C07BF88   LUI A3, -16504
-9D001E1C  ACE56004   SW A1, 24580(A3)
+9D002180  3C07BF88   LUI A3, -16504
+9D002184  ACE66004   SW A2, 24580(A3)
 50:                      // configuration PB10 sortie et PB11 entrée
 51:                     mPORTBSetBits(TX); // mettre à Vdd pour ne pas généré un faux start bit.
-9D001E20  24050400   ADDIU A1, ZERO, 1024
-9D001E24  3C07BF88   LUI A3, -16504
-9D001E28  ACE56138   SW A1, 24888(A3)
+9D002188  24060400   ADDIU A2, ZERO, 1024
+9D00218C  3C07BF88   LUI A3, -16504
+9D002190  ACE66138   SW A2, 24888(A3)
 52:                     mPORTBSetPinsDigitalOut(TX);      // sortie PB10(Tx), transmission UART2
-9D001E2C  3C07BF88   LUI A3, -16504
-9D001E30  ACE56114   SW A1, 24852(A3)
-9D001E34  AC856104   SW A1, 24836(A0)
+9D002194  3C07BF88   LUI A3, -16504
+9D002198  ACE66114   SW A2, 24852(A3)
+9D00219C  ACA66104   SW A2, 24836(A1)
 53:                     mPORTBSetPinsDigitalIn (RX);      // entrée PB11(Rx), réception UART2
-9D001E38  24050800   ADDIU A1, ZERO, 2048
-9D001E3C  3C08BF88   LUI T0, -16504
-9D001E40  AD056118   SW A1, 24856(T0)
-9D001E44  AC856104   SW A1, 24836(A0)
+9D0021A0  24060800   ADDIU A2, ZERO, 2048
+9D0021A4  3C08BF88   LUI T0, -16504
+9D0021A8  AD066118   SW A2, 24856(T0)
+9D0021AC  ACA66104   SW A2, 24836(A1)
 54:                     // assignation des périphériques aux broches
 55:                     // l'information se trouve dans pps.h
 56:                     PPSUnLock;                     // déverrouillage configuration assignation périphérique
 57:                     //clavier
 58:                     I2C1CONbits.DISSLW=1; // voir pic32mx1xxx/2xxx-errata.pdf rev. E, point 9
-9D001E48  3C04BF80   LUI A0, -16512
-9D001E4C  8C855000   LW A1, 20480(A0)
-9D001E50  7C454A44   INS A1, V0, 9, 1
-9D001E54  AC855000   SW A1, 20480(A0)
+9D0021B0  3C05BF80   LUI A1, -16512
+9D0021B4  8CA65000   LW A2, 20480(A1)
+9D0021B8  7C464A44   INS A2, V0, 9, 1
+9D0021BC  ACA65000   SW A2, 20480(A1)
 59:                     RPA0R=0;  // pas de périphérique sur RA0 (keyboard clock)
-9D001E58  3C02BF81   LUI V0, -16511
-9D001E5C  AC40FB00   SW ZERO, -1280(V0)
+9D0021C0  3C02BF81   LUI V0, -16511
+9D0021C4  AC40FB00   SW ZERO, -1280(V0)
 60:                     RPA1R=0;  // pas de périphérique sur RA1 (keyboard data)
-9D001E60  3C02BF81   LUI V0, -16511
-9D001E64  AC40FB04   SW ZERO, -1276(V0)
+9D0021C8  3C02BF81   LUI V0, -16511
+9D0021CC  AC40FB04   SW ZERO, -1276(V0)
 61:                     RPB3R=0; //  pas de périphérique sur RB3 (status LED)
-9D001E68  3C02BF81   LUI V0, -16511
-9D001E6C  AC40FB38   SW ZERO, -1224(V0)
+9D0021D0  3C02BF81   LUI V0, -16511
+9D0021D4  AC40FB38   SW ZERO, -1224(V0)
 62:                     TRISBCLR=STATUS_LED; // broche status LED en sortie
-9D001E70  24020008   ADDIU V0, ZERO, 8
-9D001E74  ACE26114   SW V0, 24852(A3)
+9D0021D8  24020008   ADDIU V0, ZERO, 8
+9D0021DC  ACE26114   SW V0, 24852(A3)
 63:                     _status_off();
-9D001E78  3C04BF88   LUI A0, -16504
-9D001E7C  AC826134   SW V0, 24884(A0)
+9D0021E0  3C05BF88   LUI A1, -16504
+9D0021E4  ACA26134   SW V0, 24884(A1)
 64:                     PPSOutput(4, RPB10, U2TX);  // assignation U2TX sur PB10, (groupe, pin, fonction)
-9D001E80  3C02BF81   LUI V0, -16511
-9D001E84  8C44FB54   LW A0, -1196(V0)
-9D001E88  24050002   ADDIU A1, ZERO, 2
-9D001E8C  7CA41804   INS A0, A1, 0, 4
-9D001E90  AC44FB54   SW A0, -1196(V0)
+9D0021E8  3C02BF81   LUI V0, -16511
+9D0021EC  8C46FB54   LW A2, -1196(V0)
+9D0021F0  24050002   ADDIU A1, ZERO, 2
+9D0021F4  7CA61804   INS A2, A1, 0, 4
+9D0021F8  AC46FB54   SW A2, -1196(V0)
 65:                     PPSInput (2, U2RX, RPB11);  // assignation U2RX sur PB11, (groupe, fonction, pin)
-9D001E94  3C02BF81   LUI V0, -16511
-9D001E98  8C44FA58   LW A0, -1448(V0)
-9D001E9C  7C641804   INS A0, V1, 0, 4
-9D001EA0  AC44FA58   SW A0, -1448(V0)
+9D0021FC  3C02BF81   LUI V0, -16511
+9D002200  8C46FA58   LW A2, -1448(V0)
+9D002204  7C861804   INS A2, A0, 0, 4
+9D002208  AC46FA58   SW A2, -1448(V0)
 66:                     PPSOutput(2,RPB5,OC2); // 5=OC2  sur PB5 sortie synchronistaiton ntsc
-9D001EA4  3C02BF81   LUI V0, -16511
-9D001EA8  8C44FB40   LW A0, -1216(V0)
-9D001EAC  24050005   ADDIU A1, ZERO, 5
-9D001EB0  7CA41804   INS A0, A1, 0, 4
-9D001EB4  AC44FB40   SW A0, -1216(V0)
+9D00220C  3C02BF81   LUI V0, -16511
+9D002210  8C46FB40   LW A2, -1216(V0)
+9D002214  24070005   ADDIU A3, ZERO, 5
+9D002218  7CE61804   INS A2, A3, 0, 4
+9D00221C  AC46FB40   SW A2, -1216(V0)
 67:                     PPSOutput(1,RPB4,OC1);  // 5=OC1 impulsion déclenchant SPI , Fsync vidéo
-9D001EB8  3C02BF81   LUI V0, -16511
-9D001EBC  8C44FB3C   LW A0, -1220(V0)
-9D001EC0  7CA41804   INS A0, A1, 0, 4
-9D001EC4  AC44FB3C   SW A0, -1220(V0)
+9D002220  3C02BF81   LUI V0, -16511
+9D002224  8C46FB3C   LW A2, -1220(V0)
+9D002228  7CE61804   INS A2, A3, 0, 4
+9D00222C  AC46FB3C   SW A2, -1220(V0)
 68:                     PPSOutput(3,RPB6,SDO1); // 3=SDO1 sortie SPI1 (vidéo)
-9D001EC8  3C02BF81   LUI V0, -16511
-9D001ECC  8C44FB44   LW A0, -1212(V0)
-9D001ED0  7C641804   INS A0, V1, 0, 4
-9D001ED4  AC44FB44   SW A0, -1212(V0)
+9D002230  3C02BF81   LUI V0, -16511
+9D002234  8C46FB44   LW A2, -1212(V0)
+9D002238  7C861804   INS A2, A0, 0, 4
+9D00223C  AC46FB44   SW A2, -1212(V0)
 69:                     PPSInput(1,SS1,RPB7); // entrée Fsync sur RPB7
-9D001ED8  3C02BF81   LUI V0, -16511
-9D001EDC  8C43FA88   LW V1, -1400(V0)
-9D001EE0  7CC31804   INS V1, A2, 0, 4
-9D001EE4  AC43FA88   SW V1, -1400(V0)
-70:                     PPSLock;                       // reverrouille pour éviter assignation accidentelle.
-71:                  }
-9D001EE8  8FBF0014   LW RA, 20(SP)
-9D001EEC  03E00008   JR RA
-9D001EF0  27BD0018   ADDIU SP, SP, 24
-72:                  
-73:                  inline unsigned int ticks(void){
-74:                      return sys_tick;
-9D001EF4  8F82802C   LW V0, -32724(GP)
-75:                  } //ticks()
-9D001EF8  03E00008   JR RA
-9D001EFC  00000000   NOP
-76:                  
-77:                  inline void delay_us(unsigned int usec){
-78:                      for (usec=usec*(CLK_PER_USEC/3);usec;usec--);
-9D001F00  2402000C   ADDIU V0, ZERO, 12
-9D001F04  70821002   MUL V0, A0, V0
-9D001F08  10400003   BEQ V0, ZERO, 0x9D001F18
-9D001F0C  2442FFFF   ADDIU V0, V0, -1
-9D001F10  1440FFFF   BNE V0, ZERO, 0x9D001F10
-9D001F14  2442FFFF   ADDIU V0, V0, -1
-9D001F18  03E00008   JR RA
-9D001F1C  00000000   NOP
-79:                  }//delay_us()
-80:                  
-81:                  void delay_ms(unsigned int msec){
-82:                  #ifdef USE_CORE_TIMER
-83:                      unsigned int t0;
-84:                      t0=sys_tick+msec;
-9D001F20  8F82802C   LW V0, -32724(GP)
-9D001F24  00821021   ADDU V0, A0, V0
-85:                      while (sys_tick<t0);
-9D001F28  8F83802C   LW V1, -32724(GP)
-9D001F2C  0062182B   SLTU V1, V1, V0
-9D001F30  1460FFFD   BNE V1, ZERO, 0x9D001F28
-9D001F34  00000000   NOP
-86:                  #else
-87:                      while (msec--)
-88:                          delay_us(1000);
-89:                  #endif
-90:                  } // delay_ms()
-9D001F38  03E00008   JR RA
-9D001F3C  00000000   NOP
-91:                  
-92:                  #ifdef USE_CORE_TIMER
-93:                    //déclaration du gestionnaire d'interruption
-94:                     void __ISR(_CORE_TIMER_VECTOR, IPL1SOFT)  CoreTimerHandler(void){
-9D001F40  415DE800   RDPGPR SP, SP
-9D001F44  401A7000   MFC0 K0, EPC
-9D001F48  401B6000   MFC0 K1, Status
-9D001F4C  27BDFFE8   ADDIU SP, SP, -24
-9D001F50  AFBA0014   SW K0, 20(SP)
-9D001F54  401A6002   MFC0 K0, SRSCtl
-9D001F58  AFBB0010   SW K1, 16(SP)
-9D001F5C  AFBA000C   SW K0, 12(SP)
-9D001F60  7C1B7844   INS K1, ZERO, 1, 15
-9D001F64  377B0400   ORI K1, K1, 1024
-9D001F68  409B6000   MTC0 K1, Status
-9D001F6C  AFA30004   SW V1, 4(SP)
-9D001F70  AFA20000   SW V0, 0(SP)
-95:                         sys_tick++;
-9D001F74  8F82802C   LW V0, -32724(GP)
-9D001F78  24420001   ADDIU V0, V0, 1
-9D001F7C  AF82802C   SW V0, -32724(GP)
-96:                         __asm__("addiu $v0, $zero, 0");
-9D001F80  24020000   ADDIU V0, ZERO, 0
-97:                         __asm__("mtc0 $v0, $9");
-9D001F84  40824800   MTC0 V0, Count
-98:                         __asm__("addiu $v0,$zero,%0"::"I"(CORE_TICK_RATE));
-9D001F88  2402493E   ADDIU V0, ZERO, 18750
-99:                         __asm__("mtc0 $v0, $11");
-9D001F8C  40825800   MTC0 V0, Compare
-100:                        mCTClearIntFlag();
-9D001F90  24030001   ADDIU V1, ZERO, 1
-9D001F94  3C02BF88   LUI V0, -16504
-9D001F98  AC431034   SW V1, 4148(V0)
-101:                    };
-9D001F9C  8FA30004   LW V1, 4(SP)
-9D001FA0  8FA20000   LW V0, 0(SP)
-9D001FA4  41606000   DI ZERO
-9D001FA8  000000C0   EHB
-9D001FAC  8FBA0014   LW K0, 20(SP)
-9D001FB0  8FBB0010   LW K1, 16(SP)
-9D001FB4  409A7000   MTC0 K0, EPC
-9D001FB8  8FBA000C   LW K0, 12(SP)
-9D001FBC  27BD0018   ADDIU SP, SP, 24
-9D001FC0  409A6002   MTC0 K0, SRSCtl
-9D001FC4  41DDE800   WRPGPR SP, SP
-9D001FC8  409B6000   MTC0 K1, Status
-9D001FCC  42000018   ERET
-102:                 #endif
-103:                 
+9D002240  3C02BF81   LUI V0, -16511
+9D002244  8C44FA88   LW A0, -1400(V0)
+9D002248  7C641804   INS A0, V1, 0, 4
+9D00224C  AC44FA88   SW A0, -1400(V0)
+70:                     PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD
+9D002250  3C02BF81   LUI V0, -16511
+9D002254  8C44FA90   LW A0, -1392(V0)
+9D002258  7CA41804   INS A0, A1, 0, 4
+9D00225C  AC44FA90   SW A0, -1392(V0)
+71:                     PPSOutput(2,RPB8,SDO2); // sortie commande carte SD
+9D002260  3C02BF81   LUI V0, -16511
+9D002264  8C44FB4C   LW A0, -1204(V0)
+9D002268  7C641804   INS A0, V1, 0, 4
+9D00226C  AC44FB4C   SW A0, -1204(V0)
+72:                     PPSLock;                       // reverrouille pour éviter assignation accidentelle.
+73:                  }
+9D002270  8FBF0014   LW RA, 20(SP)
+9D002274  03E00008   JR RA
+9D002278  27BD0018   ADDIU SP, SP, 24
+74:                  
+75:                  inline unsigned int ticks(void){
+76:                      return sys_tick;
+9D00227C  8F82802C   LW V0, -32724(GP)
+77:                  } //ticks()
+9D002280  03E00008   JR RA
+9D002284  00000000   NOP
+78:                  
+79:                  inline void delay_us(unsigned int usec){
+80:                      for (usec=usec*(CLK_PER_USEC/3);usec;usec--);
+9D002288  2402000C   ADDIU V0, ZERO, 12
+9D00228C  70821002   MUL V0, A0, V0
+9D002290  10400003   BEQ V0, ZERO, 0x9D0022A0
+9D002294  2442FFFF   ADDIU V0, V0, -1
+9D002298  1440FFFF   BNE V0, ZERO, 0x9D002298
+9D00229C  2442FFFF   ADDIU V0, V0, -1
+9D0022A0  03E00008   JR RA
+9D0022A4  00000000   NOP
+81:                  }//delay_us()
+82:                  
+83:                  void delay_ms(unsigned int msec){
+84:                  #ifdef USE_CORE_TIMER
+85:                      unsigned int t0;
+86:                      t0=sys_tick+msec;
+9D0022A8  8F82802C   LW V0, -32724(GP)
+9D0022AC  00821021   ADDU V0, A0, V0
+87:                      while (sys_tick<t0);
+9D0022B0  8F83802C   LW V1, -32724(GP)
+9D0022B4  0062182B   SLTU V1, V1, V0
+9D0022B8  1460FFFD   BNE V1, ZERO, 0x9D0022B0
+9D0022BC  00000000   NOP
+88:                  #else
+89:                      while (msec--)
+90:                          delay_us(1000);
+91:                  #endif
+92:                  } // delay_ms()
+9D0022C0  03E00008   JR RA
+9D0022C4  00000000   NOP
+93:                  
+94:                  #ifdef USE_CORE_TIMER
+95:                    //déclaration du gestionnaire d'interruption
+96:                     void __ISR(_CORE_TIMER_VECTOR, IPL1SOFT)  CoreTimerHandler(void){
+9D0022C8  415DE800   RDPGPR SP, SP
+9D0022CC  401A7000   MFC0 K0, EPC
+9D0022D0  401B6000   MFC0 K1, Status
+9D0022D4  27BDFFE8   ADDIU SP, SP, -24
+9D0022D8  AFBA0014   SW K0, 20(SP)
+9D0022DC  401A6002   MFC0 K0, SRSCtl
+9D0022E0  AFBB0010   SW K1, 16(SP)
+9D0022E4  AFBA000C   SW K0, 12(SP)
+9D0022E8  7C1B7844   INS K1, ZERO, 1, 15
+9D0022EC  377B0400   ORI K1, K1, 1024
+9D0022F0  409B6000   MTC0 K1, Status
+9D0022F4  AFA30004   SW V1, 4(SP)
+9D0022F8  AFA20000   SW V0, 0(SP)
+97:                         sys_tick++;
+9D0022FC  8F82802C   LW V0, -32724(GP)
+9D002300  24420001   ADDIU V0, V0, 1
+9D002304  AF82802C   SW V0, -32724(GP)
+98:                         __asm__("mfc0 $v0, $11");
+9D002308  40025800   MFC0 V0, Compare
+99:                         __asm__("addiu $v0,$v0,%0"::"I"(CORE_TICK_RATE));
+9D00230C  2442493E   ADDIU V0, V0, 18750
+100:                        __asm__("mtc0 $v0, $11");
+9D002310  40825800   MTC0 V0, Compare
+101:                        mCTClearIntFlag();
+9D002314  24030001   ADDIU V1, ZERO, 1
+9D002318  3C02BF88   LUI V0, -16504
+9D00231C  AC431034   SW V1, 4148(V0)
+102:                    };
+9D002320  8FA30004   LW V1, 4(SP)
+9D002324  8FA20000   LW V0, 0(SP)
+9D002328  41606000   DI ZERO
+9D00232C  000000C0   EHB
+9D002330  8FBA0014   LW K0, 20(SP)
+9D002334  8FBB0010   LW K1, 16(SP)
+9D002338  409A7000   MTC0 K0, EPC
+9D00233C  8FBA000C   LW K0, 12(SP)
+9D002340  27BD0018   ADDIU SP, SP, 24
+9D002344  409A6002   MTC0 K0, SRSCtl
+9D002348  41DDE800   WRPGPR SP, SP
+9D00234C  409B6000   MTC0 K1, Status
+9D002350  42000018   ERET
+103:                 #endif
+104:                 

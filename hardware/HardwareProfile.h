@@ -27,6 +27,8 @@
 
 #include <p32xxxx.h>
 
+#define VPC_32
+
 #define STDIO   UART2
 #define STDOUT  STDIO
 #define STDIN   STDIO
@@ -45,9 +47,14 @@
 #define CORE_TICK_RATE (mGetSystemClock()/2/1000) // system tick 1msec
 #define CLK_PER_USEC (SYSCLK/1000000L)
 
-#define STATUS_LED BIT_3
-#define _status_on()  (LATBSET = STATUS_LED)
-#define _status_off() (LATBCLR = STATUS_LED)
+#define STATUS_LED  BIT_3
+#define _status_on()  (PORTB |=STATUS_LED)
+#define _status_off() (PORTB &=~STATUS_LED)
+#define _write_on() _status_on()
+#define _write_off() _status_off()
+#define _read_on() _status_on()
+#define _read_off() _status_off()
+
 
 #define USE_CORE_TIMER  // metter en commentaire si on n'utilise pas le core timer
 

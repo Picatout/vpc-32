@@ -26,11 +26,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <plib.h>
+
+
 #include "hardware/HardwareProfile.h"
 #include "hardware/ntsc.h"
 #include "hardware/font.h"
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
+#include "hardware/Pinguino/diskio.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -78,6 +81,7 @@ void put_char(int x, int y, char c){
         r=-l;
     }
     for (i=0;i<7;i++){
+        if (y>=VRES) break;
         if (r){
             video_bmp[y][b] &= ~(0x1f>>r);
             video_bmp[y][b] |= font[c][i]>>r;
@@ -94,6 +98,10 @@ void put_char(int x, int y, char c){
 const char *msg2=" test video ntsc ";
 const char *msg1="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
 
+void clear_screen(){
+    memset(video_bmp,0,HRES/8*VRES);
+} // clear_screen()
+
 void print(int x, int y, const char *text){
     while (*text){
         put_char(x, y, *text++);
@@ -101,6 +109,32 @@ void print(int x, int y, const char *text){
         if (x>HRES-6) break;
     }
 }// print()
+
+void print_hex(int x, int y, unsigned char hex){
+    char c;
+    c= (hex>>4);
+    if (c<10)
+        c+='0';
+    else
+        c+='A'-10;
+    put_char(x,y,c);
+    x +=6;
+    if (x>6*53){
+        x=1;
+        y += 8;
+    }
+    c=hex&0xf;
+    if (c<10)
+        c+='0';
+    else
+        c+='A'-10;
+    put_char(x,y,c);
+    x +=6;
+    if (x>6*53){
+        x=1;
+        y += 8;
+    }
+} // print_hex()
 
 void test_pattern(void){
     int i,j;
@@ -148,10 +182,12 @@ void main(void) {
     int code;
     HardwareInit();
     UartInit(STDIO,9600,DEFAULT_LINE_CTRL);
+    UartPrint(STDOUT,"initialisation video\r");
     ln_cnt=0;
     video=0;
     test_pattern();
     VideoInit();
+    UartPrint(STDOUT,"initialisation clavier\r");
     delay_ms(750);
     if ((code=KeyboardInit())==1){
         _status_on();
@@ -164,12 +200,33 @@ void main(void) {
         SetKbdLeds(0);
         _status_off();
     }else{
-        error_code_status(-code);
+        UartPrint(STDOUT,"erreur initialisation clavier\r");
     }
-   // MediaInitialize();
+    int x=1,y=1;
+    UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
+    initSD();
+    UartPrint(STDOUT,"initialisation carte SD\r");
+    if (disk_initialize(0)==STA_NOINIT){
+        UartPrint(STDOUT,"erreur d'initialisation carte SD\r");
+        _status_on();
+    }else{
+        unsigned char buff[BLK_SIZE];
+        int i;
+        UartPrint(STDOUT,"lecture secteur 0 de la carte SD\r");
+        clear_screen();
+        if (disk_read(0,buff,0,1)==RES_OK){
+            for (i=0;i<BLK_SIZE;i++){
+                print_hex(x,y,buff[i]);
+                x += 3*6;
+                if (x>53*6){
+                    x=1;
+                    y += 8;
+                }
+            }
+        }
+    }
     short scancode,key;
-    int x=1,y=20;
-    UartPrint(STDOUT,"OK\r\n");
+    UartPrint(STDOUT,"OK\r");
 //    while (1){ // test interface RS-232
 //        if ((key=UartGetch(STDIN))>0){
 //            put_char(x,y,key);
@@ -199,7 +256,7 @@ void main(void) {
                     default:
                         put_char(x, y, GetKey(scancode)&127);
                         x += 6;
-                        if (x>=(53*6+1)){
+                        if (x>(53*6)){
                             y +=8;
                             x=1;
                         }

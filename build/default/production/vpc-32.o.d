@@ -4,4 +4,9 @@ hardware/HardwareProfile.h  \
  hardware/ntsc.h  \
 hardware/font.h  \
 hardware/serial_comm.h  \
- hardware/keyboard.h 
+ hardware/keyboard.h  \
+hardware/Pinguino/diskio.h  \
+ hardware/Pinguino/integer.h  \
+hardware/Pinguino/ff.h  \
+ hardware/Pinguino/typedef.h  \
+hardware/Pinguino/ffconf.h 

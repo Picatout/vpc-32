@@ -11,8 +11,9 @@
         <itemPath>hardware/serial_comm.h</itemPath>
         <itemPath>hardware/QWERTY.h</itemPath>
         <itemPath>hardware/keyboard.h</itemPath>
-        <itemPath>hardware/sdcard.h</itemPath>
-        <itemPath>hardware/spi4sdcard.h</itemPath>
+        <itemPath>hardware/Pinguino/sdmmc.h</itemPath>
+        <itemPath>hardware/Pinguino/diskio.h</itemPath>
+        <itemPath>hardware/Pinguino/typedef.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -27,8 +28,8 @@
         <itemPath>hardware/HardwareProfile.c</itemPath>
         <itemPath>hardware/serial_comm.c</itemPath>
         <itemPath>hardware/keyboard.c</itemPath>
-        <itemPath>hardware/sdcard.c</itemPath>
-        <itemPath>hardware/spi4sdcard.c</itemPath>
+        <itemPath>hardware/Pinguino/sdmmc.c</itemPath>
+        <itemPath>hardware/Pinguino/diskio.c</itemPath>
       </logicalFolder>
       <itemPath>vpc-32.c</itemPath>
     </logicalFolder>
