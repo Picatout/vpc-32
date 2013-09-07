@@ -35,10 +35,10 @@ extern "C" {
 #include "font.h"
 #include "hardware/ntsc.h"
 
-#define CHAR_PER_LINE 53
 #define LINE_PER_SCREEN 28
 #define CHEIGHT (CHAR_HEIGHT+1) // espace vertical occupé par un caractère + interligne
 #define CWIDTH (CHAR_WIDTH+1) // espace horizontal occupé par un caractère + inter-char
+#define CHAR_PER_LINE ((int)(HRES/CWIDTH))
 #define TAB_WIDTH 4
 
     typedef struct{
@@ -53,14 +53,12 @@ extern "C" {
     void clear_eol(void); // efface la fin de la ligne à partir du curseur.
     void scroll_up(void); // fait glissé le texte une ligne vers le haut.
     void scroll_down(void); // fait glissé le texte une ligne vers le bas.
-    void scroll_left(unsigned short line, unsigned short count);// fait la ligne de count position vers la gauche
-    void scroll_right(unsigned short line, unsigned short count); // fait glissé la ligne de count position vers la droite.
     text_coord_t get_curpos(); // retourne position curseur texte.
     void set_curpos(unsigned short x, unsigned short y); // positionne le curseur
     void put_char(char c); //affiche le caractère à la position courante
     void print(const char *str); // imprime un chaîne à la position courante
     void print_hex(unsigned int i, unsigned char width); // imprime un nombre hexadécimal à la position courante
-    void print_int(int number); // imprime un entier à la position courante.
+    void print_int(int number, unsigned short width); // imprime un entier à la position courante.
     void cursor_right(void); // avance le curseur, retour à la ligne si nécessaire.
     void cursor_left(void); // recule le curseur d'une position, va à la fin de la ligne précédente si nécessaire.
     void cursor_down(void); // descend le curseur à la ligne suivante, scroll_up() si nécessaire
@@ -69,6 +67,7 @@ extern "C" {
     void invert_char(void); // inverse les pixel du caractère à la position du curseur.
     void show_cursor(BOOL); // affiche ou masque le curseur texte
     void set_cursor(cursor_t shape); // défini la  forme du curseur
+    void crlf(void); // déplace le curseur à la ligne suivante
 #ifdef	__cplusplus
 }
 #endif

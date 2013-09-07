@@ -120,7 +120,7 @@ void main(void) {
     }else{
         UartPrint(STDOUT,"erreur initialisation clavier\r");
     }
-    unsigned int cpos;
+    text_coord_t cpos;
     UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
     initSD();
     UartPrint(STDOUT,"initialisation carte SD\r");
@@ -133,13 +133,13 @@ void main(void) {
         UartPrint(STDOUT,"lecture secteur 0 de la carte SD\r");
         clear_screen();
         if (disk_read(0,buff,0,1)==RES_OK){
-            for (i=0;i<(BLK_SIZE-24);i++){
+            for (i=0;i<(486);i++){
                 print_hex(buff[i],2);
-                if ((i+1)%18){
+                cpos=get_curpos();
+                if (cpos.x && (cpos.x<CHAR_PER_LINE)){
+                    put_char(32);
                     cursor_right();
                 }
-//                cpos=get_curpos();
-//                if ((cpos>>16)>0){cursor_right();}
             }
             set_cursor(CR_BLOCK);
             while (1){

@@ -58,6 +58,7 @@ void scroll_down(void){
     memset(dst,0,HRES/8*CHEIGHT);
 }//scroll_down()
 
+
 void cursor_right(void){
     cx += CWIDTH;
     if (cx>(CHAR_PER_LINE*CWIDTH)){
@@ -99,22 +100,31 @@ void cursor_down(void){
     }
 }//cursor_down()
 
+void crlf(void){
+    cx=X_OFS;
+    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
+        scroll_up();
+    }else{
+        cy += CHEIGHT;
+    }
+}//crlf()
+
 void put_char(char c){
     register int i,l,r,b,x,y;
     x=cx;
     y=cy;
     switch (c){
         case CR:
-            cx=X_OFS;
-            cy += CHAR_HEIGHT+1;
+            crlf();
             break;
         case TAB:
             cx += (cx%tab_width);
-            if (cx>(CHAR_PER_LINE*CWIDTH)){
+            if (cx>=(X_OFS+CHAR_PER_LINE*CWIDTH)){
                 cx = X_OFS;
-                cy += CHEIGHT;
-                if (cy>(LINE_PER_SCREEN*CHEIGHT)){
+                if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
                     scroll_up();
+                }else{
+                    cy += CHEIGHT;
                 }
             }
             break;
@@ -128,7 +138,6 @@ void put_char(char c){
                 r=-l;
             }
             for (i=0;i<7;i++){
-                if (y>=VRES) break;
                 if (r){
                     video_bmp[y][b] &= ~(0x1f>>r);
                     video_bmp[y][b] |= font5x7[c][i]>>r;
@@ -140,7 +149,6 @@ void put_char(char c){
                     video_bmp[y++][b] |= font5x7[c][i]<<l;
                 }
             }
-            cursor_right();
     }//switch(c)
 }//put)char()
 
@@ -153,6 +161,7 @@ void clear_screen(){
 void print(const char *text){
     while (*text){
         put_char(*text++);
+        cursor_right();
     }
 }// print()
 
@@ -173,7 +182,7 @@ void print_hex(unsigned int hex, unsigned char width){
     print(++d);
 } // print_hex()
 
-void print_decimal(int number, unsigned short width){ // imprime entier,width inclus le signe
+void print_int(int number, unsigned short width){ // imprime entier,width inclus le signe
     int sign=0, i;
     char str[14], *d;
     str[13]=0;
@@ -192,10 +201,16 @@ void set_tab_width(unsigned char width){
 }// set_tab_width()
 
 void clear_eol(void){
-    int i;
-    for (i=CHEIGHT;i;i--){
-        memset(&video_bmp[cy+CHEIGHT-i][cx],0,HRES/8);
+    int x,y;
+    x=cx;
+    y=cy;
+    while (cx<(X_OFS+CWIDTH*(CHAR_PER_LINE-1))){
+        put_char(32);
+        cursor_right();
     }
+    put_char(32);
+    cx=x;
+    cy=y;
 }// clear_eol()
 
 text_coord_t get_curpos(){
