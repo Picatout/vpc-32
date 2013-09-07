@@ -8,4 +8,6 @@ hardware/keyboard.h  \
 hardware/Pinguino/integer.h  \
  hardware/Pinguino/ff.h  \
 hardware/Pinguino/typedef.h  \
- hardware/Pinguino/ffconf.h 
+ hardware/Pinguino/ffconf.h  \
+console.h  \
+font.h 

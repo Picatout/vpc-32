@@ -33,7 +33,7 @@
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
-//#include "console.h"
+#include "console.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -133,7 +133,7 @@ void main(void) {
         UartPrint(STDOUT,"lecture secteur 0 de la carte SD\r");
         clear_screen();
         if (disk_read(0,buff,0,1)==RES_OK){
-            for (i=0;i<(BLK_SIZE);i++){
+            for (i=0;i<(BLK_SIZE-24);i++){
                 print_hex(buff[i],2);
                 if ((i+1)%18){
                     cursor_right();
@@ -141,6 +141,14 @@ void main(void) {
 //                cpos=get_curpos();
 //                if ((cpos>>16)>0){cursor_right();}
             }
+            set_cursor(CR_BLOCK);
+            while (1){
+                show_cursor(TRUE);
+                delay_ms(500);
+                show_cursor(FALSE);
+                delay_ms(500);
+            }
+
         }
     }
     short scancode,key;

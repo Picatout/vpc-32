@@ -5,7 +5,6 @@
                    displayName="Header Files"
                    projectFiles="true">
       <logicalFolder name="f1" displayName="hardware" projectFiles="true">
-        <itemPath>hardware/font.h</itemPath>
         <itemPath>hardware/ntsc.h</itemPath>
         <itemPath>hardware/HardwareProfile.h</itemPath>
         <itemPath>hardware/serial_comm.h</itemPath>
@@ -14,8 +13,9 @@
         <itemPath>hardware/Pinguino/sdmmc.h</itemPath>
         <itemPath>hardware/Pinguino/diskio.h</itemPath>
         <itemPath>hardware/Pinguino/typedef.h</itemPath>
-        <itemPath>console.h</itemPath>
       </logicalFolder>
+      <itemPath>font.h</itemPath>
+      <itemPath>console.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -34,6 +34,7 @@
       </logicalFolder>
       <itemPath>vpc-32.c</itemPath>
       <itemPath>console.c</itemPath>
+      <itemPath>font.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

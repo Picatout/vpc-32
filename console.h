@@ -31,12 +31,14 @@
 extern "C" {
 #endif
 
-#include "hardware/font.h"
+#include <GenericTypeDefs.h>
+#include "font.h"
 #include "hardware/ntsc.h"
 
 #define CHAR_PER_LINE 53
 #define LINE_PER_SCREEN 28
-#define LINE_SPACING (CHAR_HEIGHT+1)
+#define CHEIGHT (CHAR_HEIGHT+1) // espace vertical occupé par un caractère + interligne
+#define CWIDTH (CHAR_WIDTH+1) // espace horizontal occupé par un caractère + inter-char
 #define TAB_WIDTH 4
 
     typedef struct{
@@ -44,7 +46,7 @@ extern "C" {
         unsigned short y;
     } text_coord_t;
     
-    typedef enum _CURSOR_SHAPE {CR_HIDE=0,CR_UNDER,CR_BLOCK} cursor_t;
+    typedef enum _CURSOR_SHAPE {CR_UNDER=0,CR_BLOCK} cursor_t;
     
 // fonctions de l'interface
     void clear_screen(void); // efface l'écran et positionne le curseur à {0,0}
@@ -55,7 +57,6 @@ extern "C" {
     void scroll_right(unsigned short line, unsigned short count); // fait glissé la ligne de count position vers la droite.
     text_coord_t get_curpos(); // retourne position curseur texte.
     void set_curpos(unsigned short x, unsigned short y); // positionne le curseur
-    void show_cursor(cursor_t shape); // affiche ou masque le curseur texte
     void put_char(char c); //affiche le caractère à la position courante
     void print(const char *str); // imprime un chaîne à la position courante
     void print_hex(unsigned int i, unsigned char width); // imprime un nombre hexadécimal à la position courante
@@ -65,6 +66,9 @@ extern "C" {
     void cursor_down(void); // descend le curseur à la ligne suivante, scroll_up() si nécessaire
     void cursor_up(void); // monte le curseur à la ligne précédente, scroll_down() si nécessaire
     void set_tab_width(unsigned char width); // défini la largeur des colonnes de tabulation.
+    void invert_char(void); // inverse les pixel du caractère à la position du curseur.
+    void show_cursor(BOOL); // affiche ou masque le curseur texte
+    void set_cursor(cursor_t shape); // défini la  forme du curseur
 #ifdef	__cplusplus
 }
 #endif

@@ -16,27 +16,16 @@
 *     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* 
- * File:   font.h
- * Author: Jacques Deschênes
+/*
+ * File:   font.c
+ * Description: police de caractère  5x7
+ * Author: Jacques Descênes
  *
- * Created on 23 août 2013, 07:32
+ * Created on 7 septembre 2013, 16:28
  */
 
-#ifndef FONT_H
-#define	FONT_H
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-#define CHAR_HEIGHT 7
-#define CHAR_WIDTH 6
-#define FONT_SIZE 96
-    
-
-// police de caractères 5x7  ASCII
-const unsigned char font5x7[][CHAR_HEIGHT]={
+#include "font.h"
+const unsigned char font5x7[FONT_SIZE][CHAR_HEIGHT]={
 	{0x00,0x00,0x00,0x00,0x00,0x00,0x00}, // espace
 	{0x04,0x04,0x04,0x04,0x04,0x00,0x04}, // !
 	{0x0a,0x0a,0x0a,0x00,0x00,0x00,0x00}, // "
@@ -134,12 +123,3 @@ const unsigned char font5x7[][CHAR_HEIGHT]={
         {0x00,0x00,0x08,0x15,0x02,0x00,0x00}, // ~
         {0x00,0x00,0x00,0x00,0x00,0x00,0x00}, // blank
 };
-
-
-
-#ifdef	__cplusplus
-}
-#endif
-
-#endif	/* FONT_H */
-
