@@ -6,5 +6,4 @@ hardware/Pinguino/ff.h  \
  hardware/Pinguino/typedef.h  \
 hardware/Pinguino/ffconf.h  \
  hardware/Pinguino/../HardwareProfile.h  \
-hardware/Pinguino/sdmmc.h  \
- hardware/Pinguino/../serial_comm.h 
+hardware/Pinguino/sdmmc.h 

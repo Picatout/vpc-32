@@ -1,6 +1,24 @@
+/*
+* Copyright 2013, Jacques Deschênes
+* This file is part of VPC-32.
+*
+*     VPC-32 is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     VPC-32 is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 /* 
  * File:   font.h
- * Author: Jacques
+ * Author: Jacques Deschênes
  *
  * Created on 23 août 2013, 07:32
  */
@@ -12,8 +30,13 @@
 extern "C" {
 #endif
 
-// police de caractères 5x7  lettres majuscules et chiffre
-const unsigned char font[][7]={
+#define CHAR_HEIGHT 7
+#define CHAR_WIDTH 6
+#define FONT_SIZE 96
+    
+
+// police de caractères 5x7  ASCII
+const unsigned char font5x7[][CHAR_HEIGHT]={
 	{0x00,0x00,0x00,0x00,0x00,0x00,0x00}, // espace
 	{0x04,0x04,0x04,0x04,0x04,0x00,0x04}, // !
 	{0x0a,0x0a,0x0a,0x00,0x00,0x00,0x00}, // "

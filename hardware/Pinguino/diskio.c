@@ -22,7 +22,6 @@
 //#include <digitalw.c>
 #include "../HardwareProfile.h"
 #include "sdmmc.h"
-#include "../serial_comm.h"
 
 // For boards known to support the RTCC library ***Added 07 May 2012
 // to allow SD Library to support PIC32 Pinguino Micro, which
@@ -251,7 +250,6 @@ DSTATUS disk_initialize(PF_BYTE drv /* Physical drive number (0) */
 	PF_BYTE n, ty, cmd, buf[4];
 	UINT16 tmr;
 	DSTATUS s = 0;
-        UartPrint(STDOUT,"enterting disk_initialize\r");
 	if (drv)
 		return STA_NOINIT; /* Supports only single drive */
 	if (Stat & STA_NODISK)
@@ -261,13 +259,11 @@ DSTATUS disk_initialize(PF_BYTE drv /* Physical drive number (0) */
 	//FCLK_SLOW();
 	for (n = 10; n; n--)
 		rcvr_spi(); /* 80 dummy clocks */
-        UartPrint(STDOUT,"sdcard answered dummy clock init\r");
 	CS_H();
 	for (n = 10; n; n--)
 		rcvr_spi(); /* 80 dummy clocks */
 
 	ty = 0;
-        UartPrint(STDOUT,"dummy clock init completed\r");
 	if (send_cmd(CMD0, 0) == 1) { /* Enter Idle state */
 		if (send_cmd(CMD8, 0x1AA) == 1) { /* SDv2? */
 			for (n = 0; n < 4; n++)
@@ -642,5 +638,8 @@ void put_rc(FRESULT rc) {
 			;
 	}
 	//CDCprintln("rc=%u FR_%s", (UINT16) rc, str);
-        
+        print("rc=");
+        print_int(rc);
+        put_char(32);
+        print(str);
 }

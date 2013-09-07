@@ -30,10 +30,10 @@
 
 #include "hardware/HardwareProfile.h"
 #include "hardware/ntsc.h"
-#include "hardware/font.h"
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
+//#include "console.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -70,71 +70,10 @@
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 
 
-void put_char(int x, int y, char c){
-    register int i,l,r,b;
-    if (c<32) return;
-    c -=32;
-    b=x>>5;
-    r=0;
-    l=27-(x&0x1f);
-    if (l<0){
-        r=-l;
-    }
-    for (i=0;i<7;i++){
-        if (y>=VRES) break;
-        if (r){
-            video_bmp[y][b] &= ~(0x1f>>r);
-            video_bmp[y][b] |= font[c][i]>>r;
-            video_bmp[y][b+1] &= ~(0x1f<<32-r);
-            video_bmp[y][b+1] |= font[c][i]<<(32-r);
-            y++;
-        } else{
-            video_bmp[y][b] &= ~(0x1f<<l);
-            video_bmp[y++][b] |= font[c][i]<<l;
-        }
-    }
-}//put)char()
 
 const char *msg2=" test video ntsc ";
 const char *msg1="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
 
-void clear_screen(){
-    memset(video_bmp,0,HRES/8*VRES);
-} // clear_screen()
-
-void print(int x, int y, const char *text){
-    while (*text){
-        put_char(x, y, *text++);
-        x += 6;
-        if (x>HRES-6) break;
-    }
-}// print()
-
-void print_hex(int x, int y, unsigned char hex){
-    char c;
-    c= (hex>>4);
-    if (c<10)
-        c+='0';
-    else
-        c+='A'-10;
-    put_char(x,y,c);
-    x +=6;
-    if (x>6*53){
-        x=1;
-        y += 8;
-    }
-    c=hex&0xf;
-    if (c<10)
-        c+='0';
-    else
-        c+='A'-10;
-    put_char(x,y,c);
-    x +=6;
-    if (x>6*53){
-        x=1;
-        y += 8;
-    }
-} // print_hex()
 
 void test_pattern(void){
     int i,j;
@@ -152,31 +91,10 @@ void test_pattern(void){
         video_bmp[i][4]=0xcccccccc;
         video_bmp[i][5]=0xaaaaaaaa;
     }//i
-    print(2,3,msg1);
-    print(2,12,msg2);
+    print(msg1);
+    print(msg2);
 }//test_pattern()
 
-void digit(char d){
-    while (d--){
-        _status_on();
-        delay_ms(400);
-        _status_off();
-        delay_ms(300);
-    }
-}//digit()
-void error_code_status(int code){
-    char d;
-    code &= 255;
-    d=code/100;
-    digit(d);
-    delay_ms(500);
-    code = code % 100;
-    d= code/10;
-    digit(d);
-    delay_ms(500);
-    code = code % 10;
-    digit(code);
-}//error_code_status()
 
 void main(void) {
     int code;
@@ -202,7 +120,7 @@ void main(void) {
     }else{
         UartPrint(STDOUT,"erreur initialisation clavier\r");
     }
-    int x=1,y=1;
+    unsigned int cpos;
     UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
     initSD();
     UartPrint(STDOUT,"initialisation carte SD\r");
@@ -215,29 +133,18 @@ void main(void) {
         UartPrint(STDOUT,"lecture secteur 0 de la carte SD\r");
         clear_screen();
         if (disk_read(0,buff,0,1)==RES_OK){
-            for (i=0;i<BLK_SIZE;i++){
-                print_hex(x,y,buff[i]);
-                x += 3*6;
-                if (x>53*6){
-                    x=1;
-                    y += 8;
+            for (i=0;i<(BLK_SIZE);i++){
+                print_hex(buff[i],2);
+                if ((i+1)%18){
+                    cursor_right();
                 }
+//                cpos=get_curpos();
+//                if ((cpos>>16)>0){cursor_right();}
             }
         }
     }
     short scancode,key;
     UartPrint(STDOUT,"OK\r");
-//    while (1){ // test interface RS-232
-//        if ((key=UartGetch(STDIN))>0){
-//            put_char(x,y,key);
-//            x+=6;
-//            if (x>=(53*6+1)){
-//                x=1;
-//                y += 8;
-//            }
-//            UartPrint(STDOUT,"OK\r\n");
-//        }
-//    }
     while(1){
         if ((scancode=GetScancode())){
             if (scancode>0){
@@ -247,19 +154,14 @@ void main(void) {
                         rx_flags |= F_SHIFT;
                         break;
                     case BKSP:
-                        x -= 6;
-                        put_char(x,y,32);
+                        cursor_left();
+                        put_char(32);
                         break;
                     case ENTER:
-                        x=1;
-                        y += 8;
+                        put_char(CR);
+                        break;
                     default:
-                        put_char(x, y, GetKey(scancode)&127);
-                        x += 6;
-                        if (x>(53*6)){
-                            y +=8;
-                            x=1;
-                        }
+                        put_char(GetKey(scancode)&127);
                 }
             }else switch (scancode&511){
                 case LSHIFT:

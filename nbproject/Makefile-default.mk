@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c
+SOURCEFILES_QUOTED_IF_SPACED=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c console.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/console.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/console.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o
+OBJECTFILES=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/console.o
 
 # Source Files
-SOURCEFILES=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c
+SOURCEFILES=hardware/ntsc.c vpc-32.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c console.c
 
 
 CFLAGS=
@@ -126,6 +126,11 @@ ${OBJECTDIR}/hardware/Pinguino/diskio.o: hardware/Pinguino/diskio.c  nbproject/M
 	@${RM} ${OBJECTDIR}/hardware/Pinguino/diskio.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/Pinguino/diskio.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/Pinguino/diskio.o.d" -o ${OBJECTDIR}/hardware/Pinguino/diskio.o hardware/Pinguino/diskio.c   
 	
+${OBJECTDIR}/console.o: console.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/console.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/console.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/console.o.d" -o ${OBJECTDIR}/console.o console.c   
+	
 else
 ${OBJECTDIR}/hardware/ntsc.o: hardware/ntsc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/hardware 
@@ -161,6 +166,11 @@ ${OBJECTDIR}/hardware/Pinguino/diskio.o: hardware/Pinguino/diskio.c  nbproject/M
 	@${MKDIR} ${OBJECTDIR}/hardware/Pinguino 
 	@${RM} ${OBJECTDIR}/hardware/Pinguino/diskio.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/Pinguino/diskio.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/hardware/Pinguino/diskio.o.d" -o ${OBJECTDIR}/hardware/Pinguino/diskio.o hardware/Pinguino/diskio.c   
+	
+${OBJECTDIR}/console.o: console.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/console.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/console.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -O1 -MMD -MF "${OBJECTDIR}/console.o.d" -o ${OBJECTDIR}/console.o console.c   
 	
 endif
 

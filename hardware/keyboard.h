@@ -50,9 +50,9 @@ typedef struct scan2key{
 #define LSHIFT			0x12
 #define RSHIFT                  0x59
 #define LCTRL			0x14
-#define RCTRL                   XT_BIT|0x14
+#define RCTRL                   (XT_BIT|0x14)
 #define LALT			0x11
-#define RALT                    XT_BIT|0x11
+#define RALT                    (XT_BIT|0x11)
 #define BKSP                    0x66
 #define KEY_ESC			0x76
 #define F1			0x05
@@ -67,23 +67,23 @@ typedef struct scan2key{
 #define F10			0x09
 #define F11			0x78
 #define F12			0x07
-#define PRN			XT_BIT|0x12   // touche PrtSc enfoncée 4 codes: 0xe012e07c, relâchée 6 codes: 0xe0f07ce0f012
-#define PAUSE			XT_BIT|0xe1   // touche Pause séquence de 8 codes 0xe11477e1f014f077
-#define UP_ARROW		XT_BIT|0x75
-#define DOWN_ARROW		XT_BIT|0x72
-#define LEFT_ARROW		XT_BIT|0x6B
-#define RIGHT_ARROW		XT_BIT|0x74
-#define INSERT			XT_BIT|0x70
-#define HOME			XT_BIT|0x6c
-#define	PGUP			XT_BIT|0x7d
-#define PGDN			XT_BIT|0x7a
-#define	DEL			XT_BIT|0x71
-#define END			XT_BIT|0x69
-#define KPDIV			XT_BIT|0x4a
+#define PRN			(XT_BIT|0x12)   // touche PrtSc enfoncée 4 codes: 0xe012e07c, relâchée 6 codes: 0xe0f07ce0f012
+#define PAUSE			(XT_BIT|0xe1)   // touche Pause séquence de 8 codes 0xe11477e1f014f077
+#define UP_ARROW		(XT_BIT|0x75)
+#define DOWN_ARROW		(XT_BIT|0x72)
+#define LEFT_ARROW		(XT_BIT|0x6B)
+#define RIGHT_ARROW		(XT_BIT|0x74)
+#define INSERT			(XT_BIT|0x70)
+#define HOME			(XT_BIT|0x6c)
+#define	PGUP			(XT_BIT|0x7d)
+#define PGDN			(XT_BIT|0x7a)
+#define	DEL			(XT_BIT|0x71)
+#define END			(XT_BIT|0x69)
+#define KPDIV			(XT_BIT|0x4a)
 #define KPMUL			0x7c
 #define KPMINUS			0x7b
 #define KPPLUS			0x79
-#define KPENTER			XT_BIT|0x5a
+#define KPENTER			(XT_BIT|0x5a)
 #define KPDOT			0x71
 #define KP0			0x70
 #define KP1			0x69
