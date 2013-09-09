@@ -68,6 +68,8 @@ extern "C" {
     void show_cursor(BOOL); // affiche ou masque le curseur texte
     void set_cursor(cursor_t shape); // défini la  forme du curseur
     void crlf(void); // déplace le curseur à la ligne suivante
+    unsigned short get_key(); // lecture touches clavier
+    unsigned short wait_key(); // attend qu'une touche soit enfoncée.
 #ifdef	__cplusplus
 }
 #endif

@@ -31,6 +31,7 @@
         <itemPath>hardware/keyboard.c</itemPath>
         <itemPath>hardware/Pinguino/sdmmc.c</itemPath>
         <itemPath>hardware/Pinguino/diskio.c</itemPath>
+        <itemPath>hardware/QWERTY.c</itemPath>
       </logicalFolder>
       <itemPath>vpc-32.c</itemPath>
       <itemPath>console.c</itemPath>

@@ -98,6 +98,7 @@ void test_pattern(void){
 
 void main(void) {
     int code;
+    short key;
     HardwareInit();
     UartInit(STDIO,9600,DEFAULT_LINE_CTRL);
     UartPrint(STDOUT,"initialisation video\r");
@@ -106,8 +107,7 @@ void main(void) {
     test_pattern();
     VideoInit();
     UartPrint(STDOUT,"initialisation clavier\r");
-    delay_ms(750);
-    if ((code=KeyboardInit())==1){
+    if (KeyboardInit()){
         _status_on();
         SetKbdLeds(F_NUM);
         delay_ms(300);
@@ -119,6 +119,12 @@ void main(void) {
         _status_off();
     }else{
         UartPrint(STDOUT,"erreur initialisation clavier\r");
+        while (1){
+            _status_on();
+            delay_ms(500);
+            _status_off();
+            delay_ms(500);
+        }
     }
     text_coord_t cpos;
     UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
@@ -141,59 +147,20 @@ void main(void) {
                     cursor_right();
                 }
             }
-            set_cursor(CR_BLOCK);
-            while (1){
-                show_cursor(TRUE);
-                delay_ms(500);
-                show_cursor(FALSE);
-                delay_ms(500);
-            }
-
         }
     }
-    short scancode,key;
+    delay_ms(2000);
+    clear_screen();
     UartPrint(STDOUT,"OK\r");
+    set_cursor(CR_BLOCK);
     while(1){
-        if ((scancode=GetScancode())){
-            if (scancode>0){
-                switch (scancode){
-                    case LSHIFT:
-                    case RSHIFT:
-                        rx_flags |= F_SHIFT;
-                        break;
-                    case BKSP:
-                        cursor_left();
-                        put_char(32);
-                        break;
-                    case ENTER:
-                        put_char(CR);
-                        break;
-                    default:
-                        put_char(GetKey(scancode)&127);
-                }
-            }else switch (scancode&511){
-                case LSHIFT:
-                case RSHIFT:
-                    rx_flags &= ~F_SHIFT;
-                    break;
-                case LCTRL:
-                case RCTRL:
-                    break;
-                case LALT:
-                case RALT:
-                    break;
-                case NUM_LOCK:
-                    kbd_leds ^= F_NUM;
-                    SetKbdLeds(kbd_leds);
-                    break;
-                case CAPS_LOCK:
-                    kbd_leds ^= F_CAPS;
-                    rx_flags ^= F_CAPS;
-                    SetKbdLeds(kbd_leds);
-                    break;
-
-            }
+        show_cursor(TRUE);
+        key=wait_key();
+        show_cursor(FALSE);
+        if (!(key & FN_BIT)){
+            put_char(key);
+            cursor_right();
         }
-    }
+    } // while(1)
 }
 

@@ -30,8 +30,8 @@ extern "C" {
 #endif
 // structure pour la table de transcription des codes clavier
 typedef struct scan2key{
-	unsigned short code:8;
-	unsigned short ascii:8;
+	 short code;
+	 short ascii;
 }t_scan2key;
 
 
@@ -41,6 +41,7 @@ typedef struct scan2key{
 
 #define XT_BIT	(1<<8)  // indicateur code étendu
 #define REL_BIT (1<<15) // indicateur touche relâchée
+#define FN_BIT (1<<9) // indicateur touche non ASCII (F* PRN, PAUSE, SCROLL, flèches, etc)
 
 // touches spéciales
 #define ENTER                   0x5A
@@ -97,9 +98,9 @@ typedef struct scan2key{
 #define KP9			0x7d
 
 // réponses du clavier aux commandes
-#define KBD_ACK 0xFA // ACK confirmation envoyé par le clavier
-#define KBD_RSND 0xFE // le clavier demande de renvoyer la commande
-#define BAT_OK 0xAA // test clavier réussi (Basic Assurance Test)
+#define KBD_ACK   0xFA   // ACK confirmation envoyé par le clavier
+#define KBD_RSND  0xFE  // le clavier demande de renvoyer la commande
+#define BAT_OK    0xAA    // test clavier réussi (Basic Assurance Test)
 #define BAT_ERROR 0xFC // échec test clavier
 
 
@@ -113,17 +114,26 @@ typedef struct scan2key{
 #define F_SCROLL 1 // bit indicateur scroll_lock dans kbd_leds
 #define F_NUM  2 // bit indicateur numlock dans kbd_leds
 #define F_CAPS 4 // bit indicateur capslock dans kbd_leds
-#define F_SHIFT 8  // bit indicateur shift dans kbd_leds
+#define F_LSHIFT 8  // bit indicateur shift dans kbd_leds
+#define F_RSHIFT 16 // bit indicateur touche contrôle 
+#define F_SHIFT (F_LSHIFT|F_RSHIFT)
+#define F_LCTRL 32  // bit indiateur touche alt enfoncée
+#define F_RCTRL 64
+#define F_CTRL (F_LCTRL|F_RCTRL)
+#define F_LALT 128
+#define F_ALTCHAR  256
+#define F_ALT (F_LALT|F_ALTCHAR)
 
 extern volatile unsigned char rx_flags, kbd_leds;
+extern volatile unsigned short key_state; // état des touches d'alteration: shift, ctrl ,alt
 
 
 // keyboard API
 int KeyboardInit();  // initialisation E/S et RAZ clavier
-short GetScancode();  // obtient le code clavier en tête de la file
-short GetKey(short scancode);  // obtient la transcription du code en ASCII
-int KbdSend(char cmd);  // envoie une commande au clavier
-int SetKbdLeds(unsigned int leds_state); // contrôle l'état des LEDS du clavier
+short KbdScancode();  // obtient le code clavier en tête de la file
+short KbdKey(short scancode);  // obtient la transcription du code en ASCII
+void KbdSend(char cmd);  // envoie une commande au clavier
+int SetKbdLeds(unsigned char leds_state); // contrôle l'état des LEDS du clavier
 
 #ifdef	__cplusplus
 }

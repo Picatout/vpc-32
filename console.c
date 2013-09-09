@@ -25,6 +25,7 @@
 
 #include "console.h"
 #include "hardware/serial_comm.h"
+#include "hardware/keyboard.h"
 
 #define X_OFS  ((HRES%CWIDTH)/2)  // offset vidéo position curseur x
 #define Y_OFS  ((VRES%CHEIGHT)/2)  // offset vidéo position curseur y
@@ -297,3 +298,20 @@ void set_cursor(cursor_t shape){
         cur_shape=shape;
     }
 }// set_cursor()
+
+unsigned short get_key(){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
+    unsigned short code;
+    code=  KbdScancode();
+    if (!(code & FN_BIT)){
+        code = KbdKey(code);
+    }
+    return code;
+}//get_key()
+
+unsigned short wait_key(){ // attend qu'une touche soit enfoncée et retourne sa valeur.
+    unsigned short key;
+    while (!(key=get_key()));
+    return key;
+}//wait_key()
+
+
