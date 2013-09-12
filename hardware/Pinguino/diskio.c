@@ -367,7 +367,7 @@ DRESULT disk_read(PF_BYTE drv, /* Physical drive nmuber (0) */
 /*-----------------------------------------------------------------------*/
 
 #if _READONLY == 0
-DRESULT disk_write(PF_BYTE drv, /* Physical drive nmuber (0) */
+DRESULT disk_write(PF_BYTE drv, /* Physical drive number (0) */
                    const PF_BYTE *buff, /* Pointer to the data to be written */
                    DWORD sector, /* Start sector number (LBA) */
                    PF_BYTE count /* Sector count (1..255) */
@@ -624,7 +624,6 @@ DWORD get_fattime(void) {
 	return tmr;
 }
 
-static
 void put_rc(FRESULT rc) {
 	const char *str =
                         "OK\0" "DISK_ERR\0" "INT_ERR\0" "NOT_READY\0" "NO_FILE\0" "NO_PATH\0"
@@ -639,7 +638,9 @@ void put_rc(FRESULT rc) {
 	}
 	//CDCprintln("rc=%u FR_%s", (UINT16) rc, str);
         print("rc=");
-        print_int(rc);
-        put_char(32);
+        print_int(rc,5);
+        cursor_right();
         print(str);
+        put_char('\r');
 }
+

@@ -28,14 +28,15 @@
 
 #include "fileio.h"
 #include "sdmmc.h"
-#include "ff.c"					// Fat Filesystem
-#include "diskio.c"				// card access functions
+#include "ff.h"					// Fat Filesystem
+#include "diskio.h"				// card access functions
+#include "../serial_comm.h"
 
 //#define SD_DEBUG
 
-#ifdef SD_DEBUG
-    #include <__cdc.c>          // USB CDC functions
-#endif
+//#ifdef SD_DEBUG
+//    #include <__cdc.c>          // USB CDC functions
+//#endif
 
 /*	----------------------------------------------------------------------------
  mount
@@ -53,31 +54,39 @@ char mount(unsigned char pin) {
 
 	// 0. init the I/Os
 #ifdef SD_DEBUG
-	CDCprintln("Initializing I/Os... ");
+	UartPrint(STDOUT,"Initialisation carte SD\r");
 #endif
 	initSD();
 
 #ifdef SD_DEBUG
-	CDCprintf("Looking for SD slot... ");
+	UartPrint(STDOUT,"Looking for SD slot... ");
 #endif
 	// 1. check if the card is in the slot
 	if (!getCD()) {
 		FError = FE_NOT_PRESENT;
 #ifdef SD_DEBUG
-		CDCprintln("Failed!");
+		UartPrint(STDOUT, "Échec!\r");
 #endif
 		return FALSE;
 	}
 #ifdef SD_DEBUG
-	CDCprintln("OK");
+	UartPrint(STDOUT,"OK\r");
 #endif
 
 	// 2. initialize the card
 #ifdef SD_DEBUG
-	CDCprintf("Initializing SD card... ");
+	UartPrint(STDOUT,"Initializing SD card... ");
 #endif
 	initMedia();
-
+        if (disk_initialize(0)==STA_NOINIT){
+#ifdef SD_DEBUG
+            UartPrint(STDOUT,"Echec d'initialisation de la carte SD\r");
+#endif
+            return 0;
+        };
+#ifdef SD_DEBUG
+        UartPrint(STDOUT,"OK\r");
+#endif
 	// We're skipping the old step 3 because there's no need for malloc
 	// This takes 6k off the code size if malloc is not used elsewhere.
 	// Instead, just point it to our _Fat var.
@@ -86,37 +95,37 @@ char mount(unsigned char pin) {
 
 	// Mount media
 #ifdef SD_DEBUG
-	CDCprintf("Mounting FAT filesystem... ");
+	UartPrint(STDOUT,"Mounting FAT filesystem... ");
 #endif
 	r = f_mount(0, Fat);
 	if (r != FR_OK) {
 		FError = r;
 #ifdef SD_DEBUG
-		CDCprintln("Failed!");
+		UartPrint(STDOUT,"Failed!\r");
 #endif
 		//free(Fat);
 		return FALSE;
 	}
 #ifdef SD_DEBUG
-	CDCprintln("OK");
+	UartPrint(STDOUT, "OK\r");
 #endif
 
 #ifdef SD_DEBUG
-	CDCprintf("Checking FAT filesystem... ");
+	UartPrint(STDOUT,"Checking FAT filesystem... ");
 #endif
 	const TCHAR * pth = "/";
 	r = chk_mounted(&pth, &Fat, 0);
 	if (r != FR_OK) {
 		FError = r;
 #ifdef SD_DEBUG
-		CDCprintln("Failed!");
-		put_rc(r);
+		UartPrint(STDOUT, "Failed!\r");
+                 //put_rc(r);
 #endif
 		unmount();
 		return FALSE;
 	}
 #ifdef SD_DEBUG
-	CDCprintln("OK");
+	UartPrint(STDOUT, "OK\r");
 #endif
 
 	return TRUE;
@@ -172,15 +181,18 @@ unsigned listDir(const char *path) {
 
 	res = f_opendir(&dir, "/");
 #ifdef SD_DEBUG
-	CDCprintf("f_opendir? ");
-	put_rc(res);
+	UartPrint(STDOUT,"f_opendir? ");
+	//put_rc(res);
 #endif
 	p1 = s1 = s2 = 0;
-	CDCprintln("\nf_readdir('%s'): ", path);
+	//CDCprintln("\nf_readdir('%s'): ", path);
+        print("\rnf_readdir('");
+        print(path);
+        print("'):");
 	for (;;) {
 		res = f_readdir(&dir, &Finfo);
 #ifdef SD_DEBUG
-		put_rc(res);
+//		put_rc(res);
 #endif
 		if ((res != FR_OK) || !Finfo.fname[0]) {
 			break;
@@ -193,18 +205,18 @@ unsigned listDir(const char *path) {
 			p1 += Finfo.fsize;
 		}
 /* what about other outputs ?
-		CDCprintf("%c%c%c%c%c ",
+		UartPrint(STDOUT,"%c%c%c%c%c ",
                 (Finfo.fattrib & AM_DIR) ? 'D' : '-',
 				(Finfo.fattrib & AM_RDO) ? 'R' : '-',
 				(Finfo.fattrib & AM_HID) ? 'H' : '-',
 				(Finfo.fattrib & AM_SYS) ? 'S' : '-',
 				(Finfo.fattrib & AM_ARC) ? 'A' : '-');
-		CDCprintf("%u/%02u/%02u %02u:%02u ",
+		UartPrint(STDOUT,"%u/%02u/%02u %02u:%02u ",
                 (Finfo.fdate >> 9) + 1980,
 				(Finfo.fdate >> 5) & 15, Finfo.fdate & 31, (Finfo.ftime >> 11),
 				(Finfo.ftime >> 5) & 63);
-		CDCprintf(" %9u ", Finfo.fsize);
-		CDCprintln(" %-12s %s", Finfo.fname,
+		UartPrint(STDOUT," %9u ", Finfo.fsize);
+		UartPrint(STDOUT, " %-12s %s", Finfo.fname,
 #if _USE_LFN
 				Lfname);
 #else

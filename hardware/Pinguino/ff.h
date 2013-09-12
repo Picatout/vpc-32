@@ -21,6 +21,7 @@
 extern "C" {
 #endif
 
+#include <GenericTypeDefs.h>
 #include "typedef.h"
 #include "integer.h"	/* Basic integer types */
 #include "ffconf.h"	/* FatFs configuration options */
@@ -129,7 +130,7 @@ typedef struct {
 	DWORD*	cltbl;			/* Pointer to the cluster link map table (null on file open) */
 #endif
 #if _FS_SHARE
-	UINT16	lockid;			/* File lock ID (index of file semaphore table) */
+	UINT	lockid;			/* File lock ID (index of file semaphore table) */
 #endif
 #if !_FS_TINY
 	PF_BYTE	buf[_MAX_SS];	/* File data read/write buffer */
@@ -167,7 +168,7 @@ typedef struct {
 	TCHAR	fname[13];		/* Short file name (8.3 format) */
 #if _USE_LFN
 	TCHAR*	lfname;			/* Pointer to the LFN buffer */
-	UINT16 	lfsize;			/* Size of LFN buffer in TCHAR */
+	UINT 	lfsize;			/* Size of LFN buffer in TCHAR */
 #endif
 } FILINFO;
 
@@ -203,33 +204,33 @@ typedef enum {
 /*--------------------------------------------------------------*/
 /* FatFs module application interface                           */
 
-FRESULT f_mount (PF_BYTE, FATFS*);						/* Mount/Unmount a logical drive */
-FRESULT f_open (FIL*, const TCHAR*, PF_BYTE);			/* Open or create a file */
-FRESULT f_read (FIL*, void*, UINT16, UINT16*);			/* Read data from a file */
-FRESULT f_lseek (FIL*, DWORD);						/* Move file pointer of a file object */
-FRESULT f_close (FIL*);								/* Close an open file object */
-FRESULT f_opendir (DIR*, const TCHAR*);				/* Open an existing directory */
-FRESULT f_readdir (DIR*, FILINFO*);					/* Read a directory item */
-FRESULT f_stat (const TCHAR*, FILINFO*);			/* Get file status */
-FRESULT f_write (FIL*, const void*, UINT16, UINT16*);	/* Write data to a file */
+FRESULT f_mount (PF_BYTE, FATFS*);			/* Mount/Unmount a logical drive */
+FRESULT f_open (FIL*, const TCHAR*, PF_BYTE);		/* Open or create a file */
+FRESULT f_read (FIL*, void*, UINT, UINT*);		/* Read data from a file */
+FRESULT f_lseek (FIL*, DWORD);				/* Move file pointer of a file object */
+FRESULT f_close (FIL*);					/* Close an open file object */
+FRESULT f_opendir (DIR*, const TCHAR*);			/* Open an existing directory */
+FRESULT f_readdir (DIR*, FILINFO*);			/* Read a directory item */
+FRESULT f_stat (const TCHAR*, FILINFO*);		/* Get file status */
+FRESULT f_write (FIL*, const void*, UINT, UINT*);	/* Write data to a file */
 FRESULT f_getfree (const TCHAR*, DWORD*, FATFS**);	/* Get number of free clusters on the drive */
-FRESULT f_truncate (FIL*);							/* Truncate file */
-FRESULT f_sync (FIL*);								/* Flush cached data of a writing file */
-FRESULT f_unlink (const TCHAR*);					/* Delete an existing file or directory */
-FRESULT	f_mkdir (const TCHAR*);						/* Create a new directory */
-FRESULT f_chmod (const TCHAR*, PF_BYTE, PF_BYTE);			/* Change attriburte of the file/dir */
+FRESULT f_truncate (FIL*);				/* Truncate file */
+FRESULT f_sync (FIL*);					/* Flush cached data of a writing file */
+FRESULT f_unlink (const TCHAR*);			/* Delete an existing file or directory */
+FRESULT	f_mkdir (const TCHAR*);				/* Create a new directory */
+FRESULT f_chmod (const TCHAR*, PF_BYTE, PF_BYTE);	/* Change attribute of the file/dir */
 FRESULT f_utime (const TCHAR*, const FILINFO*);		/* Change timestamp of the file/dir */
 FRESULT f_rename (const TCHAR*, const TCHAR*);		/* Rename/Move a file or directory */
-FRESULT f_chdrive (PF_BYTE);							/* Change current drive */
-FRESULT f_chdir (const TCHAR*);						/* Change current directory */
-FRESULT f_getcwd (TCHAR*, UINT16);					/* Get current directory */
-FRESULT f_forward (FIL*, UINT16(*)(const PF_BYTE*,UINT16), UINT16, UINT16*);	/* Forward data to the stream */
-FRESULT f_mkfs (PF_BYTE, PF_BYTE, UINT16);					/* Create a file system on the drive */
-FRESULT	f_fdisk (PF_BYTE, const DWORD[], void*);		/* Divide a physical drive into some partitions */
-int f_putc (TCHAR, FIL*);							/* Put a character to the file */
-int f_puts (const TCHAR*, FIL*);					/* Put a string to the file */
-int f_printf (FIL*, const TCHAR*, ...);				/* Put a formatted string to the file */
-TCHAR* f_gets (TCHAR*, int, FIL*);					/* Get a string from the file */
+FRESULT f_chdrive (PF_BYTE);				/* Change current drive */
+FRESULT f_chdir (const TCHAR*);				/* Change current directory */
+FRESULT f_getcwd (TCHAR*, UINT);			/* Get current directory */
+FRESULT f_forward (FIL*, UINT(*)(const PF_BYTE*,UINT), UINT, UINT*);	/* Forward data to the stream */
+FRESULT f_mkfs (PF_BYTE, PF_BYTE, UINT);		/* Create a file system on the drive */
+FRESULT	f_fdisk (PF_BYTE, const DWORD[], void*);	/* Divide a physical drive into some partitions */
+int f_putc (TCHAR, FIL*);				/* Put a character to the file */
+int f_puts (const TCHAR*, FIL*);			/* Put a string to the file */
+int f_printf (FIL*, const TCHAR*, ...);			/* Put a formatted string to the file */
+TCHAR* f_gets (TCHAR*, int, FIL*);			/* Get a string from the file */
 
 #define f_eof(fp) (((fp)->fptr == (fp)->fsize) ? 1 : 0)
 #define f_error(fp) (((fp)->flag & FA__ERROR) ? 1 : 0)
@@ -253,10 +254,10 @@ DWORD get_fattime (void);
 
 /* Unicode support functions */
 #if _USE_LFN						/* Unicode - OEM code conversion */
-WCHAR ff_convert (WCHAR, UINT16);		/* OEM-Unicode bidirectional conversion */
+WCHAR ff_convert (WCHAR, UINT);		/* OEM-Unicode bidirectional conversion */
 WCHAR ff_wtoupper (WCHAR);			/* Unicode upper-case conversion */
 #if _USE_LFN == 3					/* Memory functions */
-void* ff_memalloc (UINT16);			/* Allocate memory block */
+void* ff_memalloc (UINT);			/* Allocate memory block */
 void ff_memfree (void*);			/* Free memory block */
 #endif
 #endif
@@ -278,17 +279,17 @@ int ff_del_syncobj (_SYNC_t);		/* Delete a sync object */
 
 /* File access control and file status flags (FIL.flag) */
 
-#define	FA_READ				0x01
+#define	FA_READ			0x01
 #define	FA_OPEN_EXISTING	0x00
-#define FA__ERROR			0x80
+#define FA__ERROR		0x80
 
 #if !_FS_READONLY
-#define	FA_WRITE			0x02
+#define	FA_WRITE		0x02
 #define	FA_CREATE_NEW		0x04
 #define	FA_CREATE_ALWAYS	0x08
 #define	FA_OPEN_ALWAYS		0x10
-#define FA__WRITTEN			0x20
-#define FA__DIRTY			0x40
+#define FA__WRITTEN		0x20
+#define FA__DIRTY		0x40
 #endif
 
 

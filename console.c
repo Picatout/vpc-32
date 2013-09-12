@@ -188,7 +188,10 @@ void print_int(int number, unsigned short width){ // imprime entier,width inclus
     char str[14], *d;
     str[13]=0;
     d=&str[12];
-    if (number<0){sign=1;}
+    if (number<0){
+        sign=1;
+        number = -number;
+    }
     for (i=--width;i;i--){
         *d--=(number%10)+'0';
         number /= 10;
@@ -310,7 +313,19 @@ unsigned short get_key(){ // lecture touche clavier, retourne 0 s'il n'y a pas d
 
 unsigned short wait_key(){ // attend qu'une touche soit enfoncée et retourne sa valeur.
     unsigned short key;
-    while (!(key=get_key()));
+    unsigned int t0;
+    t0=ticks()+500;
+    while (!(key=get_key())){
+        if (ticks()==t0){
+            if (flags & CUR_SHOW){
+                show_cursor(FALSE);
+            }else{
+                show_cursor(TRUE);
+            }
+            t0=ticks()+500;
+        }
+    };
+    show_cursor(FALSE);
     return key;
 }//wait_key()
 

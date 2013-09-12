@@ -57,7 +57,7 @@
 #define _read_off() _status_off()
 
 
-#define USE_CORE_TIMER  // metter en commentaire si on n'utilise pas le core timer
+#define USE_CORE_TIMER  // mettre en commentaire si on n'utilise pas le core timer
 
 
 void HardwareInit();

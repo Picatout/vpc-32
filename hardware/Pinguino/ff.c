@@ -1937,11 +1937,11 @@ DWORD sect /* Sector# (lba) to check if it is an FAT boot record or not */
 /* Check if the file system object is valid or not                       */
 /*-----------------------------------------------------------------------*/
 
-static FRESULT chk_mounted( /* FR_OK(0): successful, !=0: any error occurred */
-const TCHAR **path, /* Pointer to pointer to the path name (drive number) */
-FATFS **rfs, /* Pointer to pointer to the found file system object */
-PF_BYTE chk_wp /* !=0: Check media write protection for write access */
-) {
+FRESULT chk_mounted( /* FR_OK(0): successful, !=0: any error occurred */
+                            const TCHAR **path, /* Pointer to pointer to the path name (drive number) */
+                            FATFS **rfs, /* Pointer to pointer to the found file system object */
+                            PF_BYTE chk_wp /* !=0: Check media write protection for write access */
+                            ) {
 	PF_BYTE fmt, b, pi, *tbl;
 	UINT vol;
 	DSTATUS stat;
@@ -2140,8 +2140,8 @@ PF_WORD id /* Member id of the target object to be checked */
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_mount(PF_BYTE vol, /* Logical drive number to be mounted/unmounted */
-FATFS *fs /* Pointer to new file system object (NULL for unmount)*/
-) {
+                FATFS *fs /* Pointer to new file system object (NULL for unmount)*/
+                ) {
 	FATFS *rfs;
 
 	if (vol >= _VOLUMES) {/* Check if the drive number is valid */
@@ -2175,9 +2175,9 @@ FATFS *fs /* Pointer to new file system object (NULL for unmount)*/
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_open(FIL *fp, /* Pointer to the blank file object */
-const TCHAR *path, /* Pointer to the file name */
-PF_BYTE mode /* Access mode and file open mode flags */
-) {
+                const TCHAR *path, /* Pointer to the file name */
+                PF_BYTE mode /* Access mode and file open mode flags */
+                ) {
 	FRESULT res;
 	DIR dj;
 	PF_BYTE *dir;
@@ -2299,10 +2299,10 @@ PF_BYTE mode /* Access mode and file open mode flags */
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_read(FIL *fp, /* Pointer to the file object */
-void *buff, /* Pointer to data buffer */
-UINT btr, /* Number of bytes to read */
-UINT *br /* Pointer to number of bytes read */
-) {
+                void *buff, /* Pointer to data buffer */
+                UINT btr, /* Number of bytes to read */
+                UINT *br /* Pointer to number of bytes read */
+                ) {
 	FRESULT res;
 	DWORD clst, sect, remain;
 	UINT rcnt, cc;
@@ -2402,10 +2402,10 @@ UINT *br /* Pointer to number of bytes read */
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_write(FIL *fp, /* Pointer to the file object */
-const void *buff, /* Pointer to the data to be written */
-UINT btw, /* Number of bytes to write */
-UINT *bw /* Pointer to number of bytes written */
-) {
+                const void *buff, /* Pointer to the data to be written */
+                UINT btw, /* Number of bytes to write */
+                UINT *bw /* Pointer to number of bytes written */
+                ) {
 	FRESULT res;
 	DWORD clst, sect;
 	UINT wcnt, cc;
@@ -2719,8 +2719,8 @@ FRESULT f_getcwd (
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_lseek(FIL *fp, /* Pointer to the file object */
-DWORD ofs /* File pointer from top of file */
-) {
+                DWORD ofs /* File pointer from top of file */
+                ) {
 	FRESULT res;
 
 	res = validate(fp->fs, fp->id); /* Check validity of the object */
@@ -2959,8 +2959,8 @@ FILINFO *fno /* Pointer to file information to return */
 /*-----------------------------------------------------------------------*/
 
 FRESULT f_stat(const TCHAR *path, /* Pointer to the file path */
-FILINFO *fno /* Pointer to file information to return */
-) {
+                FILINFO *fno /* Pointer to file information to return */
+                ) {
 	FRESULT res;
 	DIR dj;
 	DEF_NAMEBUF;

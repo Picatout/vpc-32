@@ -34,6 +34,7 @@
 #include "hardware/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
 #include "console.h"
+#include "hardware/Pinguino/ff.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -99,8 +100,12 @@ void test_pattern(void){
 void main(void) {
     int code;
     short key;
+    unsigned char buff[BLK_SIZE];
+    int i;
+    unsigned int size;
+
     HardwareInit();
-    UartInit(STDIO,9600,DEFAULT_LINE_CTRL);
+    UartInit(STDIO,128000,DEFAULT_LINE_CTRL);
     UartPrint(STDOUT,"initialisation video\r");
     ln_cnt=0;
     video=0;
@@ -128,35 +133,82 @@ void main(void) {
     }
     text_coord_t cpos;
     UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
-    initSD();
+//    initSD();
+//    if (disk_initialize(0)==STA_NOINIT){
+//        UartPrint(STDOUT,"echec\r");
+//    }else{
+//        clear_screen();
+//        disk_read(0,buff,0,1);
+//        for (i=0;i<512;i++){
+//            print_hex(buff[i],2);
+//            if ((i+1)%16==0){
+//                put_char('\r');
+//            }else{
+//                cursor_right();
+//            }
+//        }
+//    }
+//    while (1);
+
     UartPrint(STDOUT,"initialisation carte SD\r");
-    if (disk_initialize(0)==STA_NOINIT){
-        UartPrint(STDOUT,"erreur d'initialisation carte SD\r");
+    if (!mount(0)){
         _status_on();
-    }else{
-        unsigned char buff[BLK_SIZE];
-        int i;
-        UartPrint(STDOUT,"lecture secteur 0 de la carte SD\r");
-        clear_screen();
-        if (disk_read(0,buff,0,1)==RES_OK){
-            for (i=0;i<(486);i++){
-                print_hex(buff[i],2);
-                cpos=get_curpos();
-                if (cpos.x && (cpos.x<CHAR_PER_LINE)){
-                    put_char(32);
-                    cursor_right();
-                }
+        while(1);
+    }
+    FIL *fp;
+    FILINFO *fo;
+    fp=malloc(sizeof(FIL));
+    fo=malloc(sizeof(FILINFO));
+    if (!f_open(fp,"readme.txt",FA_READ)){
+        f_stat("readme.txt",fo);
+        if (!f_read(fp,buff,fo->fsize,(UINT*)&i)){
+            clear_screen();
+            buff[fo->fsize]=0;
+            print("file size: ");
+            print_int(i,10);
+            put_char('\r');
+            print(buff);
+            f_close(fp);
+            if (i==40){
+                f_open(fp,"readme.txt",FA_WRITE);
+                f_lseek(fp,i);
+                f_write(fp,"test ecriture\r",14,(UINT*)&i);
+                f_stat("readme.txt",fo);
+                print("grandeur apres ecriture: ");
+                print_int(fo->fsize,10);
+                f_close(fp);
             }
+            free(fp);
+            free(fo);
         }
     }
+//    UartPrint(STDOUT,"lecture du registre CSD\r");
+//    clear_screen();
+//    size=disk_ioctl(0,GET_SECTOR_SIZE,buff);
+//    print_int(*(unsigned short *)buff,10);
+//    put_char('\r');
+//    size=disk_ioctl(0,GET_SECTOR_COUNT,buff);
+//    print_int(*(int*)buff,10);
+//    put_char('\r');
+//    size=disk_ioctl(0,GET_BLOCK_SIZE,buff);
+//    print_int(*(int*)buff,10);
+//    put_char('\r');
+//    for (i=511;i;i--){
+//        buff[i]=255;
+//    }
+    while (1);
+    
     delay_ms(2000);
     clear_screen();
     UartPrint(STDOUT,"OK\r");
     set_cursor(CR_BLOCK);
     while(1){
-        show_cursor(TRUE);
+        key=UartGetch(STDIN);
+//        if (key>-1){
+//            put_char(key);
+//            cursor_right();
+//        }
         key=wait_key();
-        show_cursor(FALSE);
         if (!(key & FN_BIT)){
             put_char(key);
             cursor_right();

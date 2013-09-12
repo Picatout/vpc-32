@@ -35,7 +35,9 @@ DRESULT disk_ioctl (PF_BYTE, PF_BYTE, void*);
 //void	disk_timerproc (void);
 
 DWORD 	get_fattime(void);
+
 static void put_rc (FRESULT);
+
 
 #define BLK_SIZE 512  // SDC/MMC data block size
 

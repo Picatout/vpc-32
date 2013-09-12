@@ -252,7 +252,7 @@ int writeSECTOR(LBA a, char *p)
 	return (r);      // return TRUE if successful
 } // writeSECTOR
 
-/*
+
 // SD card connector presence detection switch
 // returns  TRUE card present
 //          FALSE card not present
@@ -280,5 +280,5 @@ int getWP(void)
 	return (SDWP);
 #endif
 }
-*/
+
 #endif /* __SDMMC_C__ */

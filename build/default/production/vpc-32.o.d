@@ -10,4 +10,5 @@ hardware/Pinguino/integer.h  \
 hardware/Pinguino/typedef.h  \
  hardware/Pinguino/ffconf.h  \
 console.h  \
-font.h 
+font.h  \
+hardware/Pinguino/ff.h 
