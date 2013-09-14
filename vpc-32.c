@@ -35,6 +35,8 @@
 #include "hardware/Pinguino/diskio.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
+#include "vpForth/opcodes.h"
+#include "vpForth/vpForth.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -72,8 +74,8 @@
 
 
 
-const char *msg2=" test video ntsc ";
-const char *msg1="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
+const char *msg1=" test video ntsc\r";
+const char *msg2="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
 
 
 void test_pattern(void){
@@ -92,8 +94,8 @@ void test_pattern(void){
         video_bmp[i][4]=0xcccccccc;
         video_bmp[i][5]=0xaaaaaaaa;
     }//i
-    print(msg1);
-    print(msg2);
+    print(LOCAL_CON,msg1);
+    print(LOCAL_CON,msg2);
 }//test_pattern()
 
 
@@ -105,83 +107,56 @@ void main(void) {
     unsigned int size;
 
     HardwareInit();
-    UartInit(STDIO,128000,DEFAULT_LINE_CTRL);
-    UartPrint(STDOUT,"initialisation video\r");
+    UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     ln_cnt=0;
     video=0;
     test_pattern();
+    UartPrint(STDOUT,"initialisation video\r");
     VideoInit();
-    UartPrint(STDOUT,"initialisation clavier\r");
+    delay_ms(500);
+    UartPrint(STDOUT,"initialisation clavier: ");
     if (KeyboardInit()){
-        _status_on();
-        SetKbdLeds(F_NUM);
-        delay_ms(300);
-        SetKbdLeds(F_CAPS);
-        delay_ms(300);
-        SetKbdLeds(F_SCROLL);
-        delay_ms(300);
-        SetKbdLeds(0);
-        _status_off();
+        UartPrint(STDOUT,"OK\r");
+        comm_channel=LOCAL_CON;
     }else{
-        UartPrint(STDOUT,"erreur initialisation clavier\r");
-        while (1){
-            _status_on();
-            delay_ms(500);
-            _status_off();
-            delay_ms(500);
-        }
+        UartPrint(STDOUT,"erreur clavier\r");
+        UartPrint(STDOUT,"Utilisation du lien sériel.\r");
+        comm_channel=SERIAL_CON;
     }
     text_coord_t cpos;
-    UartPrint(STDOUT,"initialisation SPI2 (carte SD)\r");
-//    initSD();
-//    if (disk_initialize(0)==STA_NOINIT){
-//        UartPrint(STDOUT,"echec\r");
-//    }else{
-//        clear_screen();
-//        disk_read(0,buff,0,1);
-//        for (i=0;i<512;i++){
-//            print_hex(buff[i],2);
-//            if ((i+1)%16==0){
-//                put_char('\r');
-//            }else{
-//                cursor_right();
+    UartPrint(STDOUT,"initialisation peripherique carte SD.\r");
+    UartPrint(STDOUT,"initialisation carte SD: ");
+    if (!mount(0)){
+        UartPrint(STDOUT,"Echec\r");
+    }
+    UartPrint(STDOUT, "OK\r");
+//    FIL *fp;
+//    FILINFO *fo;
+//    fp=malloc(sizeof(FIL));
+//    fo=malloc(sizeof(FILINFO));
+//    if (!f_open(fp,"readme.txt",FA_READ)){
+//        f_stat("readme.txt",fo);
+//        if (!f_read(fp,buff,fo->fsize,(UINT*)&i)){
+//            clear_screen();
+//            buff[fo->fsize]=0;
+//            print("file size: ");
+//            print_int(i,10);
+//            put_char('\r');
+//            print(buff);
+//            f_close(fp);
+//            if (i==40){
+//                f_open(fp,"readme.txt",FA_WRITE);
+//                f_lseek(fp,i);
+//                f_write(fp,"test ecriture\r",14,(UINT*)&i);
+//                f_stat("readme.txt",fo);
+//                print("grandeur apres ecriture: ");
+//                print_int(fo->fsize,10);
+//                f_close(fp);
 //            }
+//            free(fp);
+//            free(fo);
 //        }
 //    }
-//    while (1);
-
-    UartPrint(STDOUT,"initialisation carte SD\r");
-    if (!mount(0)){
-        _status_on();
-        while(1);
-    }
-    FIL *fp;
-    FILINFO *fo;
-    fp=malloc(sizeof(FIL));
-    fo=malloc(sizeof(FILINFO));
-    if (!f_open(fp,"readme.txt",FA_READ)){
-        f_stat("readme.txt",fo);
-        if (!f_read(fp,buff,fo->fsize,(UINT*)&i)){
-            clear_screen();
-            buff[fo->fsize]=0;
-            print("file size: ");
-            print_int(i,10);
-            put_char('\r');
-            print(buff);
-            f_close(fp);
-            if (i==40){
-                f_open(fp,"readme.txt",FA_WRITE);
-                f_lseek(fp,i);
-                f_write(fp,"test ecriture\r",14,(UINT*)&i);
-                f_stat("readme.txt",fo);
-                print("grandeur apres ecriture: ");
-                print_int(fo->fsize,10);
-                f_close(fp);
-            }
-            free(fp);
-            free(fo);
-        }
-    }
 //    UartPrint(STDOUT,"lecture du registre CSD\r");
 //    clear_screen();
 //    size=disk_ioctl(0,GET_SECTOR_SIZE,buff);
@@ -196,23 +171,15 @@ void main(void) {
 //    for (i=511;i;i--){
 //        buff[i]=255;
 //    }
-    while (1);
-    
-    delay_ms(2000);
-    clear_screen();
-    UartPrint(STDOUT,"OK\r");
+//    while (1);
+//    delay_ms(2000);
+    tone(400,1000);
+    UartPrint(STDOUT,"initialisation completee.\r");
     set_cursor(CR_BLOCK);
+    clear_screen();
     while(1){
-        key=UartGetch(STDIN);
-//        if (key>-1){
-//            put_char(key);
-//            cursor_right();
-//        }
-        key=wait_key();
-        if (!(key & FN_BIT)){
-            put_char(key);
-            cursor_right();
-        }
+        vpForth();
     } // while(1)
-}
+} // main()
+
 

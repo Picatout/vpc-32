@@ -11,4 +11,7 @@ hardware/Pinguino/typedef.h  \
  hardware/Pinguino/ffconf.h  \
 console.h  \
 font.h  \
-hardware/Pinguino/ff.h 
+hardware/Pinguino/ff.h  \
+ vpForth/opcodes.h  \
+vpForth/vpForth.h  \
+vpForth/opcodes.h 

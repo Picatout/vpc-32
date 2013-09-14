@@ -24,6 +24,7 @@
  */
 
 #include "console.h"
+#include "hardware/HardwareProfile.h"
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 
@@ -39,6 +40,8 @@ static unsigned short cx=X_OFS, cy=Y_OFS;  // coordonnée courante du curseur tex
 static unsigned char tab_width=TAB_WIDTH;
 static cursor_t cur_shape=CR_UNDER;
 static unsigned short flags=0;
+
+unsigned char comm_channel=LOCAL_CON;
 
 
 void scroll_up(void){
@@ -110,48 +113,56 @@ void crlf(void){
     }
 }//crlf()
 
-void put_char(char c){
+void put_char(dev_t channel, char c){
     register int i,l,r,b,x,y;
     x=cx;
     y=cy;
-    switch (c){
-        case CR:
-            crlf();
-            break;
-        case TAB:
-            cx += (cx%tab_width);
-            if (cx>=(X_OFS+CHAR_PER_LINE*CWIDTH)){
-                cx = X_OFS;
-                if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
-                    scroll_up();
-                }else{
-                    cy += CHEIGHT;
+    if (channel==LOCAL_CON){
+        switch (c){
+            case CR:
+                crlf();
+                break;
+            case TAB:
+                cx += (cx%tab_width);
+                if (cx>=(X_OFS+CHAR_PER_LINE*CWIDTH)){
+                    cx = X_OFS;
+                    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
+                        scroll_up();
+                    }else{
+                        cy += CHEIGHT;
+                    }
                 }
-            }
-            break;
-        default:
-            if ((c<32) || (c>(FONT_SIZE+32))) break;
-            c -=32;
-            b=x>>5;
-            r=0;
-            l=27-(x&0x1f);
-            if (l<0){
-                r=-l;
-            }
-            for (i=0;i<7;i++){
-                if (r){
-                    video_bmp[y][b] &= ~(0x1f>>r);
-                    video_bmp[y][b] |= font5x7[c][i]>>r;
-                    video_bmp[y][b+1] &= ~(0x1f<<32-r);
-                    video_bmp[y][b+1] |= font5x7[c][i]<<(32-r);
-                    y++;
-                } else{
-                    video_bmp[y][b] &= ~(0x1f<<l);
-                    video_bmp[y++][b] |= font5x7[c][i]<<l;
+                break;
+            case '\b':
+                cursor_left();
+                break;
+            default:
+                if ((c<32) || (c>(FONT_SIZE+32))) break;
+                c -=32;
+                b=x>>5;
+                r=0;
+                l=27-(x&0x1f);
+                if (l<0){
+                    r=-l;
                 }
-            }
-    }//switch(c)
-}//put)char()
+                for (i=0;i<7;i++){
+                    if (r){
+                        video_bmp[y][b] &= ~(0x1f>>r);
+                        video_bmp[y][b] |= font5x7[c][i]>>r;
+                        video_bmp[y][b+1] &= ~(0x1f<<32-r);
+                        video_bmp[y][b+1] |= font5x7[c][i]<<(32-r);
+                        y++;
+                    } else{
+                        video_bmp[y][b] &= ~(0x1f<<l);
+                        video_bmp[y++][b] |= font5x7[c][i]<<l;
+                    }
+                }
+                cursor_right();
+        }//switch(c)
+    }else{
+        UartPutch(channel,c);
+    }
+}//put_char()
 
 void clear_screen(){
     memset(video_bmp,0,HRES/8*VRES);
@@ -159,19 +170,22 @@ void clear_screen(){
     cy=Y_OFS;
 } // clear_screen()
 
-void print(const char *text){
-    while (*text){
-        put_char(*text++);
-        cursor_right();
+void print(dev_t channel, const char *text){
+    if (channel==LOCAL_CON){
+        while (*text){
+            put_char(channel, *text++);
+        }
+    }else{
+        UartPrint(channel,text);
     }
 }// print()
 
-void print_hex(unsigned int hex, unsigned char width){
+void print_hex(dev_t channel, unsigned int hex, unsigned char width){
     char c[12], *d;
     int i;
     c[11]=0;
     d= &c[10];
-    for(i=width;i;i--){
+    for(i=width;i>=0||hex;i--){
         *d=(hex%16);
         if (*d<10)
             *d += '0';
@@ -180,10 +194,10 @@ void print_hex(unsigned int hex, unsigned char width){
         hex /=16;
         d--;
     }
-    print(++d);
+    print(channel, ++d);
 } // print_hex()
 
-void print_int(int number, unsigned short width){ // imprime entier,width inclus le signe
+void print_int(dev_t channel, int number, unsigned short width){ // imprime entier,width inclus le signe
     int sign=0, i;
     char str[14], *d;
     str[13]=0;
@@ -192,12 +206,12 @@ void print_int(int number, unsigned short width){ // imprime entier,width inclus
         sign=1;
         number = -number;
     }
-    for (i=--width;i;i--){
+    for (i=--width;i>=0||number;i--){
         *d--=(number%10)+'0';
         number /= 10;
     }
-    if (sign){*d='-';}else{*d=' ';}
-    print(d);
+    if (sign){*d='-';}else{*d='+';}
+    print(channel, d);
 }// print_decimal()
 
 void set_tab_width(unsigned char width){
@@ -209,10 +223,10 @@ void clear_eol(void){
     x=cx;
     y=cy;
     while (cx<(X_OFS+CWIDTH*(CHAR_PER_LINE-1))){
-        put_char(32);
+        put_char(LOCAL_CON, 32);
         cursor_right();
     }
-    put_char(32);
+    put_char(LOCAL_CON, 32);
     cx=x;
     cy=y;
 }// clear_eol()
@@ -302,31 +316,66 @@ void set_cursor(cursor_t shape){
     }
 }// set_cursor()
 
-unsigned short get_key(){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
+unsigned short get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
     unsigned short code;
-    code=  KbdScancode();
-    if (!(code & FN_BIT)){
-        code = KbdKey(code);
+    if (channel==LOCAL_CON){
+        code=  KbdScancode();
+        if (!(code & FN_BIT)){
+            code = KbdKey(code);
+        }
+    }else{
+        code=UartGetch(STDIN);
+        if (code==-1){
+            code=0;
+        }
     }
     return code;
 }//get_key()
 
-unsigned short wait_key(){ // attend qu'une touche soit enfoncée et retourne sa valeur.
+unsigned short wait_key(dev_t channel){ // attend qu'une touche soit enfoncée et retourne sa valeur.
     unsigned short key;
     unsigned int t0;
     t0=ticks()+500;
-    while (!(key=get_key())){
-        if (ticks()==t0){
-            if (flags & CUR_SHOW){
-                show_cursor(FALSE);
-            }else{
-                show_cursor(TRUE);
+    if (channel==LOCAL_CON){
+        while (!(key=get_key(channel))){
+            if (ticks()==t0){
+                if (flags & CUR_SHOW){
+                    show_cursor(FALSE);
+                }else{
+                    show_cursor(TRUE);
+                }
+                t0=ticks()+500;
             }
-            t0=ticks()+500;
-        }
-    };
-    show_cursor(FALSE);
+        };
+        show_cursor(FALSE);
+    }else{
+        key=UartWaitch(STDIN,0);
+    }
     return key;
 }//wait_key()
 
-
+unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char){ // lit une ligne au clavier, retourne la longueur de texte.
+    unsigned char c=0, count=0;
+    if (channel==LOCAL_CON){
+        while ((c!='\r') && (count<=max_char)){
+            c=wait_key(channel);
+            if (c==CR){
+                break;
+            }else if (c==BS){
+                ibuff--;
+                count--;
+                print(channel,"\b \b");
+            }else if ((c & FN_BIT)==0){
+                *ibuff++=c;
+                count++;
+                put_char(channel, c);
+            }
+        }// while
+        if (count){
+            *ibuff=(char)0;
+        }
+    }else{
+        count=UartReadln(STDIN,ibuff,max_char);
+    }
+    return count;
+} // readline()

@@ -27,6 +27,7 @@
 
 #include "HardwareProfile.h"
 #include <plib.h>
+#include "../sound.h"
 
 volatile unsigned int  sys_tick; // compteur pour les milli-secondes
 
@@ -67,6 +68,7 @@ void HardwareInit(){
    PPSOutput(2,RPB5,OC2); // 5=OC2  sur PB5 sortie synchronistaiton ntsc
    PPSOutput(1,RPB4,OC1);  // 5=OC1 impulsion déclenchant SPI , Fsync vidéo
    PPSOutput(3,RPB6,SDO1); // 3=SDO1 sortie SPI1 (vidéo)
+   PPSOutput(4,RPB9,OC3); // OC3 sortie audio.
    PPSInput(1,SS1,RPB7); // entrée Fsync sur RPB7
    PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD
    PPSOutput(2,RPB8,SDO2); // sortie commande carte SD
@@ -85,7 +87,7 @@ void delay_ms(unsigned int msec){
 #ifdef USE_CORE_TIMER
     unsigned int t0;
     t0=sys_tick+msec;
-    while (sys_tick<t0);
+    while (sys_tick!=t0);
 #else
     while (msec--)
         delay_us(1000);
@@ -99,6 +101,10 @@ void delay_ms(unsigned int msec){
        __asm__("mfc0 $v0, $11");
        __asm__("addiu $v0,$v0,%0"::"I"(CORE_TICK_RATE));
        __asm__("mtc0 $v0, $11");
+       if (tone_on && !(--duration)){
+               mTone_off();
+               tone_on=0;
+       }
        mCTClearIntFlag();
    };
 #endif

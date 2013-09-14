@@ -35,7 +35,11 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define FREE_RAM 16384
+#define FREE_RAM 8192
+
+#define LOCAL_CON 0  // console vidéo locale
+#define SERIAL_CON STDIO // console rs-232
+
 
 #define TX BIT_10 // UART2 TX sur PB10
 #define RX BIT_11 // UART2 RX sur PB11
@@ -60,9 +64,13 @@
 #define USE_CORE_TIMER  // mettre en commentaire si on n'utilise pas le core timer
 
 
+
 void HardwareInit();
 #ifdef USE_CORE_TIMER
 unsigned int ticks(void);
+
+
+
 #endif
 void delay_us(unsigned int usec);
 void delay_ms(unsigned int msec);

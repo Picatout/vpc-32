@@ -34,12 +34,15 @@ extern "C" {
 #include <GenericTypeDefs.h>
 #include "font.h"
 #include "hardware/ntsc.h"
-
+#include "hardware/HardwareProfile.h"
+    
 #define LINE_PER_SCREEN 28
 #define CHEIGHT (CHAR_HEIGHT+1) // espace vertical occupé par un caractère + interligne
 #define CWIDTH (CHAR_WIDTH+1) // espace horizontal occupé par un caractère + inter-char
 #define CHAR_PER_LINE ((int)(HRES/CWIDTH))
 #define TAB_WIDTH 4
+
+typedef  char dev_t;
 
     typedef struct{
         unsigned short x;
@@ -47,7 +50,9 @@ extern "C" {
     } text_coord_t;
     
     typedef enum _CURSOR_SHAPE {CR_UNDER=0,CR_BLOCK} cursor_t;
-    
+
+extern unsigned char comm_channel;
+
 // fonctions de l'interface
     void clear_screen(void); // efface l'écran et positionne le curseur à {0,0}
     void clear_eol(void); // efface la fin de la ligne à partir du curseur.
@@ -55,10 +60,10 @@ extern "C" {
     void scroll_down(void); // fait glissé le texte une ligne vers le bas.
     text_coord_t get_curpos(); // retourne position curseur texte.
     void set_curpos(unsigned short x, unsigned short y); // positionne le curseur
-    void put_char(char c); //affiche le caractère à la position courante
-    void print(const char *str); // imprime un chaîne à la position courante
-    void print_hex(unsigned int i, unsigned char width); // imprime un nombre hexadécimal à la position courante
-    void print_int(int number, unsigned short width); // imprime un entier à la position courante.
+    void put_char(dev_t channel, char c); //affiche le caractère à la position courante
+    void print(dev_t channel, const char *str); // imprime un chaîne à la position courante
+    void print_hex(dev_t channel, unsigned int i, unsigned char width); // imprime un nombre hexadécimal à la position courante
+    void print_int(dev_t channel, int number, unsigned short width); // imprime un entier à la position courante.
     void cursor_right(void); // avance le curseur, retour à la ligne si nécessaire.
     void cursor_left(void); // recule le curseur d'une position, va à la fin de la ligne précédente si nécessaire.
     void cursor_down(void); // descend le curseur à la ligne suivante, scroll_up() si nécessaire
@@ -68,8 +73,10 @@ extern "C" {
     void show_cursor(BOOL); // affiche ou masque le curseur texte
     void set_cursor(cursor_t shape); // défini la  forme du curseur
     void crlf(void); // déplace le curseur à la ligne suivante
-    unsigned short get_key(); // lecture touches clavier
-    unsigned short wait_key(); // attend qu'une touche soit enfoncée.
+    unsigned short get_key(dev_t channel); // lecture touches clavier
+    unsigned short wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
+    unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char); // lit une ligne au clavier, retourne la longueur de texte.
+
 #ifdef	__cplusplus
 }
 #endif
