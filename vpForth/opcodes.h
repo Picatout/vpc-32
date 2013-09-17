@@ -106,28 +106,6 @@
 #define TOK_COUNT (LASTOP+1)
 #define IBADOP -TOK_COUNT
 
-#define RAM_SEG  0xA000
-#define CODE_SEG 0x9D00
-#define SFR_SEG  0xBF88
-
-
-/* constantes */
-#define FLASH_SIZE 2048
-#define CELL_SIZE 4
-
-/* utilisation des regitres MIPS */
-#define ip s0  /* pointeur d'instruction VM */
-#define dp s1  /* pointeur pile de données */
-#define rp s2  /* pointeur pile de contrôle */
-#define ptr s3 /* pointeur de travail */
-
-#define _dpush  addiu dp,dp,CELL_SIZE
-#define _dpop   addiu dp,dp,-CELL_SIZE
-#define _rpush  addiu rp,rp,CELL_SIZE
-#define _rpop   addiu rp,rp,-CELL_SIZE
-#define _tos    0(dp)
-#define _next    addiu ip,ip,1
-#define _bytecode 0(ip)
 
 
 

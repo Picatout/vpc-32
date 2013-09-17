@@ -42,6 +42,143 @@ RAM_SEG=0xA000
 CODE_SEG=0x9D00
 SFR_SEG=0xBF88
 */
+/*
+#define RAM_SEG  0xA000
+#define CODE_SEG 0x9D00
+#define SFR_SEG  0xBF88
+*/
+
+/* constantes */
+FLASH_SIZE=2048
+CELL_SIZE=4
+
+RAM_SEG=0xA000
+CODE_SEG=0x9D00
+SFR_SEG=0xBF88
+
+
+/* utilisation des regitres MIPS */
+ip=s0  /* pointeur d'instruction VM */
+dp=s1  /* pointeur pile de données */
+rp=s2  /* pointeur pile de contrôle */
+wp=s3 /* pointeur de travail */
+topd=s4 /* sommet de la pile des arguments */
+topr=s5 /* sommet de la pile de contrôle */
+
+ # NOTE: les pointeurs de piles sont incrémentés avant l''empilement.
+ #       et décrémenté après le dépilement.
+
+    .macro _dpush  R   # empile le contenu de R
+     addiu dp,dp, (CELL_SIZE)
+     sw topd, 0(dp)
+     addu topd,zero, \R
+    .endm
+
+    .macro _dpop  R=$0
+    addu \R,zero, topd
+    lw topd, 0(dp)
+    addiu dp,dp,-(CELL_SIZE)
+    .endm
+
+    .macro _fetch_t R  # copie le contenu de topd dans R
+    addu \R, topd, zero
+    .endm
+
+    .macro _store_t R  # met le contenu du registre R dans topd
+    addu topd, \R, zero
+    .endm
+
+
+
+    .macro _fetch_n R, N  # copie le Nième élément de la pile dans R
+    lw \R, -(\N-1)*4(dp)
+    .endm
+
+    .macro _store_n R, N  # copie R, N en N ième position de la pile
+    sw \R, -(\N-1)*4(dp)
+    .endm
+
+
+    .macro _rpush   R   # empile R sur pile des retours
+    addiu rp,rp,(CELL_SIZE)
+    sw topr, 0(rp)
+    addu topr, zero, \R
+    .endm
+
+    .macro _rpop  R  # dépile topr dans R
+    addu \R, topr, zero
+    lw topr, 0(rp)
+    addiu rp,rp,-(CELL_SIZE)
+    .endm
+
+    .macro _fetch_r  R   # copie topr dans R
+    addu \R, topr,zero
+    .endm
+
+    .macro _store_r R    # copie R dans topr
+    addu topr, \R, zero
+    .endm
+
+    .macro _next        # next bytecode
+    addiu ip,ip,1
+    .endm
+
+    .macro ld_bytecode R
+    lb \R, 0(ip)
+    andi \R, \R, 0xff
+    .endm
+
+
+    .macro _to_r    # >R
+    _dpop t7
+    _rpush t7
+    .endm
+
+    .macro _from_r  # R>
+    _rpop t7
+    _dpush t7
+    .endm
+
+
+    .macro _getch channel  # channel et un pointeur sur le device id.
+    la a0, \channel
+    jal get_key
+    lb a0, 0(a0)
+    .endm
+
+    .macro _putch channel   # transmet le caractère qui est dans topd
+    la a0, \channel
+    lb a0, 0(a0)
+    _dpop a1
+    jal put_char
+    nop
+    .endm
+
+    .macro ld_var R V  # charge le registre R avec le contenu du pointeur V
+    la \R, \V
+    lw \R, 0(\R)
+    .endm
+
+    DPRINT=1
+
+    .macro _dbg_print N
+    .if DPRINT
+    jal dbg_print
+    li a0, \N
+    .endif
+    .endm
+
+    .macro _fn_enter N
+    addiu sp, sp, -(\N)
+    sw ra, (\N-4)(sp)
+    .endm
+    
+    .macro _fn_exit N
+    lw ra, (\N-4)(sp)
+    j ra
+    addiu sp,sp, \N
+    .endm
+
 
 STDIO=1
 
@@ -58,182 +195,188 @@ SFR_INV=12
 base: .word 10
 
 .section .bss
-dstack: .space DSTACK_SIZE
+dempty:  .space 1    # pile vide
+dstack:  .space DSTACK_SIZE
+rempty:  .space 1    # pile vide
 rstack: .space RSTACK_SIZE
-zsp: .word   0   # pile données position vide
-zrp: .word   0   # pile retour position vide
+zsp: .word   dempty   # pile données position vide
+zrp: .word   rempty   # pile retour position vide
 here: .word  0
 
 .text
 .set noreorder
+.set macro
 .global StackVM,  flash_code
 # .global tokens
 .ent StackVM
 
 
 StackVM:
-    addiu sp, sp, -16
-    sw  ra, 12(sp)
-    sw  s0, 8(sp)
-    sw  s1, 4(sp)
-    sw  s2, 0(sp)
-    addu ip, zero, a0
-    lui dp, RAM_SEG
-    ori dp, dp, dstack
-    _dpop   # pile vide pointeur sous le premier élément
-    lui rp, RAM_SEG
-    ori rp, rp, rstack
-    _rpop
-    lui ptr, RAM_SEG
-    ori ptr,ptr, zsp
-    sw dp, 0(ptr)    // valeur de sp lorsque pile données vide.
-    sw rp, 4(ptr)    // valeur de rp lorsque pile retour vide.
+    _fn_enter 32
+    sw  s0, 24(sp)
+    sw  s1, 20(sp)
+    sw  s2, 16(sp)
+    sw  s3, 12(sp)
+    sw  s4, 8(sp)
+    sw  s5, 4(sp)
+    addu ip, zero, a0  #buffer code passé en paramètre
+    la dp, dempty
+    la rp, rempty
+    la wp, zsp
+    sw dp, 0(wp)    // valeur de sp lorsque pile données vide.
+    sw rp, 4(wp)    // valeur de rp lorsque pile retour vide.
+
 vm:
-    lb   t0, _bytecode
+    ld_bytecode t0
     _next
     addiu t1,t0, IBADOP
     bgtz  t1, badop
     sll   t0, t0, 2   
-    lui   t1, CODE_SEG
-    addiu  t0,t0,opcodes_vectors
-    or    t1,t1,t0
+    la t1, opcodes_vectors
+    addu  t1,t1,t0
     lw  t1, 0(t1)
-    j     t1
+    j   t1
     nop
 end:   # 'bye' ( -- ) sortie de la machine virtuelle
     xor v0, zero,zero
     b exit
     nop
+
 qrx: # '?key' ( -- ch -1 | 0 )
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0,0(ptr)
-    jal get_key
+    _getch comm_channel
+    _dpush v0
+    beq v0, zero, vm
     nop
-    _dpush
-    bltz v0, qrx_exit
-    addiu t0,v0,1
-    sw v0,_tos
     addiu t0,zero,-1
-    _dpush
-qrx_exit:
+    _dpush t0
     b vm
-    sw t0,_tos
+    nop
+
 dot:  # '.'  ( n --  ) imprime entier n
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0,0(ptr)
-    lw a1, _tos
-    _dpop
+    la wp, comm_channel
+    lb a0, 0(wp)
+    li a1, 32
+    jal put_char
+    nop
+    lb a0,0(wp)
+    _dpop a1
     jal print_int
-    ori a2,zero,1
+    addiu a2,zero,1
     b vm
     nop
+
 emit:   # 'emit' ( ch -- ) transmet charactère au terminal
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0,0(ptr)
-    lw  a1,_tos
-    _dpop
-    jal put_char
-    andi a1,a1, 255
+    _putch comm_channel
     b vm
     nop
+
 iemit:  # 'iemit' ( n -- ) transmet n comme 4 octet ordonné en little indian
-    lw t0, _tos
-    _dpop
-    ori t1,zero,4
+    _fetch_t a1
+    li t0, 4
+    _dpush t0
 1:
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0,0(ptr)
+    la a0, comm_channel
     jal put_char
-    andi a1, t0, 255
-    addiu t1,-1
-    beqz t1, vm
-    srl t0,t0,8
+    lw a0,0(a0)
+    addiu topd,-1
+    beqz topd, 2f
+    _dpop
+    _fetch_n a1, 1
+    srl a1,a1,8
+    _store_n a1, 1
     b 1b
     nop
+2:
+    _dpop
+    b vm
+    nop
+
 lit:    # 'lit' ( -- n) empile un entier
     jal fetch_int
-    _dpush
+    nop
+    _dpush v0
     b vm
-    sw  v0, _tos
+    nop
+
 clit:       # 'clit' ( -- byte ) empile un octet signe étendu sur 32 bits
-    lb t0,_bytecode
+    ld_bytecode t0
     _next
-    _dpush
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 wlit:       # 'wlit' ( -- w16  ) empile un mot de 16 bits
-    lbu t0,_bytecode
+    lbu t0, 0(ip)
     _next
-    lb t1, _bytecode
+    ld_bytecode t1
     _next
     sll  t1,t1, 8
     or  t0,t0,t1
-    _dpush
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 fcall:   # 'fcall' (R: -- addr_ret ) appelle sous-routine VM en mémoire flash
     lui t2, CODE_SEG
-    lbu t0, _bytecode
+    lbu t0, 0(ip)
 fcall_1:
     _next
-    lbu t1, _bytecode
+    lbu t1, 0(ip)
     _next
     sll t1,t1,8
     or t0,t0,t1
     or t0,t0,t2
-    _rpush
-    sw ip,0(rp)
+    _rpush ip
     b vm
     move ip, t0
+
 rcall:  # 'rcall' (R: -- addr_ret ) appelle sous-routine VM en mémoire RAM
     lui t2, RAM_SEG
+    lbu t0, 0(ip)
     b fcall_1
-    lbu t0, _bytecode
-ret:        # ';' (R: addr_ret -- ) sortie de sous-routine
-    lui t1, RAM_SEG # vérifie si la pile est vide, si c''est le cas exit.
-    ori t1,t1,zrp
-    lw t1, 0(t1)
-    lw t0, 0(rp)
-    move ip, t0
-    bne t1,t0, vm
-    _rpop
-    b exit
     nop
+
+ret:        # ';' (R: addr_ret -- ) sortie de sous-routine
+    la t1, zrp    # vérifie si la pile est vide, si c''est le cas exit.
+    lw t1, 0(t1)
+    beq t1,rp, exit # erreur accès pile retour vide
+    nop
+    _rpop ip
+    b vm
+    nop
+
 bra:        # 'branch' ( -- ) branchement incondionnnel (adresse relative +127,-128)
-    lb t0, _bytecode
+    ld_bytecode t0
     _next
     b vm
     addu ip, ip, t0   # branchement relative intervale -128 à +127
-qbra:       # '?bra' ( t|f -- ) branche si sommet pile est vrai (tos!=0)
-    lw t0, _tos
-    _dpop
+
+qbra:       # '?bra' ( t|f -- ) branche si sommet pile est vrai (topd!=0)
+    _dpop t0
     beqz t0, vm
     _next
     lb t0, -1(ip)
     b vm
     addu ip,ip,t0
-qbraz:      # '?braz' ( t|f -- ) branche si somme pile est faux (tos==0)
-    lw t0, _tos
-    _dpop
+
+qbraz:      # '?braz' ( t|f -- ) branche si sommet pile est faux (topd==0)
+    _dpop t0
     bne t0, zero, vm
     _next
     lb t0, -1(ip)
     b vm
     addu ip,ip,t0
+
 exec:       # 'exec' ( addr -- ) appelle sous-routine à partir de la pile
-    _rpush
-    sw  ip, 0(rp)
-    lw  ip, _tos
+    _rpush ip
+    _dpop ip
     b vm
-    _dpop
+    nop
+
 store:      # '!' ( n addr -- )  variable = n
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
-    sb t1, 0(t0)   # l'adresse n'est pas forcément alignée donc on y va octet par octet
+    _dpop t0
+    _dpop t1
+    sb t1, 0(t0)   # l''adresse n''est pas forcément alignée donc on y va octet par octet
     srl t1,t1,8
     sb t1,1(t0)
     srl t1,t1,8
@@ -241,10 +384,11 @@ store:      # '!' ( n addr -- )  variable = n
     srl t1,t1,8
     sb t1,3(t0)
     b vm
-    addiu dp,dp,-8
-fetch:      # '@' ( addr -- n ) tos = variable
-    lw t0, _tos
-    lbu t1, 0(t0)   # l'adresse n'est pas forcément alignée donc on y va octet par octet
+    nop
+
+fetch:      # '@' ( addr -- n ) topd = variable
+    _fetch_t t0
+    lbu t1, 0(t0)   # l''adresse n''est pas forcément alignée donc on y va octet par octet
     lbu t2, 1(t0)
     sll t2,t2,8
     or t1,t1,t2
@@ -255,450 +399,420 @@ fetch:      # '@' ( addr -- n ) tos = variable
     sll t2, 24
     or t0,t1,t2
     b vm
-    sw t0, _tos
+    _store_t t0
+
 cstore:     # 'c!' ( char addr --  ) variable = char
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
+    _dpop t0
+    _dpop t1
     sb t1, 0(t0)
     b vm
-    addiu dp,dp,-8
-cfetch:     # 'c@' ( addr -- char )  tos= char
-    lw t0, _tos
+    nop
+
+cfetch:     # 'c@' ( addr -- char )  topd= char
+    addu t0, topd, zero
     lb t0, 0(t0)
     b vm
-    sw t0, _tos
-rpfetch:    # 'rp@' ( -- rp ) tos = rp
-    _dpush
+    addu topd, t0, zero
+
+rpfetch:    # 'rp@' ( -- rp ) topd = rp
+    _dpush rp
     b vm
-    sw  rp, _tos
-rpstore:    # 'rp!' ( rp -- ) rp = tos
-    lw rp, _tos
+    nop
+
+rpstore:    # 'rp!' ( rp -- ) rp = topd
+    _dpop rp
     b vm
-    _dpop
+    nop
+
 rfetch:     # 'r@' ( -- n ) (R: n -- n )
-    _dpush
-    lw t0, 0(rp)
+    _fetch_r t0
+    _dpush t0
     b vm
-    sw t0, _tos
-tor:        # '>r' ( n -- ) (R: -- n )
-    lw t0, _tos
-    _rpush
-    sw t0, 0(rp)
+    nop
+
+tor:        # >r ( n -- ) (R: -- n )
+    _dpop t0
+    _rpush t0
     b vm
-    _dpop
+    nop
+
 rfrom:      # 'r>' ( -- n ) (R: n -- )
-    _dpush
-    lw t0, 0(rp)
-    sw t0, _tos
+    _rpop t0
+    _dpush t0
     b vm
-    _rpop
-spfetch:    #  'sp@' ( -- sp )
+    nop
+
+spfetch:    #  'sp@' ( -- dp )
     move t0, dp
-    _dpush
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 spstore:    # 'sp!' ( n -- )
     b vm
-    lw dp, _tos
+    move dp, topd
+
 zerosp:     # 'zsp' ( -- n) position du bas de la pile données
-    lui ptr, RAM_SEG
-    ori ptr,ptr,zsp
-    lw t0, 0(ptr)
-    _dpush
+    la t0, zsp
+    lw t0, 0(t0)
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 zerorp:     # 'zrp' ( -- n ) position du base de la pile retours
-    lui ptr, RAM_SEG
-    ori ptr,ptr,zrp
-    lw t0, 0(ptr)
-    _dpush
+    la t0, zrp
+    lw t0, 0(t0)
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 ipfetch:        # 'ip@' ( -- ip ) empile la valeur courante du pointeur d''instructions
-    _dpush
+    _dpush ip
     b vm
-    sw ip, _tos
+    nop
+
 ipstore:        # 'ip!' ( ip -- ) initialise le pointeur d''insturctions
-    lw t0, _tos
-    _dpop
+    _dpop t0
     b vm
     move ip, t0
+
 herefetch:  # 'here'  ( -- addr ) adresse de la variable here
-    lui ptr, RAM_SEG
-    ori ptr, ptr, here
-    lw t0, 0(ptr)
-    _dpush
+    la t0, here
+    lw t0, 0(t0)
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 basefetch: # 'base' ( -- addr ) adresse de la variable here
-    lui ptr, RAM_SEG
-    ori ptr, ptr, base
-    lw t0, 0(ptr)
-    _dpush
+    la t0, base
+    lw t0, 0(t0)
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 drop:       # 'drop' ( n -- )
+    _dpop t0
     b vm
-    _dpop
+    nop
+
 ddrop:      # '2drop' ( n1 n2 -- )
+    lw topd, -4(dp)
     b vm
     addiu dp,dp,-8
+
 dup:        # 'dup' ( n -- n n )
-    lw t0, _tos
-    _dpush
+    move t0, topd
+    _dpush t0
     b vm
-    sw t0, _tos
-ddup:
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
-    addiu dp,dp,8
-    sw t1, -CELL_SIZE(dp)
+    nop
+
+ddup:       # '2dup' ( n1 n2 -- n1 n2 n1 n2 )
+    _fetch_t t0
+    _fetch_n t1, 2
+    _dpush t1
+    _dpush t0
     b vm
-    sw t0, _tos
+    nop
+
 qdup:       # ?dup ( n -- n n | n ) duplique n si n!=0
-    lw t0, _tos
-    beqz t0, vm
+    beqz topd, vm
     nop
-    _dpush
+    addiu dp, dp, (CELL_SIZE)
     b vm
-    sw t0, _tos
+    sw topd, 0(dp)
+
 swap:       # 'swap' (n1 n2 -- n2 n1 )
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
-    sw t0, -CELL_SIZE(dp)
+    _fetch_t t0
+    lw topd, 0(dp)
     b vm
-    sw t1, _tos
+    sw t0, 0(dp)
+
 over:       # 'over' ( n1 n2 -- n1 n2 n1 )
-    lw t0, -CELL_SIZE(dp)
-    _dpush
+    _fetch_n t0, 2
+    addiu dp, dp, (CELL_SIZE)
+    sw topd, 0(dp)
     b vm
-    sw t0,_tos
-rot:
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
-    lw t2, -8(dp)
-    sw t0, -CELL_SIZE(dp)
-    sw t1, -8(dp)
+    _store_t t0
+
+rot:        # rot ( n2 n1 n0 -- n1 n0 n2 )
+    _fetch_t t0
+    _fetch_n topd, 2
+    _fetch_n t1, 1
+    _store_n t1, 2
+    _store_n t0, 1 
     b vm
-    sw t2, _tos
+    nop
+
 plus:       # '+'   ( n1 n2 -- n1+n2 )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    addu t0,t1,t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    addu topd,topd,t0
+
 plus1:      # '+1'  (n -- n+1 )
-    lw t0, _tos
-    addiu t0, t0, 1
     b vm
-    sw t0, _tos
+    addiu topd, topd, 1
+
 plusstore:  # '+!'  ( n addr -- ) *addr  = *addr+n
-    lw t1, _tos
-    lw t0, 0(t1)
-    lw t2, -CELL_SIZE(dp)
-    add t0, t0, t2
-    sw t0, 0(t1)
+    _dpop t0
+    lw t1, 0(t0)
+    add t1, topd, t1
+    sw t1, 0(t0)
+    _dpop t0
     b vm
-    addiu dp,dp,-8 # 2drop
+    nop
+
 minus:      # '-' ( n1 n2 -- n1-n2 )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    subu t0,t1,t0
+    _dpop t0
+    subu topd,topd,t0
     b vm
-    sw t0, _tos
+    nop
+
 minus1:     # '-1' ( n -- n-1 )
-    lw t0, _tos
-    addiu t0, t0, -1
     b vm
-    sw t0, _tos
+    addiu topd, topd, -1
+
 multi:      # '*' ( n1 n2 -- n1*n2 )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    mul t0,t1,t0
+    _dpop t0
+    mul topd,topd,t0
     b vm
-    sw t0, _tos
+    nop
+
 divi:      # '/' ( n1 n2 -- n1/n2 )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    div t1,t0
-    mflo t0
+    _dpop t0
+    div topd,t0
     b vm
-    sw t0, _tos
+    mflo topd
+
 divmod:     # '/mod'  ( n1 n2 -- n1%n2 n1/n2 )
-    lw t0, _tos
-    lw t1, -CELL_SIZE(dp)
+    _fetch_t t0
+    lw t1, 0(dp)
     div t1, t0
+    mflo topd
     mfhi t1
-    mflo t0
-    sw t1, -CELL_SIZE(dp)
+    sw t1, 0(dp)
     b vm
-    sw t0, _tos
+    nop
+
 lshift:     # '<<' ( n1 u -- n1<<u )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    sllv t0, t1, t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    sllv topd, topd, t0
+
 rshift:     # '>>'  ( n1 u -- n1>>u )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    srlv t0, t1, t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    srlv topd, topd, t0
+
 modulo:     # 'mod' ( n1 n2 -- n1%n2 )
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    div t1,t0
-    mfhi t0
+    _dpop t0
+    div topd,t0
     b vm
-    sw t0, _tos
+    mfhi topd
+
 min:        # 'min' (n1 n2 -- min )  conserve le plus petit
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    subu t1,t1,t0
+    _dpop t0
+    subu t1,topd,t0
     bltz t1, vm
     nop
     b vm
-    sw t0, _tos
+    _store_t t0
+
 max:        # 'max' (n1 n2 -- max ) conserve le plus grand
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    subu t1,t0,t1
+    _dpop t0
+    subu t1,t0,topd
     bltz t1, vm
     nop
     b vm
-    sw t0, _tos
+    _store_t t0
+
 abs:        # 'abs' ( n -- abs(n) )
-    lw t0, _tos
-    bgez t0, vm
-    not t0
+    bltz topd, vm
+    not topd, topd
     b vm
-    sw t0, _tos
+    nop
+
 ltz:   # '0<'  ( n -- t|f )
-    lw t0, _tos
-    addiu t1, zero,-1
-    bltz t0, vm
-    sw t1, _tos
-    xor t0,t0,t0
+    bltz topd, vm
+    addiu topd,zero,-1
     b vm
-    sw t0, _tos
+    xor topd,topd,topd
+
 bitand:     # 'and' ( n1 n2 -- n1&n2)
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    and t0,t1,t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    and topd,topd,t0
+
 bitor:     # 'or' ( n1 n2 -- n1|n2)
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    or t0,t1,t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    or topd,topd,t0
+
 bitxor:     # 'xor' ( n1 n2 -- n1^n2)
-    lw t0, _tos
-    _dpop
-    lw t1, _tos
-    xor t0,t1,t0
+    _dpop t0
     b vm
-    sw t0, _tos
+    xor topd,topd,t0
+
 bitnot:     # 'not' ( n1 -- ~n1 )
-    lw t0, _tos
-    not t0,t0
     b vm
-    sw t0, _tos
+    not topd, topd
+
 equal:      # '='  ( n1 n2 -- t|f ) n1==n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0,zero,-1
-    beql t1,t2, vm   # branch on equal likely n''exécutre l''instruction dans
-    sw t0, _tos      # le delay slot seulement s''il y a branchement, pratique!!
-    addu t0,zero,zero
+    _dpop t0
+    xor topd, topd, t0
+    beqz topd, vm
+    addiu topd, zero, -1
     b vm
-    sw t0, _tos
+    xor topd, topd ,topd
+
 nequal:     # '<>' ( n1 n2 -- t|f ) n1<>n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0,zero,-1
-    bnel t1,t2, vm
-    sw t0, _tos
-    addu t0,zero,zero
+    _dpop t0
+    xor t0, topd, t0
+    beqz t0, vm
+    xor topd, topd, topd
     b vm
-    sw t0, _tos
+    addiu topd, zero, -1
+
 less:       # '<'  ( n1 n2 -- t|f ) n1<n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0,zero,-1
-    subu t1,t1,t2
-    bltzl t1, vm
-    sw t0, _tos
-    addu t0,zero,zero
+    _dpop t0
+    subu t0, topd, t0
+    bltz t0, vm
+    addiu topd, zero, -1
     b vm
-    sw t0, _tos
+    xor topd, topd, topd
+
 greater:    # '>'  ( n1 n2 -- t|f ) n1>n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0, zero,-1
-    subu t1,t1,t2
-    bgtzl t1, vm
-    sw t0, _tos
-    addu t0,zero,zero
+    _dpop t0
+    subu t0, topd, t0
+    bltz t0, vm
+    xor topd, topd, topd
     b vm
-    sw t0, _tos
+    addiu topd, zero, -1
+
 ltez:        # '<=' ( n1 n2 -- t|f ) n1<=n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0, zero,-1
-    subu t1,t1,t2
-    blezl t1, vm
-    sw t0, _tos
-    addu t0,zero,zero
+    _dpop t0
+    subu t0, topd, t0
+    blez t0, vm
+    addiu topd, zero, -1
     b vm
-    sw t0, _tos
+    xor topd, topd, topd
+
 gtez:        # '>=' ( n1 n2 -- t|f ) n1>=n2?
-    lw t2, _tos
-    _dpop
-    lw t1, _tos
-    addiu t0, zero,-1
-    subu t1,t1,t2
-    bgezl t1, vm
-    sw t0, _tos
-    addu t0,zero,zero
+    _dpop t0
+    subu t0, topd, t0
+    blez t0, vm
+    xor topd, topd, topd
     b vm
-    sw t0, _tos
+    addiu topd, zero, -1
+
 key:        #  ( -- char ) attend réception caractère par terminal
-    addiu a0, zero, STDIO
-    xor a1, zero, zero
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0, 0(ptr)
-    jal get_key
-    _dpush
+    _getch comm_channel
+    _dpush v0
     b vm
-    sw v0, _tos
+    nop
+
 sfr:        # ( reg -- sfr ) transforme la valeur de registre 16 bits en addresse SFR
     lui t0, SFR_SEG
-    lw t1, _tos
-    andi t1,t1, 65535
-    or  t0,t0,t1
+    andi topd,topd, 65535
     b vm
-    sw t0, _tos
+    or  topd,topd,t0
+
 set:        # ( bits sfr -- ) mets à 1 les bits du SFR
-    lw t0, _tos
-    _dpop
+    _dpop t0
     addiu t0, t0,SFR_SET
-    lw t1, _tos
-    _dpop
+    _dpop t1
     b vm
     sw t1, 0(t0)
+
 clear:      # ( bits sfr -- ) met à 0 les bits du SFR
-    lw t0, _tos
-    _dpop
-    addiu t0, t0,SFR_CLEAR
-    lw t1, _tos
-    _dpop
+    _dpop t0
+    addiu t0, t0, SFR_CLEAR
+    _dpop t1
     b vm
     sw t1, 0(t0)
+
 invert:     # ( bits sfr -- ) inverse la valeur des bits
-    lw t0, _tos
-    _dpop
+    _dpop t0
     addiu t0, t0,SFR_INV
-    lw t1, _tos
-    _dpop
+    _dpop t1
     b vm
     sw t1, 0(t0)
+
 dotq:      # '."' ( -- ) ip pointe vers le texte, le premier octet est le compte.
-    lb t0, _bytecode
+    ld_bytecode t0
+    _dpush t0
     _next
-    _dpush
-    sw t0, _tos
 dotq_loop:
-    lw t0, _tos
-    beqz t0, dotq_exit
-    addiu t0,t0,-1
-    sw t0, _tos
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0, 0(ptr)
-    lb a1, _bytecode
+    beqz topd, dotq_exit
+    addiu topd,topd,-1
+    lui wp, RAM_SEG
+    la a0, comm_channel
+    lw a0, 0(a0)
+    ld_bytecode a1
     jal put_char
+    nop
     _next
     b dotq_loop
     nop
 dotq_exit:
+    _dpop t0
     b vm
-    _dpop
+    nop
+
 readln:    # 'accept' ( buff max -- count ) lecture ligne du terminal
-    ori a0, zero, STDIO
-    lw  a2, _tos
-    _dpop
-    lw  a1, _tos
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0, 0(ptr)
+    la a0, comm_channel
+    lw a0, 0(a0)
+    _dpop a2
+    _fetch_t a1
     jal readline
     nop
     b vm
-    sw v0, _tos
-type:   # 'type'  ( buff count -- ) envoie le texte dans buff au terminal
-    ori a0,zero, STDIO
-    lw a2, _tos
-    _dpop
-    lw a1, _tos
-    lui ptr, RAM_SEG
-    ori ptr, ptr, comm_channel
-    lw a0, 0(ptr)
-    jal print
-    _dpop
-    b vm
-    nop
-delay:  # 'delay' ( msec -- ) delay en millisecondes
-    lui ptr, RAM_SEG
-    ori ptr, ptr, sys_tick
-    lw t0, 0(ptr)
-    lw t1, _tos
-    _dpop
-    bgtz t1, 1f
-    nop
-    andi t1,t1,0xFF
+    _store_t v0
+
+type:   # 'type'  ( count buff -- ) envoie le texte dans buff au terminal
+    la a0, comm_channel
+    lw a0, 0(a0)
+    _dpop wp
 1:
-    addu t0,t1,t0
-dly_loop:
-    lw t1, 0(ptr)
-    subu t1, t1,t0
-    bltz t1, dly_loop
-    nop
+    jal put_char
+    lb a1,0(wp)
+    addiu wp, wp, 1
+    addiu topd, topd, -1
+    beq topd, zero, 2f
+    b 1b
+2:
+    _dpop t0
     b vm
     nop
+
+
+delay:  # 'delay' ( msec -- ) delay en millisecondes
+    la wp, sys_tick
+    lw t0, 0(wp)
+    addu topd, topd, t0
+1:
+    lw t0, 0(wp)
+    subu t0,topd,t0
+    bne t0,zero, 1b
+    nop
+    _dpop t0
+    b vm
+    nop
+
 badop:
     move v0,t0
 exit:
-    lw  s0,8(sp)
-    lw  s1,4(sp)
-    lw  s2,0(sp)
-    lw  ra,12(sp)
-    jr  ra
-    addiu sp,sp,16
+    lw  s0,24(sp)
+    lw  s1,20(sp)
+    lw  s2,16(sp)
+    lw  s3,12(sp)
+    lw  s4,8(sp)
+    lw  s5,4(sp)
+    _fn_exit 32
 .end StackVM
 
 .ent fetch_int
 fetch_int:  # lit un entier little indian dans espace code VM
-    lbu t0, _bytecode
+    lbu t0, 0(ip)
     lbu t1, 1(ip)
     sll  t1,t1, 8
     lbu t2, 2(ip)
@@ -713,6 +827,48 @@ fetch_int:  # lit un entier little indian dans espace code VM
     nop
 .end fetch_int
 
+.ent dbg_putch    # envoie un caratère vers UART2
+dbg_putch:        # a0 contient le caractère
+    la t6, U2STA
+1:
+    lw t5,0(t6)
+    andi t5, _U1STA_UTXBF_MASK
+    bne t5, zero,  1b
+    nop
+    la t6, U2TXREG
+    sw a0, 0(t6)
+    j ra
+    nop
+.end dbg_putch
+
+.ent dbg_print    # envoie une chaine de caractère asciiz vers UART2
+                  # a0 contient le numéro du point de contrôle
+dbg_print:
+    _fn_enter 4
+    _dpush a0
+    la t7, dbg_tag
+    _dpush t7
+1:
+    lb a0, 0(topd)
+    andi a0, a0, 0x7f
+    beqz a0, 2f
+    jal dbg_putch
+    nop
+    addiu topd,topd,1
+    b 1b
+2:
+    _dpop t7
+    _dpop a0
+    jal dbg_putch
+    nop
+    li a0, '\r'
+    jal dbg_putch
+    nop
+    _fn_exit 4
+.end dbg_print
+
+dbg_tag:
+.string "debug check point: "
 
 
 opcodes_vectors:

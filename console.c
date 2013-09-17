@@ -212,7 +212,7 @@ void print_int(dev_t channel, int number, unsigned short width){ // imprime enti
     }
     if (sign){*d='-';}else{*d='+';}
     print(channel, d);
-}// print_decimal()
+}// print_int()
 
 void set_tab_width(unsigned char width){
     tab_width=width;

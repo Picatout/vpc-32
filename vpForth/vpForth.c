@@ -622,7 +622,12 @@ void compile_run(){ // analyse le contenu de TIB
     }//while (current<ctib)
     if (!(error || state)){
         *cip=IEND;
-        StackVM((const unsigned char*)imm_code);
+        code = StackVM((const unsigned char*)imm_code);
+        if (code){
+            UartPrint(STDOUT,"Erreur opcode VM: ");
+            print_int(SERIAL_CON,code,2);
+            UartPutch(STDOUT,'\r');
+        }
     }
 }// compile_run()
 
@@ -633,7 +638,7 @@ void vpForth(){ // démarrage système forth en mode interpréteur
     print(comm_channel,SYSTEM_VERSION);
     while (1){
         if ((ctib=readline(comm_channel, &tib[0],TIB_SIZE-1))){
-            UartPrint(STDOUT,tib);
+            //UartPrint(STDOUT,tib);
             compile_run();
         }
         print(comm_channel, " ok\r");

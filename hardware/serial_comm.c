@@ -40,7 +40,7 @@ void UartInit(UART_MODULE channel, int baudrate, UART_LINE_CONTROL_MODE LineCtrl
 };
 
 char UartGetch(UART_MODULE channel){
-/*lecture d'un caractère retourne -1 si aucun disponible*/
+/*lecture d'un caractère retourne 0 si aucun disponible*/
     char ch;
     if (!unget==-1) {
         ch=unget;
@@ -50,7 +50,7 @@ char UartGetch(UART_MODULE channel){
         if (UARTReceivedDataIsAvailable (channel)){
                return UARTGetDataByte(channel);
         }else{
-            return -1;
+            return 0;
         }
     }
 };
@@ -63,7 +63,7 @@ void UartPutch(UART_MODULE channel, char c){
 
 char UartWaitch(UART_MODULE channel, int delay){
 /*attend un caractère pour un temps spécifié par delay
-*retourne -1 si aucun reçu avant expiration du délais
+*retourne 0 si aucun reçu avant expiration du délais
 */
     int t;
     char ch;
@@ -77,7 +77,7 @@ char UartWaitch(UART_MODULE channel, int delay){
     while (ticks()<delay){
        if (UARTReceivedDataIsAvailable(channel)) return UARTGetDataByte(channel);
     }
-    return -1;
+    return 0;
 }
 
 void UartPrint(UART_MODULE channel, const char* str){
