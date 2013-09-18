@@ -63,7 +63,7 @@ char error=0;
 code_ptr imm_code, mark;
 
 const name_hash vm_tokens[]= { // vm tokens hash
-169559, // END
+156436, // BYE
 9629672, // ?KEY
 11525779, // EMIT
 201603, // LIT
@@ -134,22 +134,20 @@ const name_hash vm_tokens[]= { // vm tokens hash
 29, // >
 1864, // <=
 2000, // >=
-866780819 // iemit
+866780819, // iemit
+1083997420, // ispace
+1084006818, // ispces
+2361, // cr
 } ;
 
 
-// mots système enrigistrés en mémoire flash
-const char space[]={ICLIT,32,IEMIT,IRET};
-const char spaces[]={IDUP, IQBRA, 2, IDROP, IRET, ICLIT, 32, IEMIT, IMINUS1, IBRA, -11 };
-const char cr[]={ICLIT,13,IEMIT,IRET};
+// mots systèmes enrigistrés en mémoire flash
 
-//ICLIT,SPC,IEMIT,
 const char dots[]={ICLIT,SPC,IEMIT,ICLIT,'(',IEMIT,ISPFETCH,IZSP,ISUB,
                    ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ICLIT,SPC,IEMIT,
                    ITOR,IZSP,ICLIT,CELL_SIZE,IADD,IRFROM,IDUP,IQBRAZ,10,IMINUS1,
                    ITOR,IDUP,IFETCH,IDOT,ICLIT,CELL_SIZE,IADD,IBRA, -14,IDDROP,IRET};
 
-//ICLIT,SPC,IEMIT,
 const char dotr[]={ICLIT,SPC,IEMIT,ICLIT,'(',IEMIT,IRPFETCH,IZRP,ISUB,
                    ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ICLIT,SPC,IEMIT,
                    ITOR,IZRP,ICLIT,CELL_SIZE,IADD,IRFROM,IDUP,IQBRAZ,10,IMINUS1,
@@ -192,9 +190,6 @@ dict_entry_t system_dict[]={
     {-1126219579, (code_ptr)compile_until}, // until
     {934,(code_ptr)dots}, // .s
     {933,(code_ptr)dotr}, // .r
-    {1083997420, (code_ptr)space},  // 'space'
-    {1084006818, (code_ptr)spaces}, // 'spces'
-    {2361,(code_ptr)cr},  // 'cr'
 };
 #define SYSTEM_COUNT 20
 
@@ -319,14 +314,26 @@ int parse_int(int *n){
     base=10;
     sign=1;
     i=first;
-    if (tib[i]=='$'){base=16;i++;} else if (tib[i]=='-'){ sign=-1;i++;}
+    switch (tib[i]){
+        case '$':
+            base=16;
+            i++;
+            break;
+        case '-':
+            sign=-1;
+            i++;
+            break;
+        case '+':
+            i++;
+            break;
+    }
     for (;i<=last;i++){
         *n = *n*base;
         if (tib[i]>='0' && tib[i]<='9') *n += tib[i]-'0';
         else if (base==16 && tib[i]>='A' && tib[i]<='F') *n += tib[i]-'A'+10;
         else{
             error=1;
-            print(comm_channel,"erreur lecture entier.\r");
+            print(comm_channel," erreur lecture entier.\r");
             break;
         }
     }
@@ -621,7 +628,7 @@ void compile_run(){ // analyse le contenu de TIB
         }
     }//while (current<ctib)
     if (!(error || state)){
-        *cip=IEND;
+        *cip=IBYE;
         code = StackVM((const unsigned char*)imm_code);
         if (code){
             UartPrint(STDOUT,"Erreur opcode VM: ");
@@ -638,7 +645,7 @@ void vpForth(){ // démarrage système forth en mode interpréteur
     print(comm_channel,SYSTEM_VERSION);
     while (1){
         if ((ctib=readline(comm_channel, &tib[0],TIB_SIZE-1))){
-            //UartPrint(STDOUT,tib);
+            cursor_right();
             compile_run();
         }
         print(comm_channel, " ok\r");

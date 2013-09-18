@@ -102,7 +102,7 @@ topr=s5 /* sommet de la pile de contrôle */
     .macro _rpush   R   # empile R sur pile des retours
     addiu rp,rp,(CELL_SIZE)
     sw topr, 0(rp)
-    addu topr, zero, \R
+    addu topr, zero, \R  # move R -> topr
     .endm
 
     .macro _rpop  R  # dépile topr dans R
@@ -125,16 +125,15 @@ topr=s5 /* sommet de la pile de contrôle */
 
     .macro ld_bytecode R
     lb \R, 0(ip)
-    andi \R, \R, 0xff
     .endm
 
 
     .macro _to_r    # >R
-    _dpop t7
-    _rpush t7
+    _dpop wp
+    _rpush wp
     .endm
 
-    .macro _from_r  # R>
+    .macro _r_from  # R>
     _rpop t7
     _dpush t7
     .endm
@@ -182,8 +181,8 @@ topr=s5 /* sommet de la pile de contrôle */
 
 STDIO=1
 
-DSTACK_SIZE=64
-RSTACK_SIZE=64
+DSTACK_SIZE=128
+RSTACK_SIZE=128
 
 SFR_CLEAR=4
 SFR_SET=8
@@ -195,13 +194,13 @@ SFR_INV=12
 base: .word 10
 
 .section .bss
-dempty:  .space 1    # pile vide
-dstack:  .space DSTACK_SIZE
-rempty:  .space 1    # pile vide
-rstack: .space RSTACK_SIZE
 zsp: .word   dempty   # pile données position vide
 zrp: .word   rempty   # pile retour position vide
 here: .word  0
+dempty:  .word 0    # pile vide
+dstack:  .space DSTACK_SIZE
+rempty:  .word 0    # pile vide
+rstack: .space RSTACK_SIZE
 
 .text
 .set noreorder
@@ -254,10 +253,6 @@ qrx: # '?key' ( -- ch -1 | 0 )
 
 dot:  # '.'  ( n --  ) imprime entier n
     la wp, comm_channel
-    lb a0, 0(wp)
-    li a1, 32
-    jal put_char
-    nop
     lb a0,0(wp)
     _dpop a1
     jal print_int
@@ -274,20 +269,21 @@ iemit:  # 'iemit' ( n -- ) transmet n comme 4 octet ordonné en little indian
     _fetch_t a1
     li t0, 4
     _dpush t0
+    la wp, comm_channel
 1:
-    la a0, comm_channel
     jal put_char
-    lw a0,0(a0)
+    lw a0,0(wp)
     addiu topd,-1
     beqz topd, 2f
-    _dpop
+    nop
     _fetch_n a1, 1
     srl a1,a1,8
     _store_n a1, 1
     b 1b
     nop
 2:
-    _dpop
+    lw topd, -(CELL_SIZE)(dp)
+    addiu dp, dp, -2*(CELL_SIZE)
     b vm
     nop
 
@@ -431,14 +427,12 @@ rfetch:     # 'r@' ( -- n ) (R: n -- n )
     nop
 
 tor:        # >r ( n -- ) (R: -- n )
-    _dpop t0
-    _rpush t0
+    _to_r
     b vm
     nop
 
 rfrom:      # 'r>' ( -- n ) (R: n -- )
-    _rpop t0
-    _dpush t0
+    _r_from
     b vm
     nop
 
@@ -798,6 +792,34 @@ delay:  # 'delay' ( msec -- ) delay en millisecondes
     b vm
     nop
 
+space:      # 'space' ( -- ) imprime un espace
+    li t0,32
+    _dpush t0
+    _putch comm_channel
+    b vm
+    nop
+
+spaces:     # 'spces' ( n -- ) imprime n espaces
+    beqz topd, 1f
+    li t0, 32
+    _dpush t0
+    _putch comm_channel
+    addiu topd, topd, -1
+    b spaces
+    nop
+1:
+    _dpop
+    b vm
+    nop
+
+crlf:
+    li t0, '\r'
+    _dpush t0
+    _putch comm_channel
+    b vm
+    nop
+
+
 badop:
     move v0,t0
 exit:
@@ -832,7 +854,7 @@ dbg_putch:        # a0 contient le caractère
     la t6, U2STA
 1:
     lw t5,0(t6)
-    andi t5, _U1STA_UTXBF_MASK
+    andi t5,t5, _U1STA_UTXBF_MASK
     bne t5, zero,  1b
     nop
     la t6, U2TXREG
@@ -846,16 +868,18 @@ dbg_putch:        # a0 contient le caractère
 dbg_print:
     _fn_enter 4
     _dpush a0
-    la t7, dbg_tag
+    la t7, dbg_msg
     _dpush t7
 1:
     lb a0, 0(topd)
     andi a0, a0, 0x7f
     beqz a0, 2f
+    nop
     jal dbg_putch
     nop
     addiu topd,topd,1
     b 1b
+    nop
 2:
     _dpop t7
     _dpop a0
@@ -867,7 +891,7 @@ dbg_print:
     _fn_exit 4
 .end dbg_print
 
-dbg_tag:
+dbg_msg:
 .string "debug check point: "
 
 
@@ -883,5 +907,6 @@ opcodes_vectors:
 .word  min, max, abs, lshift, rshift, divmod
 .word qbraz, dot, zerosp, zerorp, herefetch,basefetch
 .word equal,nequal, less, greater,ltez,gtez, iemit
+.word space, spaces, crlf
 
 flash_code: .space FLASH_SIZE

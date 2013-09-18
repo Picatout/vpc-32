@@ -27,7 +27,7 @@
 #define	OPCODES_H
 
 // op codes
-#define IEND 0
+#define IBYE 0
 #define IQRX 1
 #define IEMIT 2
 #define ILIT 3
@@ -99,17 +99,15 @@
 #define ILTEZ 69
 #define IGTEZ 70
 #define IIEMIT 71
+#define ISPACE 72
+#define ISPCES 73
+#define ICR    74
 
-#define LASTOP 71
+#define LASTOP 74
 
 
 #define TOK_COUNT (LASTOP+1)
 #define IBADOP -TOK_COUNT
-
-
-
-
-
 
 
 #endif	/* OPCODES_H */
