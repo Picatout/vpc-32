@@ -202,15 +202,28 @@ void print_int(dev_t channel, int number, unsigned short width){ // imprime enti
     char str[14], *d;
     str[13]=0;
     d=&str[12];
+    if (width>13){width=13;}
     if (number<0){
         sign=1;
         number = -number;
     }
-    for (i=--width;i>=0||number;i--){
-        *d--=(number%10)+'0';
+    //for (i=--width;i>=0||number;i--){
+    i=width;
+    while (number>0){
+       *d--=(number%10)+'0';
         number /= 10;
+        i--;
     }
-    if (sign){*d='-';}else{*d='+';}
+    if (i==width){
+        *d--='0';
+        i--;
+    }
+    while (i>0){
+        *d--=' ';
+        i--;
+    }
+    if (sign){*d='-';}else{*d=' ';}
+    
     print(channel, d);
 }// print_int()
 
@@ -360,20 +373,21 @@ unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_cha
         while ((c!='\r') && (count<=max_char)){
             c=wait_key(channel);
             if (c==CR){
+                put_char(channel,'\r');
                 break;
             }else if (c==BS){
-                ibuff--;
-                count--;
-                print(channel,"\b \b");
+                if (count){
+                    ibuff--;
+                    count--;
+                    print(channel,"\b \b");
+                }
             }else if ((c & FN_BIT)==0){
                 *ibuff++=c;
                 count++;
                 put_char(channel, c);
             }
         }// while
-        if (count){
-            *ibuff=(char)0;
-        }
+        *ibuff=(char)0;
     }else{
         count=UartReadln(STDIN,ibuff,max_char);
     }

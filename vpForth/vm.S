@@ -67,6 +67,8 @@ topr=s5 /* sommet de la pile de contrôle */
 
  # NOTE: les pointeurs de piles sont incrémentés avant l''empilement.
  #       et décrémenté après le dépilement.
+ #       le premier élément valide da la pile de donnée est à dstack+4
+ #       le premier élément valide de la pile des retours est à rstack+4
 
     .macro _dpush  R   # empile le contenu de R
      addiu dp,dp, (CELL_SIZE)
@@ -77,7 +79,7 @@ topr=s5 /* sommet de la pile de contrôle */
     .macro _dpop  R=$0
     addu \R,zero, topd
     lw topd, 0(dp)
-    addiu dp,dp,-(CELL_SIZE)
+    addiu dp,dp, -(CELL_SIZE)
     .endm
 
     .macro _fetch_t R  # copie le contenu de topd dans R
@@ -122,11 +124,6 @@ topr=s5 /* sommet de la pile de contrôle */
     .macro _next        # next bytecode
     addiu ip,ip,1
     .endm
-
-    .macro ld_bytecode R
-    lb \R, 0(ip)
-    .endm
-
 
     .macro _to_r    # >R
     _dpop wp
@@ -189,14 +186,35 @@ SFR_SET=8
 SFR_INV=12
 
 .data
-.global base, dstack, rstack, here
+.global base, dstack, rstack, here, ctib, tib
+.global sp_state, rp_state, ip_state
 
-base: .word 10
+  VAR_BASE=0
+  VAR_TIB=4
+  VAR_CTIB=8
+  VAR_MAX=12
+  VAR_HERE=16
+  VAR_ZSP=20
+  VAR_ZRP=24
 
-.section .bss
+ # variables système
+sys_vars:       # name offset
+ # ---------------------------
+.word 10        # base   0    (base numérique 10 par défaut)
+.word tib       # tib    4    (terminal input buffer)
+.word ctib      # ctib   8    (nombre de caractère reçus dans tib)
+.word 80        # max    12  ( nombre maximum de caractère dans tib )
+.word here      # here   16   (pointeur RAM libre)
 zsp: .word   dempty   # pile données position vide
 zrp: .word   rempty   # pile retour position vide
-here: .word  0
+vm_state:
+dp_state: .word dempty
+rp_state: .word rempty
+topd_state: .word 0
+topr_state: .word 0
+ip_state: .word 0
+
+.section .bss
 dempty:  .word 0    # pile vide
 dstack:  .space DSTACK_SIZE
 rempty:  .word 0    # pile vide
@@ -206,10 +224,9 @@ rstack: .space RSTACK_SIZE
 .set noreorder
 .set macro
 .global StackVM,  flash_code
-# .global tokens
+
+
 .ent StackVM
-
-
 StackVM:
     _fn_enter 32
     sw  s0, 24(sp)
@@ -219,14 +236,26 @@ StackVM:
     sw  s4, 8(sp)
     sw  s5, 4(sp)
     addu ip, zero, a0  #buffer code passé en paramètre
+    xori a1, a1, COLD_START    # a1   COLD_START | WARM_START
+    beqz a1, 1f
+    nop
+    la  wp, vm_state
+    lw  dp, 0(wp)
+    lw  rp, 4(wp)
+    lw topd, 8(wp)
+    lw topr, 12(wp)
+    b vm
+    nop
+1:
     la dp, dempty
     la rp, rempty
     la wp, zsp
     sw dp, 0(wp)    // valeur de sp lorsque pile données vide.
     sw rp, 4(wp)    // valeur de rp lorsque pile retour vide.
 
+
 vm:
-    ld_bytecode t0
+    lbu t0, 0(ip)
     _next
     addiu t1,t0, IBADOP
     bgtz  t1, badop
@@ -236,10 +265,31 @@ vm:
     lw  t1, 0(t1)
     j   t1
     nop
+
 end:   # 'bye' ( -- ) sortie de la machine virtuelle
+    b 1f
     xor v0, zero,zero
-    b exit
-    nop
+badop:
+    move v0,t0
+    addu topd,zero,zero
+    addu topr,zero,zero
+    la wp, dempty
+    lw dp, 0(wp)
+    lw rp, 4(wp)
+1:
+    la  wp, vm_state
+    sw  dp, 0(wp)
+    sw  rp, 4(wp)
+    sw topd, 8(wp)
+    sw topr, 12(wp)
+    sw  ip, 16(wp)
+    lw  s0,24(sp)
+    lw  s1,20(sp)
+    lw  s2,16(sp)
+    lw  s3,12(sp)
+    lw  s4,8(sp)
+    lw  s5,4(sp)
+    _fn_exit 32
 
 qrx: # '?key' ( -- ch -1 | 0 )
     _getch comm_channel
@@ -295,7 +345,7 @@ lit:    # 'lit' ( -- n) empile un entier
     nop
 
 clit:       # 'clit' ( -- byte ) empile un octet signe étendu sur 32 bits
-    ld_bytecode t0
+    lb t0, 0(ip)
     _next
     _dpush t0
     b vm
@@ -303,9 +353,8 @@ clit:       # 'clit' ( -- byte ) empile un octet signe étendu sur 32 bits
 
 wlit:       # 'wlit' ( -- w16  ) empile un mot de 16 bits
     lbu t0, 0(ip)
-    _next
-    ld_bytecode t1
-    _next
+    lb t1, 1(ip)
+    addiu ip,ip,2
     sll  t1,t1, 8
     or  t0,t0,t1
     _dpush t0
@@ -342,7 +391,7 @@ ret:        # ';' (R: addr_ret -- ) sortie de sous-routine
     nop
 
 bra:        # 'branch' ( -- ) branchement incondionnnel (adresse relative +127,-128)
-    ld_bytecode t0
+    lb t0, 0(ip)
     _next
     b vm
     addu ip, ip, t0   # branchement relative intervale -128 à +127
@@ -447,15 +496,15 @@ spstore:    # 'sp!' ( n -- )
     move dp, topd
 
 zerosp:     # 'zsp' ( -- n) position du bas de la pile données
-    la t0, zsp
-    lw t0, 0(t0)
+    la wp, zsp
+    lw t0, 0(wp)
     _dpush t0
     b vm
     nop
 
 zerorp:     # 'zrp' ( -- n ) position du base de la pile retours
-    la t0, zrp
-    lw t0, 0(t0)
+    la wp, zrp
+    lw t0, 0(wp)
     _dpush t0
     b vm
     nop
@@ -466,28 +515,25 @@ ipfetch:        # 'ip@' ( -- ip ) empile la valeur courante du pointeur d''instr
     nop
 
 ipstore:        # 'ip!' ( ip -- ) initialise le pointeur d''insturctions
-    _dpop t0
+    _dpop ip
     b vm
-    move ip, t0
+    nop
 
-herefetch:  # 'here'  ( -- addr ) adresse de la variable here
+here_var:  # 'here'  ( -- addr ) adresse de la variable here
     la t0, here
-    lw t0, 0(t0)
     _dpush t0
     b vm
     nop
 
-basefetch: # 'base' ( -- addr ) adresse de la variable here
+base_var: # 'base' ( -- addr ) adresse de la variable here
     la t0, base
-    lw t0, 0(t0)
-    _dpush t0
     b vm
     nop
 
 drop:       # 'drop' ( n -- )
-    _dpop t0
+    lw topd, 0(dp)
     b vm
-    nop
+    addiu dp, dp, -(CELL_SIZE)
 
 ddrop:      # '2drop' ( n1 n2 -- )
     lw topd, -4(dp)
@@ -495,18 +541,17 @@ ddrop:      # '2drop' ( n1 n2 -- )
     addiu dp,dp,-8
 
 dup:        # 'dup' ( n -- n n )
-    move t0, topd
-    _dpush t0
+    addiu dp, dp, CELL_SIZE
     b vm
-    nop
+    sw topd, 0(dp)
+
 
 ddup:       # '2dup' ( n1 n2 -- n1 n2 n1 n2 )
-    _fetch_t t0
-    _fetch_n t1, 2
-    _dpush t1
-    _dpush t0
+    addiu dp, dp, 2*(CELL_SIZE)
+    sw topd, -4(dp)
+    lw t0, -8(dp)
     b vm
-    nop
+    sw t0, 0(dp)
 
 qdup:       # ?dup ( n -- n n | n ) duplique n si n!=0
     beqz topd, vm
@@ -561,7 +606,7 @@ minus:      # '-' ( n1 n2 -- n1-n2 )
     b vm
     nop
 
-minus1:     # '-1' ( n -- n-1 )
+minus1:     # '1-' ( n -- n-1 )
     b vm
     addiu topd, topd, -1
 
@@ -732,22 +777,20 @@ invert:     # ( bits sfr -- ) inverse la valeur des bits
     sw t1, 0(t0)
 
 dotq:      # '."' ( -- ) ip pointe vers le texte, le premier octet est le compte.
-    ld_bytecode t0
+    lbu t0, 0(ip)
     _dpush t0
     _next
+    la wp, comm_channel
 dotq_loop:
-    beqz topd, dotq_exit
+    beqz topd, 1f
     addiu topd,topd,-1
-    lui wp, RAM_SEG
-    la a0, comm_channel
-    lw a0, 0(a0)
-    ld_bytecode a1
+    lw a0, 0(wp)
+    lbu a1, 0(ip)
     jal put_char
-    nop
     _next
     b dotq_loop
     nop
-dotq_exit:
+1:
     _dpop t0
     b vm
     nop
@@ -819,17 +862,28 @@ crlf:
     b vm
     nop
 
+cellp:
+    b vm
+    addiu topd, topd, CELL_SIZE
 
-badop:
-    move v0,t0
-exit:
-    lw  s0,24(sp)
-    lw  s1,20(sp)
-    lw  s2,16(sp)
-    lw  s3,12(sp)
-    lw  s4,8(sp)
-    lw  s5,4(sp)
-    _fn_exit 32
+cellm:
+    b vm
+    addiu topd, topd, -(CELL_SIZE)
+
+svfetch:     # 'sys@' ( vname -- value )  empile la valeur d''une variable système
+    la t0, sys_vars
+    addu t0,t0,topd
+    b vm
+    lw  topd, 0(t0)
+
+svstore:     # 'sys!' ( value vname -- )  enregistre la valeur d''une variable système
+   la t0, sys_vars
+   _dpop t1
+   addu t0,t0,t1
+   _dpop t1
+   b vm
+   sw t1, 0(t0)
+
 .end StackVM
 
 .ent fetch_int
@@ -891,6 +945,8 @@ dbg_print:
     _fn_exit 4
 .end dbg_print
 
+.section .rodata
+
 dbg_msg:
 .string "debug check point: "
 
@@ -905,8 +961,8 @@ opcodes_vectors:
 .word delay
 .word qdup, plus1, minus1,plusstore, ddrop, rot, ddup
 .word  min, max, abs, lshift, rshift, divmod
-.word qbraz, dot, zerosp, zerorp, herefetch,basefetch
+.word qbraz, dot, zerosp, zerorp, here_var,base_var
 .word equal,nequal, less, greater,ltez,gtez, iemit
-.word space, spaces, crlf
+.word space, spaces, crlf, cellp, cellm, svfetch, svstore
 
 flash_code: .space FLASH_SIZE

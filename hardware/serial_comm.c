@@ -106,7 +106,7 @@ int UartReadln(UART_MODULE channel, char *buffer, int buff_len){
     while (count < (buff_len-1)){
         if (UARTReceivedDataIsAvailable(channel)){
             c = UARTGetDataByte(channel);
-            if (c==CR) break;
+            if (c==CR){UartPutch(channel,'\r'); break;}
             if (c==BS){
                 if (count){
                     buffer--;

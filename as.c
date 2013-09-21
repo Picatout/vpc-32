@@ -15,32 +15,24 @@
 *     You should have received a copy of the GNU General Public License
 *     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/* 
- * File:   vpForth.h
+/*
+ * File:   as.c
  * Author: Jacques Deschênes
  *
- * Created on 30 mai 2013
+ * Created on 20 septembre 2013, 12:27
+ * Description:  Assembleur pour la machine virtuelle.
  */
 
-#ifndef TINYFORTH_H
-#define TINYFORTH_H
-#include "opcodes.h"
+#include "as.h"
+#include "vpForth/opcodes.h"
 
-#define RAM_SPACE FREE_RAM
-#define FLASH_SPACE 2048
+const char *Mnemonics={
 
-#define SYSTEM_NAME "vpFORTH "
-#define SYSTEM_VERSION "0.01\r"
+};
 
-extern char *here; // pointeur espace code
-extern unsigned char ram_code[RAM_SPACE];
-extern const unsigned char flash_code[FLASH_SPACE];
+int as(const char *in, char *out){
+
+}// as()
 
 
-int StackVM(const unsigned char *code,int start_mode);
-
-void vpForth();
-
-#endif	/* TINYFORTH_H */
 

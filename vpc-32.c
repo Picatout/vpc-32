@@ -177,9 +177,7 @@ void main(void) {
     UartPrint(STDOUT,"initialisation completee.\r");
     set_cursor(CR_BLOCK);
     clear_screen();
-    while(1){
-        vpForth();
-    } // while(1)
+    shell();
 } // main()
 
 

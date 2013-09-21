@@ -24,6 +24,9 @@
       <itemPath>hardware/Pinguino/ffconf.h</itemPath>
       <itemPath>hardware/Pinguino/fileio.h</itemPath>
       <itemPath>sound.h</itemPath>
+      <itemPath>editor.h</itemPath>
+      <itemPath>shell.h</itemPath>
+      <itemPath>as.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -51,6 +54,9 @@
       <itemPath>hardware/Pinguino/fileio.c</itemPath>
       <itemPath>hardware/Pinguino/ff.c</itemPath>
       <itemPath>sound.c</itemPath>
+      <itemPath>editor.c</itemPath>
+      <itemPath>shell.c</itemPath>
+      <itemPath>as.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

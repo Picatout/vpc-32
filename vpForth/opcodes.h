@@ -74,8 +74,8 @@
 #define ITYPE 44
 #define IDELAY 45
 #define IQDUP  46
-#define IPLUS1 47
-#define IMINUS1 48
+#define I1PLUS 47
+#define I1MINUS 48
 #define IPLUSSTR 49
 #define IDDROP  50
 #define IROT  51
@@ -102,13 +102,20 @@
 #define ISPACE 72
 #define ISPCES 73
 #define ICR    74
+#define ICELLP 75
+#define ICELLM 76
+#define IREADL 77
+#define ISYSF  78
+#define ISYSS  79
 
-#define LASTOP 74
+#define LASTOP 79
 
 
 #define TOK_COUNT (LASTOP+1)
 #define IBADOP -TOK_COUNT
 
+#define COLD_START  0
+#define WARM_START  1
 
 #endif	/* OPCODES_H */
 

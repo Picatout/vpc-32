@@ -240,24 +240,24 @@ short KbdScancode(){  // obtient le code clavier en tête de la file
                             kbd_leds ^= F_NUM;
                             key_state ^= F_NUM;
                             SetKbdLeds(kbd_leds);
-                            code=0;
                         }
+                        code=0;
                         break;
                     case CAPS_LOCK:
                         if (flags & REL_BIT){
                             kbd_leds ^= F_CAPS;
                             key_state ^= F_CAPS;
                             SetKbdLeds(kbd_leds);
-                            code=0;
                         }
+                        code=0;
                         break;
                     case SCROLL_LOCK:
                         if (flags & REL_BIT){
                             kbd_leds ^= F_SCROLL;
                             key_state ^= F_SCROLL;
                             SetKbdLeds(kbd_leds);
-                            code=0;
                         }
+                        code=0;
                         break;
                     default:;
                 }//switch(code)

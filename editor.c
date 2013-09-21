@@ -15,32 +15,28 @@
 *     You should have received a copy of the GNU General Public License
 *     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/* 
- * File:   vpForth.h
+/*
+ * File:   editor.h
  * Author: Jacques Deschênes
  *
- * Created on 30 mai 2013
+ * Created on 18 septembre 2013, 07:18
+ * Description: un éditeur simple pour le VPC-32
+ *
  */
 
-#ifndef TINYFORTH_H
-#define TINYFORTH_H
-#include "opcodes.h"
 
-#define RAM_SPACE FREE_RAM
-#define FLASH_SPACE 2048
-
-#define SYSTEM_NAME "vpFORTH "
-#define SYSTEM_VERSION "0.01\r"
-
-extern char *here; // pointeur espace code
-extern unsigned char ram_code[RAM_SPACE];
-extern const unsigned char flash_code[FLASH_SPACE];
+#include "hardware/HardwareProfile.h"
+#include "hardware/keyboard.h"
+#include "console.h"
 
 
-int StackVM(const unsigned char *code,int start_mode);
+void ed(char *file_name){
+    if (comm_channel!=LOCAL_CON){
+        print(comm_channel, "Cet editeur fonctionne seulement sur la console locale\r");
+        return;
+    }
 
-void vpForth();
+} // ed()
 
-#endif	/* TINYFORTH_H */
+
 

@@ -17,30 +17,26 @@
 */
 
 /* 
- * File:   vpForth.h
+ * File:   shell.h
  * Author: Jacques Deschênes
  *
- * Created on 30 mai 2013
+ * Created on 18 septembre 2013, 07:29
  */
 
-#ifndef TINYFORTH_H
-#define TINYFORTH_H
-#include "opcodes.h"
+#ifndef SHELL_H
+#define	SHELL_H
 
-#define RAM_SPACE FREE_RAM
-#define FLASH_SPACE 2048
-
-#define SYSTEM_NAME "vpFORTH "
-#define SYSTEM_VERSION "0.01\r"
-
-extern char *here; // pointeur espace code
-extern unsigned char ram_code[RAM_SPACE];
-extern const unsigned char flash_code[FLASH_SPACE];
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 
-int StackVM(const unsigned char *code,int start_mode);
 
-void vpForth();
+void shell(void);
 
-#endif	/* TINYFORTH_H */
+#ifdef	__cplusplus
+}
+#endif
+
+#endif	/* SHELL_H */
 

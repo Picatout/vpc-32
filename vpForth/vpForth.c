@@ -27,6 +27,7 @@
 #include "../hardware/serial_comm.h"
 #include "../console.h"
 
+
 #include "vpForth.h"
 #include "opcodes.h"
 
@@ -110,8 +111,8 @@ const name_hash vm_tokens[]= { // vm tokens hash
 16298208, // TYPE
 759868776, // DELAY
 9598383, // ?DUP
-696, // +1
-832, // -1
+1098, // 1+
+1100, // 1-
 680, // +!
 374718263, // 2drop
 229755, // rot
@@ -138,20 +139,25 @@ const name_hash vm_tokens[]= { // vm tokens hash
 1083997420, // ispace
 1084006818, // ispces
 2361, // cr
+738488102, // cell+
+738488104, // cell-
+1059157367, // readl
+15983975, // sys@
+15983944, // sys!
 } ;
 
 
 // mots systèmes enrigistrés en mémoire flash
 
-const char dots[]={ICLIT,SPC,IEMIT,ICLIT,'(',IEMIT,ISPFETCH,IZSP,ISUB,
-                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ICLIT,SPC,IEMIT,
-                   ITOR,IZSP,ICLIT,CELL_SIZE,IADD,IRFROM,IDUP,IQBRAZ,10,IMINUS1,
-                   ITOR,IDUP,IFETCH,IDOT,ICLIT,CELL_SIZE,IADD,IBRA, -14,IDDROP,IRET};
+const char dots[]={ISPACE,ICLIT,'(',IEMIT,ISPFETCH,IZSP,ISUB,
+                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE,
+                   ITOR,IZSP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS,
+                   ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET};
 
-const char dotr[]={ICLIT,SPC,IEMIT,ICLIT,'(',IEMIT,IRPFETCH,IZRP,ISUB,
-                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ICLIT,SPC,IEMIT,
-                   ITOR,IZRP,ICLIT,CELL_SIZE,IADD,IRFROM,IDUP,IQBRAZ,10,IMINUS1,
-                   ITOR,IDUP,IFETCH,IDOT,ICLIT,CELL_SIZE,IADD,IBRA, -14,IDDROP,IRET};
+const char dotr[]={ISPACE,ICLIT,'(',IEMIT,IRPFETCH,IZRP,ISUB,
+                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE,
+                   ITOR,IZRP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS,
+                   ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET};
 
 //void print_integer(int n);
 void compile_if();
@@ -333,7 +339,6 @@ int parse_int(int *n){
         else if (base==16 && tib[i]>='A' && tib[i]<='F') *n += tib[i]-'A'+10;
         else{
             error=1;
-            print(comm_channel," erreur lecture entier.\r");
             break;
         }
     }
@@ -348,7 +353,7 @@ int try_integer(){
     code_ptr cptr;
     if (state) cptr=here;else cptr=cip;
     if (parse_int(&n)){
-        if (abs(n)<256){
+        if (n<128 && n > -129){
             *cptr++=ICLIT;
             *cptr++=n;
         }else if (abs(n)<65536){
@@ -480,7 +485,7 @@ void compile_loop(){ //loop
     if (state) cptr=here;else cptr=cip;
     there=(code_ptr)cstack[cp--];
     *cptr++=IRFROM;
-    *cptr++=IPLUS1;
+    *cptr++=I1PLUS;
     *cptr++=IDUP;
     *cptr++=IRFETCH;
     *cptr++=ISWAP;
@@ -612,6 +617,7 @@ int compile_token(int code){
 //}// print_integer()
 
 void compile_run(){ // analyse le contenu de TIB
+    char mot[7];
     int code;
     imm_code=here+256;
     cip=imm_code;
@@ -623,13 +629,16 @@ void compile_run(){ // analyse le contenu de TIB
         word(SPC);
         nh = hash();
         if (!(try_user(nh)||try_system(nh)||try_token(nh)||try_integer())){
-            print(comm_channel, "erreur de compilation, position: ");
-            print_int(comm_channel, first+1,6);
+            hash2str(nh,mot);
+            print(comm_channel, "mot inconnu '");
+            print(comm_channel,mot);
+            print(comm_channel,"', position: ");
+            print_int(comm_channel, first+1,1);
         }
     }//while (current<ctib)
     if (!(error || state)){
         *cip=IBYE;
-        code = StackVM((const unsigned char*)imm_code);
+        code = StackVM((const unsigned char*)imm_code,WARM_START);
         if (code){
             UartPrint(STDOUT,"Erreur opcode VM: ");
             print_int(SERIAL_CON,code,2);
@@ -637,6 +646,7 @@ void compile_run(){ // analyse le contenu de TIB
         }
     }
 }// compile_run()
+
 
 void vpForth(){ // démarrage système forth en mode interpréteur
     here=(unsigned char *)&ram_code;
