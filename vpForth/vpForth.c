@@ -39,20 +39,24 @@
 #define IMMEDIATE 0
 #define RESERVED 0
 #define CELL_SIZE 4
-#define HASH_BASE 68
 
 
 // data types
 typedef unsigned char BYTE ;
 typedef unsigned short WORD;
-typedef unsigned int name_hash;
 typedef char *code_ptr;
 typedef int(*compfct)();
 
+
 typedef struct{
-    name_hash name;
-    code_ptr cfa;
+    unsigned char byte_code;  // byte code à exécuter
+    unsigned short pfa; // addresse paramètres
+    unsigned int lnk;  // adresse lien vers l'entrée suivante du dictionnaire
+    unsigned char name_len; // longueur du nom et atttribus: immédiat, compilation, byte_code
+    char name[]; // nom maximun 32 caractères
 } dict_entry_t;
+
+extern  dict_entry_t sys_dict[];
 
 
 // variables
@@ -63,101 +67,8 @@ char cp=-1; //pointeur pour la pile cstack
 char error=0;
 code_ptr imm_code, mark;
 
-const name_hash vm_tokens[]= { // vm tokens hash
-156436, // BYE
-9629672, // ?KEY
-11525779, // EMIT
-201603, // LIT
-801952535, // FCALL
-229075, // RET
-155956, // BRA
-9588916, // ?BRA
-11576354, // EXEC
-0, // !
-31, // @
-2312, // C!
-2343, // C@
-229803, // RP@
-229772, // RP!
-3363, // R@
-2021, // >R
-3361, // R>
-234427, // SP@
-234396, // SP!
-11234871, // DROP
-165423, // DUP
-15973519, // SWAP
-14711441, // OVER
-10, // +
-12, // -
-9, // *
-14, // /
-206619, // MOD
-1047, // 0<
-151063, // AND
-3177, // OR
-257497, // XOR
-211259, // NOT
-196712, // KEY
-233765, // SFR
-233699, // SET
-740656049, // CLEAR
-188073, // INV
-10892291, // CLIT
-17180931, // WLIT
-885, // ."
-1059157367, // READL
-1058529047, // RCALL
-16298208, // TYPE
-759868776, // DELAY
-9598383, // ?DUP
-1098, // 1+
-1100, // 1-
-680, // +!
-374718263, // 2drop
-229755, // rot
-5510767, // 2dup
-206221, // min
-205687, // max
-150262, // abs
-1863, // <<
-2001, // >>
-4608667, // /mod
-652046345, // ?braz
-13, // .
-267015, // zsp
-266947, // zrp
-12432680, // here
-10527660, // base
-28, // =
-1865, // <>
-27, // <
-29, // >
-1864, // <=
-2000, // >=
-866780819, // iemit
-1083997420, // ispace
-1084006818, // ispces
-2361, // cr
-738488102, // cell+
-738488104, // cell-
-1059157367, // readl
-15983975, // sys@
-15983944, // sys!
-} ;
 
 
-// mots systèmes enrigistrés en mémoire flash
-
-const char dots[]={ISPACE,ICLIT,'(',IEMIT,ISPFETCH,IZSP,ISUB,
-                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE,
-                   ITOR,IZSP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS,
-                   ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET};
-
-const char dotr[]={ISPACE,ICLIT,'(',IEMIT,IRPFETCH,IZRP,ISUB,
-                   ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE,
-                   ITOR,IZRP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS,
-                   ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET};
 
 //void print_integer(int n);
 void compile_if();
@@ -178,30 +89,7 @@ void column();
 void semi_column();
 
 
-dict_entry_t system_dict[]={
-    {-25,(code_ptr)column}, // :
-    {-26,(code_ptr)semi_column}, // ;
-    {-247297, (code_ptr)compile_var}, // var
-    {-741642187, (code_ptr)compile_const},  // const
-    {-2757, (code_ptr)compile_if}, // if
-    {-16218861, (code_ptr)compile_then}, // then
-    {-11521820, (code_ptr)compile_else}, // else
-    {-15576879, (code_ptr)compile_repeat},  //rept
-    {-696303181, (code_ptr)compile_again}, // again
-    {-1167045072, (code_ptr)compile_while}, // while
-    {-2426, (code_ptr)compile_do}, // do
-    {-13736455, (code_ptr)compile_loop}, // loop
-    {-227550215, (code_ptr)compile_ploop}, // +loop
-    {-717083437, (code_ptr)compile_begin}, // begin
-    {-1126219579, (code_ptr)compile_until}, // until
-    {934,(code_ptr)dots}, // .s
-    {933,(code_ptr)dotr}, // .r
-};
-#define SYSTEM_COUNT 20
 
-
-
-dict_entry_t user_dict[USER_NAMES_SIZE];
 char free_slot=0;
 
 char tib[TIB_SIZE];
@@ -209,40 +97,10 @@ char pad[PAD_SIZE];
 
 code_ptr cip;
 
-char ctib;
+extern unsigned int ctib;
 char first, last,current;
 
 
-name_hash hash(){// hash le token courant.
-    name_hash nh;
-    int i;
-    char c;
-    nh=0;
-    for (i=first;i<first+5 && tib[i]!=0;i++){
-        c = tib[i] & 127;
-        if (c>='a' && c<='z') c -= 32;
-        else if (c>'z') c -= 26;
-        nh *= HASH_BASE;
-        nh += c-33;
-    }
-    return nh;
-}//hash()
-
-void hash2str(name_hash hash, char *name){
-    int i,d;
-    char str[6];
-    str[5]=0;
-    i=4;
-    while (hash){
-        d=hash % HASH_BASE;
-        hash /= HASH_BASE;
-        d += 33;
-        if (d>='a') d += 26;
-        str[i--]=d;
-    }
-    if (i==4) str[4]=33; else i++;
-    strcpy(name,&str[i]);
-}//hashs2str()
 
 
 void upper(){
@@ -260,57 +118,6 @@ int word(int c){
     if (tib[i]==c){tib[i]=0; i++;}
     current=i;
 }// word()
-
-
-int try_user(name_hash nh){
-    int i;
-    code_ptr cptr;
-    if (state)cptr=here; else cptr=cip;
-    for(i=free_slot-1;i>-1;i--){
-        if (user_dict[i].name==nh){
-            *cptr++=IRCALL;
-            *cptr++=(int)user_dict[i].cfa;
-            *cptr++=(int)user_dict[i].cfa>>8;
-            if (state)here=cptr;else cip=cptr;
-            break;
-        }
-    }
-    if (i==-1) return 0; else return 1;
-}// try_user()
-
-int try_system(name_hash nh){
-    int i;
-    code_ptr cptr;
-   compfct f;
-   if (state) cptr=here;else cptr=cip;
-   for(i=SYSTEM_COUNT-1;i>-1;i--){
-        if (abs(system_dict[i].name)==nh){
-            if ((int)system_dict[i].name<0){
-                f=(compfct)system_dict[i].cfa;
-                f();
-                if (error) return 0;
-            }else{
-                *cptr++=IFCALL;
-                *cptr++=(int)system_dict[i].cfa;
-                *cptr++=(int)system_dict[i].cfa>>8;
-                if (state) here=cptr;else cip=cptr;
-            }
-            return 1;
-        }
-    }
-    return 0;
-}// try_system()
-
-
-int try_token(name_hash nh){ // recherche le mot dans VM_TOKENS
-    int i;
-    for (i=TOK_COUNT-1;i>-1;i--){
-        if (nh==vm_tokens[i]){
-            return compile_token(i);
-        }
-    }
-    return 0;
-}//try_token()
 
 
 int parse_int(int *n){
@@ -600,21 +407,6 @@ int compile_token(int code){
     return !error;
 }// compile_token()
 
-
-//void print_integer(int n){
-//    int i;
-//    char sign;
-//    if (n<0){sign='-';n=abs(n);}else sign=' ';
-//    pad[11]=0;
-//    i=10;
-//    while (n){
-//       pad[i--]= '0'+ n%10;
-//       n /=10;
-//    }
-//    if (i==10) pad[i]='0'; else (sign=='-')?pad[i]=sign:i++;
-//    UartPrint(STDOUT,&pad[i]);
-//    UartPrint(STDOUT," ");
-//}// print_integer()
 
 void compile_run(){ // analyse le contenu de TIB
     char mot[7];

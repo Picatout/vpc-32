@@ -56,6 +56,18 @@ RAM_SEG=0xA000
 CODE_SEG=0x9D00
 SFR_SEG=0xBF88
 
+LEN_MASK=0x1F       # masque longueur nom 5 bits
+BYTE_CODE=0x20      # bit indicateur mot en code machine
+IMMEDIATE=0x40      # bit indicateur mot immédiat
+COMPILE_ONLY=0x80   # bit indicateur mot compilateur
+
+# offset entrée dictionnaire
+CFA=0      # code byte
+PFA=1      # pointeur des paramètres 2 octets
+LNK=2      # lien dictionnaire 4 octets
+LEN=6      # longueur du nom et bits attribus IMMEDIATE,COMPILE_ONLY, 1 octets
+NAME=7     # nom , 1 à 31 octets
+
 
 /* utilisation des regitres MIPS */
 ip=s0  /* pointeur d'instruction VM */
@@ -65,10 +77,14 @@ wp=s3 /* pointeur de travail */
 topd=s4 /* sommet de la pile des arguments */
 topr=s5 /* sommet de la pile de contrôle */
 
- # NOTE: les pointeurs de piles sont incrémentés avant l''empilement.
- #       et décrémenté après le dépilement.
- #       le premier élément valide da la pile de donnée est à dstack+4
- #       le premier élément valide de la pile des retours est à rstack+4
+
+                        ############
+                        #  MACROS  #
+                        ############
+        # NOTE: les pointeurs de piles sont incrémentés avant l''empilement.
+        #       et décrémenté après le dépilement.
+        #       le premier élément valide da la pile de donnée est à dstack+4
+        #       le premier élément valide de la pile des retours est à rstack+4
 
     .macro _dpush  R   # empile le contenu de R
      addiu dp,dp, (CELL_SIZE)
@@ -176,6 +192,7 @@ topr=s5 /* sommet de la pile de contrôle */
     .endm
 
 
+
 STDIO=1
 
 DSTACK_SIZE=128
@@ -186,8 +203,9 @@ SFR_SET=8
 SFR_INV=12
 
 .data
-.global base, dstack, rstack, here, ctib, tib
-.global sp_state, rp_state, ip_state
+// .global base, dstack, rstack, here, ctib, tib
+// .global sp_state, rp_state, ip_state
+.global UP, sys_dict
 
   VAR_BASE=0
   VAR_TIB=4
@@ -197,22 +215,18 @@ SFR_INV=12
   VAR_ZSP=20
   VAR_ZRP=24
 
- # variables système
-sys_vars:       # name offset
+ # variables utilisateur
+UP:           #  nom   position
  # ---------------------------
-.word 10        # base   0    (base numérique 10 par défaut)
-.word tib       # tib    4    (terminal input buffer)
-.word ctib      # ctib   8    (nombre de caractère reçus dans tib)
-.word 80        # max    12  ( nombre maximum de caractère dans tib )
-.word here      # here   16   (pointeur RAM libre)
+.word 10        # BASE   0    (base numérique 10 par défaut)
+tib:
+.word tib       # TIB    4    (adresse terminal input buffer)
+ctib:
+.word ctib      # CTIB   8    (nombre de caractère reçus dans tib)
+.word 80        # CMAX   12  ( nombre maximum de caractères acceptés dans TIB )
+.word uspace    # HERE   16   (pointeur espace utilisateur libre)
 zsp: .word   dempty   # pile données position vide
 zrp: .word   rempty   # pile retour position vide
-vm_state:
-dp_state: .word dempty
-rp_state: .word rempty
-topd_state: .word 0
-topr_state: .word 0
-ip_state: .word 0
 
 .section .bss
 dempty:  .word 0    # pile vide
@@ -236,17 +250,7 @@ StackVM:
     sw  s4, 8(sp)
     sw  s5, 4(sp)
     addu ip, zero, a0  #buffer code passé en paramètre
-    xori a1, a1, COLD_START    # a1   COLD_START | WARM_START
-    beqz a1, 1f
-    nop
-    la  wp, vm_state
-    lw  dp, 0(wp)
-    lw  rp, 4(wp)
-    lw topd, 8(wp)
-    lw topr, 12(wp)
-    b vm
-    nop
-1:
+
     la dp, dempty
     la rp, rempty
     la wp, zsp
@@ -264,7 +268,7 @@ vm:
     addu  t1,t1,t0
     lw  t1, 0(t1)
     j   t1
-    nop
+    move wp, ip
 
 end:   # 'bye' ( -- ) sortie de la machine virtuelle
     b 1f
@@ -277,12 +281,6 @@ badop:
     lw dp, 0(wp)
     lw rp, 4(wp)
 1:
-    la  wp, vm_state
-    sw  dp, 0(wp)
-    sw  rp, 4(wp)
-    sw topd, 8(wp)
-    sw topr, 12(wp)
-    sw  ip, 16(wp)
     lw  s0,24(sp)
     lw  s1,20(sp)
     lw  s2,16(sp)
@@ -312,28 +310,6 @@ dot:  # '.'  ( n --  ) imprime entier n
 
 emit:   # 'emit' ( ch -- ) transmet charactère au terminal
     _putch comm_channel
-    b vm
-    nop
-
-iemit:  # 'iemit' ( n -- ) transmet n comme 4 octet ordonné en little indian
-    _fetch_t a1
-    li t0, 4
-    _dpush t0
-    la wp, comm_channel
-1:
-    jal put_char
-    lw a0,0(wp)
-    addiu topd,-1
-    beqz topd, 2f
-    nop
-    _fetch_n a1, 1
-    srl a1,a1,8
-    _store_n a1, 1
-    b 1b
-    nop
-2:
-    lw topd, -(CELL_SIZE)(dp)
-    addiu dp, dp, -2*(CELL_SIZE)
     b vm
     nop
 
@@ -495,14 +471,14 @@ spstore:    # 'sp!' ( n -- )
     b vm
     move dp, topd
 
-zerosp:     # 'zsp' ( -- n) position du bas de la pile données
+sp0:     # 'zsp' ( -- n) position du bas de la pile données
     la wp, zsp
     lw t0, 0(wp)
     _dpush t0
     b vm
     nop
 
-zerorp:     # 'zrp' ( -- n ) position du base de la pile retours
+rp0:     # 'zrp' ( -- n ) position du base de la pile retours
     la wp, zrp
     lw t0, 0(wp)
     _dpush t0
@@ -519,23 +495,12 @@ ipstore:        # 'ip!' ( ip -- ) initialise le pointeur d''insturctions
     b vm
     nop
 
-here_var:  # 'here'  ( -- addr ) adresse de la variable here
-    la t0, here
-    _dpush t0
-    b vm
-    nop
-
-base_var: # 'base' ( -- addr ) adresse de la variable here
-    la t0, base
-    b vm
-    nop
-
 drop:       # 'drop' ( n -- )
     lw topd, 0(dp)
     b vm
     addiu dp, dp, -(CELL_SIZE)
 
-ddrop:      # '2drop' ( n1 n2 -- )
+drop2:      # '2drop' ( n1 n2 -- )
     lw topd, -4(dp)
     b vm
     addiu dp,dp,-8
@@ -546,7 +511,7 @@ dup:        # 'dup' ( n -- n n )
     sw topd, 0(dp)
 
 
-ddup:       # '2dup' ( n1 n2 -- n1 n2 n1 n2 )
+dup2:       # '2dup' ( n1 n2 -- n1 n2 n1 n2 )
     addiu dp, dp, 2*(CELL_SIZE)
     sw topd, -4(dp)
     lw t0, -8(dp)
@@ -769,7 +734,7 @@ clear:      # ( bits sfr -- ) met à 0 les bits du SFR
     b vm
     sw t1, 0(t0)
 
-invert:     # ( bits sfr -- ) inverse la valeur des bits
+toggle:     # ( bits sfr -- ) inverse la valeur des bits d'un registre SFR
     _dpop t0
     addiu t0, t0,SFR_INV
     _dpop t1
@@ -855,34 +820,43 @@ spaces:     # 'spces' ( n -- ) imprime n espaces
     b vm
     nop
 
-crlf:
+crlf:       # emit un CR
     li t0, '\r'
     _dpush t0
     _putch comm_channel
     b vm
     nop
 
-cellp:
+cellp:      #  ( n -- n+4)
     b vm
     addiu topd, topd, CELL_SIZE
 
-cellm:
+cellm:      #  ( n -- n-4)
     b vm
     addiu topd, topd, -(CELL_SIZE)
 
-svfetch:     # 'sys@' ( vname -- value )  empile la valeur d''une variable système
-    la t0, sys_vars
+cells:      # ( n -- n*4 )
+    li t0, CELL_SIZE
+    mult t0, topd
+    b vm
+    mflo topd
+
+aligned:     # ( addr -- a-addr) alignement sur cellule
+   li t0, ~(CELL_SIZE-1)
+   and t1, t0, topd
+   beq t1,topd, vm   # déjà aligné
+   nop
+   b vm
+   addiu topd, t1, CELL_SIZE
+
+
+douser:     # 'user' ( vname -- adr )  empile la valeur d''une variable système
+    la t0, UP
     addu t0,t0,topd
     b vm
     lw  topd, 0(t0)
 
-svstore:     # 'sys!' ( value vname -- )  enregistre la valeur d''une variable système
-   la t0, sys_vars
-   _dpop t1
-   addu t0,t0,t1
-   _dpop t1
-   b vm
-   sw t1, 0(t0)
+
 
 .end StackVM
 
@@ -950,7 +924,31 @@ dbg_print:
 dbg_msg:
 .string "debug check point: "
 
+# ************************************
+# ******* mots de haut niveau ********
+# ************************************
+here:       # 'here' ( -- adr)  retourne l''adresse position libre dans la mémoire utilisateur
+.byte ICLIT, VAR_HERE, ISYSF, IRET
 
+pad:      # 'pad'  ( -- adr)  addresse du scratch pad
+.byte   ICLIT, VAR_HERE, ISYSF, ICLIT, 80, IADD, IRET
+
+dots:       # '.s'  ( -- )  imprime le contenu de la pile de données
+.byte ISPACE,ICLIT,'(',IEMIT,ISPFETCH,IZSP,ISUB
+.byte ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE
+.byte ITOR,IZSP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS
+.byte ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET
+
+dotr:       # '.r'  ( -- ) imprime le contenu de la pile des retours
+.byte ISPACE,ICLIT,'(',IEMIT,IRPFETCH,IZRP,ISUB
+.byte ICLIT,CELL_SIZE,IDIV,IDUP,IDOT,ICLIT,')',IEMIT,ISPACE
+.byte ITOR,IZRP,ICELLP,ICELLP,IRFROM,IDUP,IQBRAZ,8,I1MINUS
+.byte ITOR,IDUP,IFETCH,IDOT,ISPACE,IBRA, -13,IDDROP,IRET
+
+
+# **********************************
+# adresse des mots en code machine *
+# **********************************
 opcodes_vectors:
 .word end,qrx,emit,lit,fcall,ret,bra,qbra,exec,store,fetch,cstore
 .word cfetch,rpfetch,rpstore,rfetch,tor,rfrom,spfetch,spstore,drop,dup,swap,over
@@ -961,8 +959,500 @@ opcodes_vectors:
 .word delay
 .word qdup, plus1, minus1,plusstore, ddrop, rot, ddup
 .word  min, max, abs, lshift, rshift, divmod
-.word qbraz, dot, zerosp, zerorp, here_var,base_var
-.word equal,nequal, less, greater,ltez,gtez, iemit
-.word space, spaces, crlf, cellp, cellm, svfetch, svstore
+.word qbraz, dot, sp0, rp0
+.word equal,nequal, less, greater,ltez,gtez
+.word space, spaces, crlf, cellp, cellm, user
 
-flash_code: .space FLASH_SIZE
+# ************** dictionnaire système *********************
+sys_dict:
+# primitives en code machines
+bc0:
+.byte IBYE              # cfa
+.short 0                # pfa
+.word bc1               # lnk
+.byte 3                 # name_len
+.ascii "BYE"            # name
+bc1:
+ .byte IQRX
+ .short 0
+ .word bc2
+ .byte 4
+ .ascii "?QRX"
+bc2:
+  .byte IEMIT
+  .short 0
+  .word bc3
+  .byte 4
+  .ascii "EMIT"
+bc3:
+  .byte ILIT
+  .short 0
+  .word bc4
+  .byte 3
+  .ascii "LIT"
+bc4
+  .byte IFCALL
+  .short 0
+  .word bc5
+  .byte 5
+  .ascii "FCALL"
+bc5:
+  .byte IRET
+  .short 0
+  .word bc6
+  .byte 4
+  .ascii "EXIT"
+bc6:
+  .byte IBRA
+  .short 0
+  .word bc7
+  .byte 6
+  .ascii "BRANCH"
+bc7:
+  .byte IQBRA
+  .short 0
+  .word bc8
+  .byte 7
+  .ascii "?BRANCH"
+bc8:
+  .byte IEXEC
+  .short 0
+  .word bc9
+  .byte  7
+  .ascii "EXECUTE"
+bc9:
+  .byte ISTORE
+  .short 0
+  .word bc10
+  .byte 1
+  .ascii "!"
+bc10:
+  .byte IFETCH
+  .short 0
+  .word bc11
+  .byte 1
+  .ascii "@"
+bc11:
+  .byte ICSTORE
+  .short 0
+  .word bc12
+  .byte 2
+  .ascii "C!"
+bc12:
+  .byte ICFETCH
+  .short 0
+  .word bc13
+  .byte 2
+  .ascii "C@"
+bc13:
+  .byte IRPFETCH
+  .short 0
+  .word bc14
+  .byte 3
+  .ascii "RP@"
+bc14:
+  .byte IRPSTORE
+  .short 0
+  .word bc15
+  .byte 3
+  .ascii "RP!"
+bc15:
+  .byte IRFETCH
+  .short 0
+  .word bc16
+  .byte 2
+  .ascii "R@"
+bc16:
+  .byte ITOR
+  .short 0
+  .word bc17
+  .byte 2
+  .ascii ">R"
+bc17:
+  .byte IRFROM
+  .short 0
+  .word bc18
+  .byte 2
+  .ascii "R>"b
+bc18:
+  .byte ISPFETCH
+  .short 0
+  .word bc19
+  .byte 3
+  .ascii "SP@"
+bc19:
+  .byte ISPSTORE
+  .short 0
+  .word bc20
+  .byte 3
+  .ascii "SP!"
+bc20:
+  .byte IDROP
+  .short 0
+  .word bc21
+  .byte 4
+  .ascii "DROP"
+bc21:
+  .byte IDUP
+  .short 0
+  .word bc22
+  .byte 3
+  .ascii "DUP"
+bc22:
+  .byte ISWAP
+  .short 0
+  .word bc23
+  .byte 4
+  .ascii "SWAP"
+ bc23:
+  .byte IOVER
+  .short 0
+  .word bc24
+  .byte 4
+  .ascii "OVER"
+bc24:
+  .byte  IADD
+  .short 0
+  .word  bc25
+  .byte  1
+  .ascii "+"
+bc25:
+  .byte  ISUB
+  .short 0
+  .word  bc26
+  .byte  1
+  .ascii "-"
+bc26:
+  .byte  IMUL
+  .short 0
+  .word  bc27
+  .byte  1
+  .ascii "*"
+bc27:
+  .byte  IDIV
+  .short 0
+  .word  bc28
+  .byte  1
+  .ascii "/"
+bc28:
+  .byte  IMOD
+  .short 0
+  .word  bc29
+  .byte  3
+  .ascii "MOD"
+bc29:
+  .byte  ILTZ
+  .short 0
+  .word  bc30
+  .byte  2
+  .ascii "0<"
+bc30:
+  .byte   IAND
+  .short  0
+  .word   bc31
+  .byte   3
+  .ascii  "AND"
+bc31:
+  .byte  IOR
+  .short 0
+  .word  bc32
+  .byte  2
+  .ascii "OR"
+bc32:
+  .byte   IXOR
+  .short  0
+  .word   bc33
+  .byte   3
+  .ascii  "XOR"
+bc33:
+  .byte   INOT
+  .short  0
+  .word   bc34
+  .byte   3
+  .ascii  "NOT"
+bc34:
+  .byte   IKEY
+  .short   0
+  .word   bc35
+  .byte    3
+  .ascii  "KEY"
+bc35:
+  .byte   ISFR
+  .short  0
+  .word   bc36
+  .byte   3
+  .ascii  "SFR"
+bc36:
+  .byte   ISET
+  .short  0
+  .word   bc37
+  .byte   3
+  .ascii  "SET"
+bc37:
+  .byte ICLR
+  .short  0
+  .word  bc38
+  .byte  5
+  .ascii "CLEAR"
+bc38:
+  .byte   ITGL
+  .short  0
+  .word   bc39
+  .byte   6
+  .ascii  "TOGGLE"
+bc39:
+  .byte   ICLIT
+  .short   0
+  .word   bc40
+  .byte   4
+  .ascii  "CLIT"
+bc40:
+  .byte   IWLIT
+  .short  0
+  .word   bc41
+  .byte   4
+  .ascii  "WLIT"
+bc41:
+  .byte   IDOTQ
+  .short  0
+  .word   bc42
+  .byte   2
+  .ascii  ".\""
+bc42:
+  .byte   IACCEPT
+  .short  0
+  .word   bc43
+  .byte   8
+  .ascii  "ACCEPT"
+bc43:
+  .byte   IRCALL
+  .short   0
+  .word    bc44
+  .byte   5
+  .ascii  "RCALL"
+bc44:
+  .byte   ITYPE
+  .short  0
+  .word   bc45
+  .byte   4
+  .ascii  "TYPE"
+bc45:
+  .byte   IDELAY
+  .short  0
+  .word   bc46
+  .byte   4
+  .ascii  "DELAY"
+bc46:
+  .byte   IQDUP
+  .short  0
+  .word   bc47
+  .byte   4
+  .ascii  "?DUP"
+bc47:
+  .byte   I1PLUS
+  .short  0
+  .word   bc48
+  .byte   2
+  .ascii  "1+"
+bc48:
+  .byte  I1MINUS
+  .short 0
+  .word  bc49
+  .byte  2
+  .ascii "1-"
+bc49:
+  .byte   IPLUSSTR
+  .short  0
+  .word   bc50
+  .byte   2
+  .ascii  "+!"
+bc50:
+  .byte   I2DROP
+  .short  0
+  .word   bc51
+  .byte   5
+  .ascii  "2DROP"
+bc51:
+  .byte  IROT
+  .short 0
+  .word  bc52
+  .byte 3
+  .ascii "ROT"
+bc52:
+  .byte  I2DUP
+  .short  0
+  .word   bc53
+  .byte   4
+  .ascii  "2DUP"
+bc53:
+  .byte   IMIN
+  .short  0
+  .word   bc54
+  .byte   3
+  .ascii  "MIN"
+bc54:
+  .byte  IMAX
+  .short  0
+  .word   bc55
+  .byte   3
+  .ascii  "MAX"
+bc55:
+  .byte   IABS
+  .short  0
+  .word   bc56
+  .byte   3
+  .ascii  "ABS"
+bc56:
+  .byte   ILSHIFT
+  .short  0
+  .word   bc57
+  .byte   2
+  .ascii  "<<"
+bc57:
+  .byte  IRSHIFT
+  .short  0
+  .word   bc58
+  .byte   2
+  .ascii  ">>"
+bc58:
+  .byte   IDIVMOD
+  .short  0
+  .word   bc59
+  .byte   4
+  .ascii  "/MOD"
+bc59:
+  .byte  IQBRAZ
+  .short 0
+  .word  bc60
+  .byte  5
+  .ascii "?BRANCH0"
+bc60:
+  .byte   IDOT
+  .short  0
+  .word   bc61
+  .byte   1
+  .ascii  "."
+bc61:
+  .byte   ISP0
+  .short  0
+  .word   bc62
+  .byte   3
+  .ascii  "SP0"
+bc62:
+  .byte  IRP0
+  .short  0
+  .word  bc63
+  .byte  3
+  .ascii "RP0"
+bc63:
+  .byte   IEQUAL
+  .short   0
+  .word    bc64
+  .byte    1
+  .ascii   "="
+bc64:
+  .byte   INEQUAL
+  .short  0
+  .word   bc65
+  .byte   2
+  .ascii  "<>"
+bc65:
+  .byte   ILESS
+  .short  0
+  .word   bc66
+  .byte   1
+  .ascii  "<"
+bc66:
+  .byte   IGREATER
+  .short  0
+  .word   bc67
+  .byte   1
+  .ascii  ">"
+bc67:
+  .byte   ILTE
+  .short  0
+  .word   bc68
+  .byte   2
+  .ascii  "<="
+bc68:
+  .byte  IGTE
+  .short 0
+  .word  bc69
+  .byte  2
+  .ascii ">="
+bc69:
+  .byte   ISPACE
+  .short  0
+  .word   bc70
+  .byte   4
+  .ascii  "SPACE"
+bc70:
+  .byte   ISPACES
+  .short  0
+  .word   bc71
+  .byte   5
+  .ascii  "SPACES"
+bc71:
+  .byte   ICRLF
+  .short  0
+  .word   bc72
+  .byte   2
+  .ascii  "CR"
+bc72:
+  .byte   ICELLP
+  .short  0
+  .word   bc73
+  .byte   5
+  .ascii  "CELL+"
+bc73:
+  .byte  ICELLM
+  .short  0
+  .word   bc74
+  .byte   5
+  .ascii  "CELL-"
+bc74:
+  .byte  ICELLS
+  .short  0
+  .word  bc75
+  .byte  5
+  .ascii "CELLS"
+bc75:
+  .byte IALIGNED
+  .short 0
+  .word bc76
+  .byte 7
+  .ascii "ALIGNED"
+bc76:
+  .byte   IUSER
+  .short  0
+  .word   f0
+  .byte   4
+  .ascii  "USER"
+
+# mots forth de haut niveau
+f0:
+ .byte IFCALL
+ .short (here & 0xffff)
+ .word f1
+ .short 4
+ .ascii "HERE"
+f1:
+ .byte IFCALL
+ .short (pad & 0xffff)
+ .word f2
+ .short 3
+ .ascii "PAD"
+f2:
+flast:
+ .byte 0
+ .short 0
+ .word 0
+ .short 0
+ .ascii
+
+
+
+# flash_code: .space FLASH_SIZE
+
+.bss
+uspace:  .space FREE_RAM   # user space

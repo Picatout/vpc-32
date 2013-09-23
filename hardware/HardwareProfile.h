@@ -48,9 +48,15 @@
 #define PBCLK   SYSCLK
 
 #define mGetSystemClock() (SYSCLK)
+#define mGetInstructionClock()	(mGetSystemClock()/1)	//
 #define mGetPeripheralClock() (mGetSystemClock())
 #define CORE_TICK_RATE (mGetSystemClock()/2/1000) // system tick 1msec
 #define CLK_PER_USEC (SYSCLK/1000000L)
+
+#define FLASH_BEG			 	0x9D000000
+#define FLASH_END			 	0x9D000000+BMXPFMSZ-1
+#define RAM_BEG				 	0xA0000000
+#define RAM_END				 	0xA0000000+BMXDRMSZ-1
 
 #define STATUS_LED  BIT_3
 #define _status_on()  (PORTB |=STATUS_LED)

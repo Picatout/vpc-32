@@ -796,7 +796,7 @@ ALGND:  .word   ALGND+4
         li      $t1, (CELLL-1)
         and     $t2, $t1, $t0
         beq     $t2, $zero, $next
-        xor     $t0, $t0, $10
+        xor     $t0, $t0, $t2
         addiu   $t0, CELLL
         j       $next
         sw      $t0, 0(DP)

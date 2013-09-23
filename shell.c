@@ -84,6 +84,7 @@ int next_token(void){
         return 0;
 }//next_token()
 
+
 void parse_execute(void){
     while (next_token()){
         switch (cmd_search(&cmd_line.buff[cmd_line.first])){
@@ -98,7 +99,7 @@ void parse_execute(void){
             case CMD_AS:
                 break;
             case CMD_FORTH:
-                vpForth();
+                cold();
                 break;
             case CMD_RUN:
                 break;
@@ -112,10 +113,9 @@ void parse_execute(void){
     }
 }// parse_execute()
 
-const char *prompt="\r>";
+const char *prompt="\r#";
 
 void shell(void){
-    int len;
     print(comm_channel,"VPC-32 shell\r");
     while (1){
         print(comm_channel,prompt);

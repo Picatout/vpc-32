@@ -4,6 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="DIOS FORTH" projectFiles="true">
+        <itemPath>DiosForth.X/source/VM/VMcore.h</itemPath>
+        <itemPath>DiosForth.X/source/VM/VMword.h</itemPath>
+        <itemPath>DiosForth.X/source/NVMem/NVMem.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="hardware" projectFiles="true">
         <itemPath>hardware/ntsc.h</itemPath>
         <itemPath>hardware/HardwareProfile.h</itemPath>
@@ -14,10 +19,6 @@
         <itemPath>hardware/Pinguino/diskio.h</itemPath>
         <itemPath>hardware/Pinguino/typedef.h</itemPath>
       </logicalFolder>
-      <logicalFolder name="f2" displayName="vpForth" projectFiles="true">
-        <itemPath>vpForth/opcodes.h</itemPath>
-        <itemPath>vpForth/vpForth.h</itemPath>
-      </logicalFolder>
       <itemPath>font.h</itemPath>
       <itemPath>console.h</itemPath>
       <itemPath>hardware/Pinguino/ff.h</itemPath>
@@ -26,7 +27,6 @@
       <itemPath>sound.h</itemPath>
       <itemPath>editor.h</itemPath>
       <itemPath>shell.h</itemPath>
-      <itemPath>as.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -35,6 +35,11 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="DIOS FORTH" projectFiles="true">
+        <itemPath>DiosForth.X/source/VM/VMcore.c</itemPath>
+        <itemPath>DiosForth.X/source/VM/VMword.c</itemPath>
+        <itemPath>DiosForth.X/source/NVMem/NVMem.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="hardware" projectFiles="true">
         <itemPath>hardware/ntsc.c</itemPath>
         <itemPath>hardware/HardwareProfile.c</itemPath>
@@ -44,11 +49,6 @@
         <itemPath>hardware/Pinguino/diskio.c</itemPath>
         <itemPath>hardware/QWERTY.c</itemPath>
       </logicalFolder>
-      <logicalFolder name="f2" displayName="vpForth" projectFiles="true">
-        <itemPath>vpForth/vpForth.c</itemPath>
-        <itemPath>vpForth/vm.S</itemPath>
-      </logicalFolder>
-      <itemPath>vpc-32.c</itemPath>
       <itemPath>console.c</itemPath>
       <itemPath>font.c</itemPath>
       <itemPath>hardware/Pinguino/fileio.c</itemPath>
@@ -56,7 +56,7 @@
       <itemPath>sound.c</itemPath>
       <itemPath>editor.c</itemPath>
       <itemPath>shell.c</itemPath>
-      <itemPath>as.c</itemPath>
+      <itemPath>vpc-32.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -67,6 +67,9 @@
   <sourceRootList>
     <Elem>hardware</Elem>
     <Elem>vpForth</Elem>
+    <Elem>DiosForth.X/source/VM</Elem>
+    <Elem>DiosForth.X/source/NVMem</Elem>
+    <Elem>DiosForth.X/source/UART</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -131,7 +134,7 @@
         <property key="extra-lib-directories" value=""/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
-        <property key="heap-size" value="4096"/>
+        <property key="heap-size" value="16384"/>
         <property key="input-libraries" value=""/>
         <property key="linker-symbols" value=""/>
         <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
@@ -147,6 +150,28 @@
         <property key="warn-section-align" value="false"/>
       </C32-LD>
       <C32CPP>
+        <property key="additional-warnings" value="false"/>
+        <property key="check-new" value="false"/>
+        <property key="eh-specs" value="true"/>
+        <property key="enable-app-io" value="false"/>
+        <property key="enable-omit-frame-pointer" value="false"/>
+        <property key="enable-symbols" value="true"/>
+        <property key="enable-unroll-loops" value="false"/>
+        <property key="exceptions" value="true"/>
+        <property key="exclude-floating-point" value="false"/>
+        <property key="extra-include-directories" value=""/>
+        <property key="generate-16-bit-code" value="false"/>
+        <property key="isolate-each-function" value="false"/>
+        <property key="make-warnings-into-errors" value="false"/>
+        <property key="optimization-level" value=""/>
+        <property key="place-data-into-section" value="false"/>
+        <property key="post-instruction-scheduling" value="default"/>
+        <property key="pre-instruction-scheduling" value="default"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="rtti" value="true"/>
+        <property key="strict-ansi" value="false"/>
+        <property key="use-cci" value="false"/>
+        <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
       </C32Global>

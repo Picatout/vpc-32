@@ -1,24 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpc-32.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/console.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/console.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/HardwareProfile.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/serial_comm.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpForth/vpForth.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpForth/vpForth.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpForth/opcodes.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/vpForth/vm.S</file>
-        <file>file:/C:/Program%20Files%20(x86)/Microchip/xc32/v1.21/pic32mx/include/peripheral/uart.h</file>
-        <file>file:/C:/Program%20Files%20(x86)/Microchip/xc32/v1.21/pic32mx/include/proc/p32mx150f128b.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/serial_comm.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/editor.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/editor.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/shell.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/shell.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/hardware/keyboard.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/as.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32.X/as.c</file>
-    </open-files>
 </project-private>

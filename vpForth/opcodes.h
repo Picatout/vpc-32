@@ -69,7 +69,7 @@
 #define ICLIT 39
 #define IWLIT 40
 #define IDOTQ 41
-#define IRDLN 42
+#define IACCEPT 42
 #define IRCALL 43
 #define ITYPE 44
 #define IDELAY 45
@@ -77,9 +77,9 @@
 #define I1PLUS 47
 #define I1MINUS 48
 #define IPLUSSTR 49
-#define IDDROP  50
+#define I2DROP  50
 #define IROT  51
-#define IDDUP 52
+#define I2DUP 52
 #define IMIN 53
 #define IMAX 54
 #define IABS 55
@@ -88,27 +88,24 @@
 #define IDIVMOD 58
 #define IQBRAZ 59
 #define IDOT 60
-#define IZSP 61
-#define IZRP 62
-#define IHERE 63
-#define IBASE 64
-#define IEQUAL 65
-#define INEQUAL 66
-#define ILESS  67
-#define IGREATER 68
-#define ILTEZ 69
-#define IGTEZ 70
-#define IIEMIT 71
-#define ISPACE 72
-#define ISPCES 73
-#define ICR    74
-#define ICELLP 75
-#define ICELLM 76
-#define IREADL 77
-#define ISYSF  78
-#define ISYSS  79
+#define ISP0 61
+#define IRP0 62
+#define IEQUAL 63
+#define INEQUAL 64
+#define ILESS  65
+#define IGREATER 66
+#define ILTE 67
+#define IGTE 68
+#define ISPACE 69
+#define ISPACES 70
+#define ICRLF  71
+#define ICELLP 72
+#define ICELLM 73
+#define ICELLS 74
+#define IALIGNED 75
+#define IUSER  76
 
-#define LASTOP 79
+#define LASTOP 76
 
 
 #define TOK_COUNT (LASTOP+1)
