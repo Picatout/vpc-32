@@ -37,6 +37,7 @@
 #include "hardware/Pinguino/ff.h"
 #include "vpForth/opcodes.h"
 #include "vpForth/vpForth.h"
+#include "sound.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -74,7 +75,7 @@
 
 
 
-const char *msg1=" test video ntsc\r";
+const char *msg1=" ntsc video target\r";
 const char *msg2="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
 
 
@@ -98,6 +99,14 @@ void test_pattern(void){
     print(LOCAL_CON,msg2);
 }//test_pattern()
 
+const unsigned int e3k[]={ // rencontre du 3ième type
+784,500, // sol4
+880,500,// la4
+698,500,// fa4
+349,500,// fa3
+523,500,// do4
+0,0
+};
 
 void main(void) {
     int code;
@@ -111,25 +120,23 @@ void main(void) {
     ln_cnt=0;
     video=0;
     test_pattern();
-    UartPrint(STDOUT,"initialisation video\r");
+    UartPrint(STDOUT,"video initialization\r");
     VideoInit();
     delay_ms(500);
-    UartPrint(STDOUT,"initialisation clavier: ");
+    UartPrint(STDOUT,"keyboard initialization: ");
     if (KeyboardInit()){
         UartPrint(STDOUT,"OK\r");
         comm_channel=LOCAL_CON;
     }else{
-        UartPrint(STDOUT,"erreur clavier\r");
-        UartPrint(STDOUT,"Utilisation du lien sériel.\r");
+        UartPrint(STDOUT,"keyboard error\r");
+        UartPrint(STDOUT,"Using uart2 channel.\r");
         comm_channel=SERIAL_CON;
     }
     text_coord_t cpos;
-    UartPrint(STDOUT,"initialisation peripherique carte SD.\r");
-    UartPrint(STDOUT,"initialisation carte SD: ");
+    UartPrint(STDOUT,"SD initialization: ");
     if (!mount(0)){
-        UartPrint(STDOUT,"Echec\r");
+        UartPrint(STDOUT,"Failed\r");
     }
-    UartPrint(STDOUT, "OK\r");
 //    FIL *fp;
 //    FILINFO *fo;
 //    fp=malloc(sizeof(FIL));
@@ -173,8 +180,9 @@ void main(void) {
 //    }
 //    while (1);
 //    delay_ms(2000);
-    tone(400,1000);
-    UartPrint(STDOUT,"initialisation completee.\r");
+    UartPrint(STDOUT,"sound initialization.\r");
+    tune(&e3k[0]);
+    UartPrint(STDOUT,"initialization completed.\r");
     set_cursor(CR_BLOCK);
     clear_screen();
     shell();

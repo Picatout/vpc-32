@@ -33,6 +33,7 @@
 //#include "..\HardwareProfile.h"
 #ifdef VPC_32
 #include "../../../console.h"
+#include "../../../sound.h"
 #else
 #include "..\Uart\UartBuf.h"	// emit ?emit key ?key
 #endif
@@ -1666,6 +1667,19 @@ void ccall(void)			// 0 sp@ ADC 10 + @ ccall (readADC)
 	void (*pFce)(void *)=(void *)POP;
 	(*pFce)((void *)POP);
 }
+#ifdef VPC_32
+// sound tone ( duration freq -- )
+void beep(void){
+    tone(POP,POP);
+} //tone()
+
+// joue une mélodie
+void play_tune(void){
+    tune((const unsigned int *)POP);
+}//play_tune
+
+
+#endif
 
 #ifndef VPC_32
 // device TIM1 ( -- addr )
@@ -1777,6 +1791,10 @@ const PRIMWORD primwords[] =
 #ifndef VPC_32
 	{9,pr|4,"TIM1",devTIM1}, {10,pr|3,"COM",devCOM}, {11,pr|3,"PIN",devPIN}, {12,pr|3,"ADC",devADC},
 	{13,pr|3,"PWM",devPWM},
+#endif
+#ifdef VPC_32
+        {9,pr|4,"beep",beep},
+        {10,pr|4,"tune",play_tune},
 #endif
 	{0xFF,pr,"",nop}
 

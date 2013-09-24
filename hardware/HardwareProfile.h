@@ -35,7 +35,7 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define FREE_RAM 8192
+#define FREE_RAM 16384
 
 #define LOCAL_CON 0  // console vidéo locale
 #define SERIAL_CON STDIO // console rs-232

@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=hardware/ntsc.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/QWERTY.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c sound.c editor.c shell.c DiosForth.X/source/VM/VMcore.c DiosForth.X/source/VM/VMword.c vpc-32.c DiosForth.X/source/NVMem/NVMem.c
+SOURCEFILES_QUOTED_IF_SPACED=DiosForth.X/source/VM/VMcore.c DiosForth.X/source/VM/VMword.c DiosForth.X/source/NVMem/NVMem.c hardware/ntsc.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/QWERTY.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c sound.c editor.c shell.c vpc-32.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/QWERTY.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/sound.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/QWERTY.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/sound.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o ${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/QWERTY.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/sound.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d ${OBJECTDIR}/hardware/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/hardware/serial_comm.o.d ${OBJECTDIR}/hardware/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/QWERTY.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/sound.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/vpc-32.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/QWERTY.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/sound.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o
+OBJECTFILES=${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o ${OBJECTDIR}/hardware/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/hardware/serial_comm.o ${OBJECTDIR}/hardware/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/QWERTY.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/sound.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o
 
 # Source Files
-SOURCEFILES=hardware/ntsc.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/QWERTY.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c sound.c editor.c shell.c DiosForth.X/source/VM/VMcore.c DiosForth.X/source/VM/VMword.c vpc-32.c DiosForth.X/source/NVMem/NVMem.c
+SOURCEFILES=DiosForth.X/source/VM/VMcore.c DiosForth.X/source/VM/VMword.c DiosForth.X/source/NVMem/NVMem.c hardware/ntsc.c hardware/HardwareProfile.c hardware/serial_comm.c hardware/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/QWERTY.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c sound.c editor.c shell.c vpc-32.c
 
 
 CFLAGS=
@@ -91,6 +91,21 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o: DiosForth.X/source/VM/VMcore.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
+	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o DiosForth.X/source/VM/VMcore.c   
+	
+${OBJECTDIR}/DiosForth.X/source/VM/VMword.o: DiosForth.X/source/VM/VMword.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
+	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o DiosForth.X/source/VM/VMword.c   
+	
+${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o: DiosForth.X/source/NVMem/NVMem.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/NVMem 
+	@${RM} ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" -o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o DiosForth.X/source/NVMem/NVMem.c   
+	
 ${OBJECTDIR}/hardware/ntsc.o: hardware/ntsc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/hardware 
 	@${RM} ${OBJECTDIR}/hardware/ntsc.o.d 
@@ -161,27 +176,27 @@ ${OBJECTDIR}/shell.o: shell.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/shell.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/shell.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/shell.o.d" -o ${OBJECTDIR}/shell.o shell.c   
 	
-${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o: DiosForth.X/source/VM/VMcore.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
-	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o DiosForth.X/source/VM/VMcore.c   
-	
-${OBJECTDIR}/DiosForth.X/source/VM/VMword.o: DiosForth.X/source/VM/VMword.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
-	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o DiosForth.X/source/VM/VMword.c   
-	
 ${OBJECTDIR}/vpc-32.o: vpc-32.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/vpc-32.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/vpc-32.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/vpc-32.o.d" -o ${OBJECTDIR}/vpc-32.o vpc-32.c   
 	
+else
+${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o: DiosForth.X/source/VM/VMcore.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
+	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o DiosForth.X/source/VM/VMcore.c   
+	
+${OBJECTDIR}/DiosForth.X/source/VM/VMword.o: DiosForth.X/source/VM/VMword.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
+	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d 
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o DiosForth.X/source/VM/VMword.c   
+	
 ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o: DiosForth.X/source/NVMem/NVMem.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/NVMem 
 	@${RM} ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" -o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o DiosForth.X/source/NVMem/NVMem.c   
+	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" -o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o DiosForth.X/source/NVMem/NVMem.c   
 	
-else
 ${OBJECTDIR}/hardware/ntsc.o: hardware/ntsc.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/hardware 
 	@${RM} ${OBJECTDIR}/hardware/ntsc.o.d 
@@ -252,25 +267,10 @@ ${OBJECTDIR}/shell.o: shell.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/shell.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/shell.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/shell.o.d" -o ${OBJECTDIR}/shell.o shell.c   
 	
-${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o: DiosForth.X/source/VM/VMcore.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
-	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMcore.o DiosForth.X/source/VM/VMcore.c   
-	
-${OBJECTDIR}/DiosForth.X/source/VM/VMword.o: DiosForth.X/source/VM/VMword.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/VM 
-	@${RM} ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/VM/VMword.o.d" -o ${OBJECTDIR}/DiosForth.X/source/VM/VMword.o DiosForth.X/source/VM/VMword.c   
-	
 ${OBJECTDIR}/vpc-32.o: vpc-32.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/vpc-32.o.d 
 	@${FIXDEPS} "${OBJECTDIR}/vpc-32.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/vpc-32.o.d" -o ${OBJECTDIR}/vpc-32.o vpc-32.c   
-	
-${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o: DiosForth.X/source/NVMem/NVMem.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/DiosForth.X/source/NVMem 
-	@${RM} ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d 
-	@${FIXDEPS} "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION) -DSD_DEBUG -O1 -MMD -MF "${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o.d" -o ${OBJECTDIR}/DiosForth.X/source/NVMem/NVMem.o DiosForth.X/source/NVMem/NVMem.c   
 	
 endif
 

@@ -116,7 +116,7 @@ void parse_execute(void){
 const char *prompt="\r#";
 
 void shell(void){
-    print(comm_channel,"VPC-32 shell\r");
+    print(comm_channel,"VPC-32 shell\r16384 bytes free RAM.\r");
     while (1){
         print(comm_channel,prompt);
         cmd_line.first=0;

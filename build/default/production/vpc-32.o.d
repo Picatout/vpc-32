@@ -14,4 +14,5 @@ font.h  \
 hardware/Pinguino/ff.h  \
  vpForth/opcodes.h  \
 vpForth/vpForth.h  \
-vpForth/opcodes.h 
+vpForth/opcodes.h  \
+sound.h 

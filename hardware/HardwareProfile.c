@@ -101,11 +101,11 @@ void delay_ms(unsigned int msec){
        __asm__("mfc0 $v0, $11");
        __asm__("addiu $v0,$v0,%0"::"I"(CORE_TICK_RATE));
        __asm__("mtc0 $v0, $11");
-       if (tone_on && !(--duration)){
-               mTone_off();
-               tone_on=0;
-       }
        mCTClearIntFlag();
+       if ((fSound & TONE_ON) && !(--duration)){
+           fSound &= ~TONE_ON;
+           mTone_off();
+       }
    };
 #endif
 

@@ -53,9 +53,6 @@ char mount(unsigned char pin) {
 	SDCS = pin;
 
 	// 0. init the I/Os
-#ifdef SD_DEBUG
-	UartPrint(STDOUT,"Initialisation carte SD\r");
-#endif
 	initSD();
 
 #ifdef SD_DEBUG
@@ -65,7 +62,7 @@ char mount(unsigned char pin) {
 	if (!getCD()) {
 		FError = FE_NOT_PRESENT;
 #ifdef SD_DEBUG
-		UartPrint(STDOUT, "Échec!\r");
+		UartPrint(STDOUT, "Failed!\r");
 #endif
 		return FALSE;
 	}
@@ -80,7 +77,7 @@ char mount(unsigned char pin) {
 	initMedia();
         if (disk_initialize(0)==STA_NOINIT){
 #ifdef SD_DEBUG
-            UartPrint(STDOUT,"Echec d'initialisation de la carte SD\r");
+            UartPrint(STDOUT,"failed!\r");
 #endif
             return 0;
         };

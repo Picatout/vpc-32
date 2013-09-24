@@ -22,24 +22,66 @@
  * Created on 13 septembre 2013, 20:42
  */
 
+#include <plib.h>
 #include "hardware/HardwareProfile.h"
+#include "sound.h"
 
-volatile unsigned char tone_on=0;
+
+
+volatile unsigned char fSound=0; // indicateurs booléins
 volatile unsigned int duration;
+volatile unsigned int *tones_list;
+
+
 
 void tone(unsigned int freq, // fréquence en hertz
           unsigned int msec){ // durée en  millisecondes
     //configuration PWM sur OC1 puor délais vidéo, utilisation TIMER2
     OC3CONbits.OCM = 5; //mode pwm
     OC3CONbits.OCTSEL=1; // timer 3
-    T3CON=0;
-    PR3=(SYSCLK/8/freq)-1; // rapport cyclique 50%
     OC3RS=0;
-    OC3R=SYSCLK/16/freq;
-    OC3CONbits.ON=1;
-    duration=msec;
-    tone_on=1;
+    T3CON=0;
     T3CONbits.TCKPS=3;
+    PR3=(SYSCLK/8/freq)-1; // rapport cyclique 50%
+    OC3R=SYSCLK/16/freq;
+    duration=msec;
+    fSound |=TONE_ON;
+    mTone_on();
     T3CONbits.ON=1;
 } //tone();
 
+// joue une mélodie en arrière plan
+void tune(const unsigned int *buffer){
+    tones_list=buffer;
+    if (*tones_list && *(tones_list+1)){
+        fSound |= PLAY_TUNE;
+        IPC3bits.T3IP=2;
+        IPC3bits.T3IS=3;
+        IFS0bits.T3IF=0;
+        IEC0bits.T3IE=1;
+        tone(*tones_list++,*tones_list++);
+    }
+}//tune()
+
+
+
+void __ISR(_TIMER_3_VECTOR, IPL2SOFT)  T3Handler(void){
+    unsigned int f,d;
+       mT3ClearIntFlag();
+       if (fSound==PLAY_TUNE){
+           f=*tones_list++;
+           d=*tones_list++;
+           if (d){
+                if (f){
+                    tone(f,d);
+                }else{
+                    duration=(*tones_list);
+                    fSound |= TONE_ON;
+                }
+           }else{
+               fSound=0;
+               IEC0bits.T3IE=0;
+               T3CONbits.ON=0;
+           } // if 
+       }//if 
+}// T3Handler

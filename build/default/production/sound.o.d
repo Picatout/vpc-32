@@ -1,3 +1,4 @@
 build/default/production/sound.o:  \
 sound.c  \
-hardware/HardwareProfile.h 
+hardware/HardwareProfile.h  \
+ sound.h 

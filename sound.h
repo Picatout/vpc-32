@@ -26,17 +26,22 @@
 #ifndef SOUND_H
 #define	SOUND_H
 
-#define mTone_off() (OC3CONbits.ON=0)
-#define mTone_on()  (OC3CONbits.ON=1)
-
-extern  volatile unsigned char tone_on;
-extern  volatile unsigned int duration;
-
-void tone(unsigned int freq, unsigned int duration);
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
+#define TONE_ON  1
+#define PLAY_TUNE 2
+
+#define mTone_off() (OC3CONbits.ON=0)
+#define mTone_on()  (OC3CONbits.ON=1)
+
+extern volatile unsigned char fSound; // indicateurs booléins
+extern volatile unsigned int duration;
+
+
+void tone(unsigned int freq, unsigned int duration);
+void tune(const unsigned int *buffer);
 
 
 
