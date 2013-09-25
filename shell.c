@@ -41,6 +41,7 @@
 #include "hardware/keyboard.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
+#include "hardware/Pinguino/fileio.h"
 #include <plib.h>
 
 #define MAX_LINE_LEN 80
@@ -53,12 +54,12 @@ typedef struct{
 
 static input_buff_t cmd_line;
 
-typedef enum CMDS {CMD_LS,CMD_RM,CMD_MV,CMD_ED,CMD_AS,CMD_RUN,
-                   CMD_CP,CMD_SND,CMD_RCV,CMD_FORTH} cmds_t;
+typedef enum CMDS {CMD_LS,CMD_RM,CMD_MV,CMD_ED,CMD_CP,CMD_SND,CMD_RCV,
+                   CMD_FORTH, CMD_CLEAR,CMD_REBOOT} cmds_t;
 
 #define CMD_LEN 10
 const char *commands[CMD_LEN]={
-    "ls","rm","mv","ed","as","run","cp","snd","rcv","forth"};
+    "ls","rm","mv","ed","cp","send","receive","forth","clear","reboot"};
 
 int cmd_search(char *target){
     int i;
@@ -84,30 +85,37 @@ int next_token(void){
         return 0;
 }//next_token()
 
+void list_directory(){
+    listDir(".");
+}//list_directory()
 
 void parse_execute(void){
     while (next_token()){
         switch (cmd_search(&cmd_line.buff[cmd_line.first])){
-            case CMD_LS:
+            case CMD_LS: // liste des fichiers sur la carte SD
+                list_directory();
                 break;
-            case CMD_RM:
+            case CMD_RM: // efface un fichier
                 break;
-            case CMD_MV:
+            case CMD_MV: // renomme ou déplace un fichier
                 break;
-            case CMD_ED:
+            case CMD_ED: // editeur
                 break;
-            case CMD_AS:
-                break;
-            case CMD_FORTH:
+            case CMD_FORTH: // lance DIOS forth
                 cold();
                 break;
-            case CMD_RUN:
+            case CMD_SND:  // envoie un fichier vers la sortie uart
                 break;
-            case CMD_SND:
+            case CMD_RCV:  // reçoit un fichier du uart
                 break;
-            case CMD_RCV:
+            case CMD_CP:   // copie un fichier
                 break;
-            case CMD_CP:
+            case CMD_CLEAR: // efface l'écran
+                clear_screen();
+                break;
+            case CMD_REBOOT: // redémarrage à froid.
+                asm("lui $t0, 0xbfc0");
+                asm("j  $t0");
                 break;
         }
     }

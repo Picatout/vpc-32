@@ -31,6 +31,7 @@
 #include "ff.h"					// Fat Filesystem
 #include "diskio.h"				// card access functions
 #include "../serial_comm.h"
+#include "../../console.h"
 
 //#define SD_DEBUG
 
@@ -175,18 +176,18 @@ unsigned listDir(const char *path) {
 	PF_BYTE res, b;
 	UINT s1, s2;
 	DIR dir; /* Directory object */
-
-	res = f_opendir(&dir, "/");
-#ifdef SD_DEBUG
-	UartPrint(STDOUT,"f_opendir? ");
-	//put_rc(res);
-#endif
+        char * fmt;
+        fmt=malloc(CHAR_PER_LINE);
+        dir.fs=Fat;
+	res = f_opendir(&dir, "\\");
 	p1 = s1 = s2 = 0;
 	//CDCprintln("\nf_readdir('%s'): ", path);
-        print("\rnf_readdir('");
-        print(path);
-        print("'):");
-	for (;;) {
+        sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
+        print(comm_channel,fmt);
+//        print(comm_channel,"\rnf_readdir('");
+//        print(comm_channel,path);
+//        print(comm_channel, "'):");
+	while (!res) {
 		res = f_readdir(&dir, &Finfo);
 #ifdef SD_DEBUG
 //		put_rc(res);
@@ -194,34 +195,43 @@ unsigned listDir(const char *path) {
 		if ((res != FR_OK) || !Finfo.fname[0]) {
 			break;
 		}
-
 		if (Finfo.fattrib & AM_DIR) {
 			s2++;
 		} else {
 			s1++;
 			p1 += Finfo.fsize;
 		}
-/* what about other outputs ?
-		UartPrint(STDOUT,"%c%c%c%c%c ",
+// what about other outputs ?
+		sprintf(fmt,"%c%c%c%c%c ",
                 (Finfo.fattrib & AM_DIR) ? 'D' : '-',
 				(Finfo.fattrib & AM_RDO) ? 'R' : '-',
 				(Finfo.fattrib & AM_HID) ? 'H' : '-',
 				(Finfo.fattrib & AM_SYS) ? 'S' : '-',
 				(Finfo.fattrib & AM_ARC) ? 'A' : '-');
-		UartPrint(STDOUT,"%u/%02u/%02u %02u:%02u ",
+                print(comm_channel, fmt);
+		sprintf(fmt,"%u/%02u/%02u %02u:%02u ",
                 (Finfo.fdate >> 9) + 1980,
 				(Finfo.fdate >> 5) & 15, Finfo.fdate & 31, (Finfo.ftime >> 11),
 				(Finfo.ftime >> 5) & 63);
-		UartPrint(STDOUT," %9u ", Finfo.fsize);
-		UartPrint(STDOUT, " %-12s %s", Finfo.fname,
+                print(comm_channel, fmt);
+                sprintf(fmt," %9u ", Finfo.fsize);
+                print(comm_channel, fmt);
+		sprintf(fmt, " %-12s %s\r", Finfo.fname,
 #if _USE_LFN
 				Lfname);
 #else
 				"");
 #endif
-*/
+                print(comm_channel,fmt);
 	}
-
+        if (!res){
+            sprintf(fmt, "\rlsfile count %d, total size %d\r",s1,p1);
+            print(comm_channel, fmt);
+        }else{
+            sprintf(fmt," error code: %d\r", res);
+            print(comm_channel, fmt);
+        }
+        free(fmt);
 	return s1;
 } // listDir
 
