@@ -179,7 +179,7 @@ unsigned listDir(const char *path) {
         char * fmt;
         fmt=malloc(CHAR_PER_LINE);
         dir.fs=Fat;
-	res = f_opendir(&dir, "\\");
+	res = f_opendir(&dir, path);
 	p1 = s1 = s2 = 0;
 	//CDCprintln("\nf_readdir('%s'): ", path);
         sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
@@ -225,7 +225,7 @@ unsigned listDir(const char *path) {
                 print(comm_channel,fmt);
 	}
         if (!res){
-            sprintf(fmt, "\rlsfile count %d, total size %d\r",s1,p1);
+            sprintf(fmt, "\rfile count %d, total size %d\r",s1,p1);
             print(comm_channel, fmt);
         }else{
             sprintf(fmt," error code: %d\r", res);
