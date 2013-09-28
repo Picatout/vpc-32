@@ -2321,7 +2321,7 @@ FRESULT f_read(FIL *fp, /* Pointer to the file object */
 	if (btr > remain)
 		btr = (UINT) remain; /* Truncate btr by remaining bytes */
 
-	for (; btr; /* Repeat until all data read */
+	for (;btr; /* Repeat until all data read */
 	rbuff += rcnt, fp->fptr += rcnt, *br += rcnt, btr -= rcnt) {
 		if ((fp->fptr % SS(fp->fs)) == 0) { /* On the sector boundary? */
 			csect = (PF_BYTE) (fp->fptr / SS(fp->fs) & (fp->fs->csize - 1)); /* Sector offset in the cluster */

@@ -76,7 +76,7 @@
 
 
 const char *msg1=" ntsc video target\r";
-const char *msg2="01234567890123456789012345678901234567890123456789012"; // 53 caractères par ligne
+const char *msg2="0123456789012345678901234567890123456789012345678901"; // 52 caractères par ligne
 
 
 void test_pattern(void){
@@ -109,12 +109,6 @@ const unsigned int e3k[]={ // rencontre du 3ième type
 };
 
 void main(void) {
-    int code;
-    short key;
-    unsigned char buff[BLK_SIZE];
-    int i;
-    unsigned int size;
-
     HardwareInit();
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     ln_cnt=0;
@@ -137,49 +131,6 @@ void main(void) {
     if (!mount(0)){
         UartPrint(STDOUT,"Failed\r");
     }
-//    FIL *fp;
-//    FILINFO *fo;
-//    fp=malloc(sizeof(FIL));
-//    fo=malloc(sizeof(FILINFO));
-//    if (!f_open(fp,"readme.txt",FA_READ)){
-//        f_stat("readme.txt",fo);
-//        if (!f_read(fp,buff,fo->fsize,(UINT*)&i)){
-//            clear_screen();
-//            buff[fo->fsize]=0;
-//            print("file size: ");
-//            print_int(i,10);
-//            put_char('\r');
-//            print(buff);
-//            f_close(fp);
-//            if (i==40){
-//                f_open(fp,"readme.txt",FA_WRITE);
-//                f_lseek(fp,i);
-//                f_write(fp,"test ecriture\r",14,(UINT*)&i);
-//                f_stat("readme.txt",fo);
-//                print("grandeur apres ecriture: ");
-//                print_int(fo->fsize,10);
-//                f_close(fp);
-//            }
-//            free(fp);
-//            free(fo);
-//        }
-//    }
-//    UartPrint(STDOUT,"lecture du registre CSD\r");
-//    clear_screen();
-//    size=disk_ioctl(0,GET_SECTOR_SIZE,buff);
-//    print_int(*(unsigned short *)buff,10);
-//    put_char('\r');
-//    size=disk_ioctl(0,GET_SECTOR_COUNT,buff);
-//    print_int(*(int*)buff,10);
-//    put_char('\r');
-//    size=disk_ioctl(0,GET_BLOCK_SIZE,buff);
-//    print_int(*(int*)buff,10);
-//    put_char('\r');
-//    for (i=511;i;i--){
-//        buff[i]=255;
-//    }
-//    while (1);
-//    delay_ms(2000);
     UartPrint(STDOUT,"sound initialization.\r");
     tune(&e3k[0]);
     UartPrint(STDOUT,"initialization completed.\r");

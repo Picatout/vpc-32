@@ -66,7 +66,7 @@ int KeyboardInit(){ // initialisation E/S et RAZ clavier
     while (!PORTAbits.RA0);
     IFS0bits.INT4IF=0; // RAZ indicateur interruption
     IEC0SET = _IEC0_INT4IE_MASK; // activation interruption externe 4 (KBD_CLK)
-    while ((ticks()!=t0) && ((rx_flags & F_ERROR)==0)){
+    while ((ticks()<t0) && ((rx_flags & F_ERROR)==0)){
         c=KbdScancode();
         if (c==BAT_OK){
             return 1;
@@ -85,7 +85,7 @@ static int KbdReset(void){
     KbdSend(KBD_RESET);
     t0=ticks()+750;
     c=0;
-    while ((ticks()!=t0) && ((rx_flags & F_ERROR)==0) && !c){
+    while ((ticks()<t0) && ((rx_flags & F_ERROR)==0) && !c){
             c=KbdScancode();
             if (c==KBD_ACK){
                 c=0;
@@ -323,19 +323,22 @@ short KbdKey(short scancode){  // obtient la transcription du code en ASCII
 
 void KbdSend(char cmd){  // envoie une commande au clavier
     register unsigned int dly;
+    unsigned int t0;
         bit_cnt=0;
 	parity=0;
 	IEC0CLR=_IEC0_INT4IE_MASK; // désactive les interruptions sur KBD_CLK
         TRISACLR = KBD_CLK; // MCU prend le contrôle de la ligne KBD_CLK
         LATACLR = KBD_CLK; //  mis à 0  KBD_CLK
         // délais minimum 100µsec
-        for (dly=(100/3*CLK_PER_USEC);dly;dly--);
+        delay_us(100);
         TRISACLR = KBD_DAT;	// prend le contrôle de la ligne KBD_DAT
 	LATACLR = KBD_DAT;   	// met KBD_DAT à zéro
 	TRISASET = KBD_CLK; 	// libère la ligne clock
+        t0=ticks()+100;
         while (!(PORTAbits.RA0)); // attend que la ligne revienne à 1
         while (bit_cnt<8){      // envoie les 8 bits, le moins significatif en premier.
-		while (PORTAbits.RA0);   // attend clock à 0
+		while ((ticks()<t0) && PORTAbits.RA0);   // attend clock à 0
+                if (ticks()>=t0) return; // pas de réponse du clavier. (pas de clavier!!)
                 if (cmd&1){
 			LATASET = KBD_DAT;
 			parity++;

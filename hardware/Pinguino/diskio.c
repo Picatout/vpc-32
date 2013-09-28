@@ -16,12 +16,15 @@
 //					do not support the use of the RTCC library.
 // 25 May 2012 Added includes for delay.c and digitalw.c
 
+#include <stdlib.h>
+
 //#include "ff.h"
 #include "diskio.h"
 //#include <delay.c>
 //#include <digitalw.c>
 #include "../HardwareProfile.h"
 #include "sdmmc.h"
+#include "../../shell.h"
 
 // For boards known to support the RTCC library ***Added 07 May 2012
 // to allow SD Library to support PIC32 Pinguino Micro, which
@@ -518,7 +521,7 @@ DRESULT disk_ioctl(PF_BYTE drv, /* Physical drive number (0) */
 	deselect();
 
 	return res;
-}
+}//disk_ioctl()
 
 /*-----------------------------------------------------------------------*/
 /* Device Timer Interrupt Procedure  (Platform dependent)                */
@@ -622,25 +625,21 @@ DWORD get_fattime(void) {
 #endif
 
 	return tmr;
-}
+} // get_fattime()
 
 void put_rc(FRESULT rc) {
+    char *fmt;
+
 	const char *str =
                         "OK\0" "DISK_ERR\0" "INT_ERR\0" "NOT_READY\0" "NO_FILE\0" "NO_PATH\0"
                                 "INVALID_NAME\0" "DENIED\0" "EXIST\0" "INVALID_OBJECT\0" "WRITE_PROTECTED\0"
                                 "INVALID_DRIVE\0" "NOT_ENABLED\0" "NO_FILE_SYSTEM\0" "MKFS_ABORTED\0" "TIMEOUT\0"
                                 "LOCKED\0" "NOT_ENOUGH_CORE\0" "TOO_MANY_OPEN_FILES\0";
 	FRESULT i;
-
-	for (i = 0; i != rc && *str; i++) {
-		while (*str++)
-			;
-	}
-	//CDCprintln("rc=%u FR_%s", (UINT16) rc, str);
-        print("rc=");
-        print_int(rc,5);
-        cursor_right();
-        print(str);
-        put_char('\r');
-}
+            for (i = 0; i != rc && *str; i++) {
+                    while (*str++)
+                            ;
+            }
+            print_error_msg(ERR_FIO,str,rc);
+}//put_rc()
 

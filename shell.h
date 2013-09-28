@@ -29,8 +29,22 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+#include "hardware/Pinguino/ff.h"
+    
+typedef enum {
+    ERR_NONE=0,
+    ERR_ALLOC,
+    ERR_USAGE,
+    ERR_FIL_OPEN,
+    ERR_CPY,
+    ERR_MKDIR,
+    ERR_NOTEXIST,
+    ERR_DENIED,
+    ERR_FIO
+} SH_ERROR;
 
 
+void print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code);
 
 void shell(void);
 

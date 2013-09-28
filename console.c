@@ -28,8 +28,8 @@
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 
-#define X_OFS  ((HRES%CWIDTH)/2)  // offset vidéo position curseur x
-#define Y_OFS  ((VRES%CHEIGHT)/2)  // offset vidéo position curseur y
+#define X_OFS  ((HRES-CHAR_PER_LINE*CWIDTH)/2)  // offset vidéo position curseur x
+#define Y_OFS  ((VRES-LINE_PER_SCREEN*CHEIGHT)/2)  // offset vidéo position curseur y
 
 // indicateurs booléens
 #define CUR_SHOW 1  // curseur actif

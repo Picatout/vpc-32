@@ -177,16 +177,18 @@ unsigned listDir(const char *path) {
 	UINT s1, s2;
 	DIR dir; /* Directory object */
         char * fmt;
-        fmt=malloc(CHAR_PER_LINE);
         dir.fs=Fat;
 	res = f_opendir(&dir, path);
-	p1 = s1 = s2 = 0;
-	//CDCprintln("\nf_readdir('%s'): ", path);
-        sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
-        print(comm_channel,fmt);
-//        print(comm_channel,"\rnf_readdir('");
-//        print(comm_channel,path);
-//        print(comm_channel, "'):");
+        if (!res) {
+            p1 = s1 = s2 = 0;
+            fmt=malloc(64);
+            if (!fmt) {
+                res=-1;
+            }else{
+                sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
+                print(comm_channel,fmt);
+            }
+        }
 	while (!res) {
 		res = f_readdir(&dir, &Finfo);
 #ifdef SD_DEBUG
@@ -225,11 +227,15 @@ unsigned listDir(const char *path) {
                 print(comm_channel,fmt);
 	}
         if (!res){
-            sprintf(fmt, "\rfile count %d, total size %d\r",s1,p1);
+            sprintf(fmt, "\rfile count %d, directory count %d,  total size %d\r",s1,s2,p1);
             print(comm_channel, fmt);
         }else{
-            sprintf(fmt," error code: %d\r", res);
-            print(comm_channel, fmt);
+            if (fmt){
+                    sprintf(fmt,"file i/o error code: %d\r", res);
+                    print(comm_channel, fmt);
+            }else{
+                print(comm_channel,"Memory allocation error.\r");
+            }
         }
         free(fmt);
 	return s1;

@@ -39,7 +39,7 @@ extern "C" {
 #define LINE_PER_SCREEN 28
 #define CHEIGHT (CHAR_HEIGHT+1) // espace vertical occupé par un caractère + interligne
 #define CWIDTH (CHAR_WIDTH+1) // espace horizontal occupé par un caractère + inter-char
-#define CHAR_PER_LINE ((int)(HRES/CWIDTH))
+#define CHAR_PER_LINE ((int)(HRES/CWIDTH)-1)
 #define TAB_WIDTH 4
 
 typedef  char dev_t;

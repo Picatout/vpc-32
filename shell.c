@@ -47,16 +47,46 @@
 #define MAX_LINE_LEN 80
 #define MAX_TOKEN 5
 
-#define ERR_ALLOC 0
-#define ERR_USAGE 1
-#define ERR_FIL_OPEN 2
-#define ERR_CPY 3
+typedef enum {
+    ERR_NONE=0,
+    ERR_ALLOC,
+    ERR_USAGE,
+    ERR_FIL_OPEN,
+    ERR_CPY,
+    ERR_MKDIR,
+    ERR_NOTEXIST,
+    ERR_DENIED,
+    ERR_FIO
+} SH_ERROR;
+
 const char *ERR_MSG[]={
+    "no error\r",
     "Memory allocation error.\r",
     "Bad usage.\r",
     "File open error.\r",
-    "Copy error.\r"
+    "Copy error.\r",
+    "Mkdir error.\r",
+    "file does not exist.\r",
+    "operation denied.\r",
+    "disk operation error, code is %d \r"
 };
+
+print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code){
+    char *fmt;
+    if (err_code==ERR_FIO){
+        fmt=malloc(64);
+        if (fmt){
+            sprintf(fmt,ERR_MSG[ERR_FIO],io_code);
+            print(comm_channel,fmt);
+            free(fmt);
+        }
+    }else{
+       print(comm_channel,ERR_MSG[err_code]);
+    }
+    if (strlen(detail)){
+       print(comm_channel,detail);
+    }
+}//print_error_msg()
 
 typedef struct{
     char buff[MAX_LINE_LEN]; // chaîne saisie par l'utilisateur.
@@ -140,17 +170,48 @@ int next_token(void){
 }//next_token()
 
 void cd(int i){ // change le répertoire courant.
+    char *path;
+    FRESULT error=FR_OK;
    if (i==2){
-   }else{
-
+       error=f_chdir(cmd_tokens[1]);
+   }
+   if (!error){
+       path=malloc(255);
+       if (path){
+          error=f_getcwd(path,255);
+          if(!error){
+              print(comm_channel,path);
+              put_char(comm_channel,'\r');
+          }
+          free(path);
+       }
    }
 }//cd()
 
 void del(int i){ // efface un fichier
+    FILINFO *fi;
+    FRESULT error=FR_OK;
     if (i==2){
-        f_unlink(cmd_tokens[1]);
+        fi=malloc(sizeof(FILINFO));
+        if (fi){
+            error=f_stat(cmd_tokens[1],fi);
+            if (!error){
+                if (fi->fattrib & (ATT_DIR|ATT_RO)){
+                    print_error_msg(ERR_DENIED,"can't delete directory or read only file.\r",0);
+                }
+                else{
+                    error=f_unlink(cmd_tokens[1]);
+                }
+            }
+            free(fi);
+            if (error){
+                print_error_msg(ERR_FIO,"",error);
+            }
+        }else{
+               print_error_msg(ERR_ALLOC,"delete failed.\r",0);
+        }
    }else{
-       print(comm_channel, "delete file, USAGE: del file_name\r");
+       print_error_msg(ERR_USAGE, "delete file USAGE: del file_name\r",0);
    }
 }//del()
 
@@ -158,7 +219,7 @@ void ren(int i){ // renomme un fichier
     if (i==3){
         f_rename(cmd_tokens[1],cmd_tokens[2]);
     }else{
-        print(comm_channel,"rename file, USAGE: ren name new_name\r");
+        print_error_msg(ERR_USAGE,"rename file, USAGE: ren name new_name\r",0);
     }
 }//ren
 
@@ -175,9 +236,9 @@ void copy(int i){ // copie un fichier
         if (fsrc && fnew && buff){
             if ((error=f_open(fsrc,cmd_tokens[1],FA_READ)==FR_OK) &&
                 (error=f_open(fnew,cmd_tokens[2],FA_CREATE_NEW|FA_WRITE)==FR_OK)){
-                while (error=f_read(fsrc,buff,512,&n)==FR_OK){
+                while ((error=f_read(fsrc,buff,512,&n))==FR_OK){
                     if (n){
-                        if (!(error=f_write(fnew,buff,n,&n)==FR_OK)){
+                        if (!((error=f_write(fnew,buff,n,&n))==FR_OK)){
                             break;
                         }
                     }else{
@@ -189,22 +250,20 @@ void copy(int i){ // copie un fichier
                 free(buff);
                 free(fsrc);
                 free(fnew);
-                if (error){
-                    print(comm_channel,ERR_MSG[ERR_CPY]);
-                    print_int(comm_channel, error,1);
-                }
-            }else{
-                print(comm_channel,ERR_MSG[ERR_FIL_OPEN]);
+            }
+            if (error){
+                print_error_msg(ERR_FIO,"copy failed.\r",error);
             }
         }else{
             print(comm_channel,ERR_MSG[ERR_ALLOC]);
         }
     }else{
-        print(comm_channel,"copy file USAGE: copy file_name new_file_name\r");
+        print_error_msg(ERR_USAGE,"copy file USAGE: copy file_name new_file_name\r",0);
     }
 }//copy()
 
 void send(int i){ // envoie un fichier via uart
+    // to do
    if (i==2){
    }else{
        print(comm_channel, "send file via serial, USAGE: send file_name\r");
@@ -212,6 +271,7 @@ void send(int i){ // envoie un fichier via uart
 }//send()
 
 void receive(int i){ // reçois un fichier via uart
+    // to do
    if (i==2){
    }else{
        print(comm_channel, "receive file from serial, USAGE: receive file_name\r");
@@ -224,9 +284,10 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     char *fmt, *buff, *rbuff, c, prev;
     int n,lcnt;
     text_coord_t cpos;
+    FRESULT error=FR_OK;
     if (i==2){
         fh=malloc(sizeof(FIL));
-        if (fh && (f_open(fh,cmd_tokens[1],FA_READ)==FR_OK)){
+        if (fh && ((error=f_open(fh,cmd_tokens[1],FA_READ))==FR_OK)){
             buff=malloc(512);
             fmt=malloc(64);
             if (fmt && buff){
@@ -248,7 +309,7 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                         cpos=get_curpos();
                         if (cpos.x==0){
                             lcnt++;
-                            if (lcnt==(LINE_PER_SCREEN-1)){
+                            if ((comm_channel==LOCAL_CON) && lcnt==(LINE_PER_SCREEN-1)){
                                 print(comm_channel,"-- next --");
                                 wait_key(comm_channel);
                                 set_curpos(cpos.x,cpos.y);
@@ -263,25 +324,42 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                 free(buff);
                 free(fmt);
             }else{
-                print(comm_channel,ERR_MSG[ERR_ALLOC]);
+                print_error_msg(ERR_ALLOC,"Can't display file.\r",0);
             }
         }else{
-            print(comm_channel,"file open failed.\r");
+            print_error_msg(ERR_FIO,"File open failed.\r",error);
         }
    }else{
-       print(comm_channel, "display text file 1 screen fill at time.\r");
-       print(comm_channel, "USAGE: more file_name\r");
+       print_error_msg(ERR_USAGE, "USAGE: more file_name\r",0);
    }
 }//more
 
 void editor(int i){ // lance l'éditeur de texte
-
+    if (i>1){
+        ed(cmd_tokens[1]);
+    }else{
+        ed(NULL);
+    }
 }//editor()
 
 void mkdir(int i){
+    FRESULT error=FR_OK;
+    char *fmt;
+
     if (i==2){
+        fmt=malloc(CHAR_PER_LINE+1);
+        if (fmt && (error=f_mkdir(cmd_tokens[1])==FR_OK)){
+            sprintf(fmt,"directory %s created\r",cmd_tokens[1]);
+            print(comm_channel,fmt);
+        }else{
+            if (!fmt){
+                print(comm_channel,ERR_MSG[ERR_ALLOC]);
+            }else{
+                print(comm_channel,ERR_MSG[ERR_MKDIR]);
+            }
+        }
     }else{
-        print(comm_channel,"mkdir create a directory, USAGE: mkdir dir_name\r");
+        print_error_msg(ERR_USAGE,"mkdir create a directory, USAGE: mkdir dir_name\r",0);
     }
 }// mkdir()
 
@@ -289,7 +367,7 @@ void list_directory(int i){
     if (i>1){
         listDir(cmd_tokens[1]);
     }else{
-        listDir("/");
+        listDir(".");
     }
 }//list_directory()
 
