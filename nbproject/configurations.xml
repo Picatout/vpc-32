@@ -27,6 +27,7 @@
       <itemPath>sound.h</itemPath>
       <itemPath>editor.h</itemPath>
       <itemPath>shell.h</itemPath>
+      <itemPath>graphics.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -57,6 +58,7 @@
       <itemPath>editor.c</itemPath>
       <itemPath>shell.c</itemPath>
       <itemPath>vpc-32.c</itemPath>
+      <itemPath>graphics.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -174,6 +176,9 @@
         <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
+        <property key="legacy-libc" value="false"/>
+        <property key="save-temps" value="false"/>
+        <property key="wpo-lto" value="false"/>
       </C32Global>
       <PICkit3PlatformTool>
         <property key="firmware.download.all" value="false"/>

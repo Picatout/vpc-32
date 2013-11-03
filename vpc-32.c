@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <plib.h>
-
+#include "graphics.h"
 
 #include "hardware/HardwareProfile.h"
 #include "hardware/ntsc.h"
@@ -99,6 +99,19 @@ void test_pattern(void){
     print(LOCAL_CON,msg2);
 }//test_pattern()
 
+const int pts[6]={HRES/2,VRES/2,HRES/2+HRES/3,VRES/2+VRES/3,HRES/2-HRES/3,VRES/2+VRES/3};
+
+void graphics_test(){ // test des fonctions graphiques
+    int i;
+    rectangle(50,50,200,200);
+//    polygon(pts,3);
+//    line(HRES/2,0,HRES/2,VRES-1);
+//    line(0,VRES/2,HRES-1,VRES/2);
+   // for (i=0;i<100;i++){
+   //     ellipse(HRES/3+i,VRES/3+i,50,30);
+   // }
+}//graphics_test
+
 const unsigned int e3k[]={ // rencontre du 3ième type
 784,500, // sol4
 880,500,// la4
@@ -136,6 +149,7 @@ void main(void) {
     UartPrint(STDOUT,"initialization completed.\r");
     set_cursor(CR_BLOCK);
     clear_screen();
+    graphics_test();
     shell();
 } // main()
 

@@ -28,12 +28,13 @@
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 
-#define X_OFS  ((HRES-CHAR_PER_LINE*CWIDTH)/2)  // offset vidéo position curseur x
-#define Y_OFS  ((VRES-LINE_PER_SCREEN*CHEIGHT)/2)  // offset vidéo position curseur y
+#define X_OFS  ((HRES-CHAR_PER_LINE*CHAR_WIDTH)/2)  // offset vidéo position curseur x
+#define Y_OFS  ((VRES-LINE_PER_SCREEN*CHAR_HEIGHT)/2)  // offset vidéo position curseur y
 
 // indicateurs booléens
 #define CUR_SHOW 1  // curseur actif
 #define CUR_VIS  2  // curseur visible
+#define INV_VID  4  // inverse vidéo
 
 
 static unsigned short cx=X_OFS, cy=Y_OFS;  // coordonnée courante du curseur texte en pixels.
@@ -47,41 +48,41 @@ unsigned char comm_channel=LOCAL_CON;
 void scroll_up(void){
     char *src, *dst;
     dst = (char*)video_bmp+Y_OFS*HRES/8;
-    src = (char*)video_bmp +(CHEIGHT+Y_OFS)*HRES/8;
-    memmove(dst,src,(LINE_PER_SCREEN-1)*CHEIGHT*HRES/8);
-    dst= (char*)video_bmp+(CHEIGHT*(LINE_PER_SCREEN-1)+Y_OFS)*HRES/8;
-    memset(dst,0,HRES/8*CHEIGHT);
+    src = (char*)video_bmp +(CHAR_HEIGHT+Y_OFS)*HRES/8;
+    memmove(dst,src,(LINE_PER_SCREEN-1)*CHAR_HEIGHT*HRES/8);
+    dst= (char*)video_bmp+(CHAR_HEIGHT*(LINE_PER_SCREEN-1)+Y_OFS)*HRES/8;
+    memset(dst,0,HRES/8*CHAR_HEIGHT);
 }//scroll_up();
 
 void scroll_down(void){
     char *src, *dst;
     src = (char*)video_bmp+Y_OFS*HRES/8;
-    dst = (char*)video_bmp+(CHEIGHT+Y_OFS)*HRES/8;
-    memmove(dst,src,(LINE_PER_SCREEN-1)*CHEIGHT*HRES/8);
+    dst = (char*)video_bmp+(CHAR_HEIGHT+Y_OFS)*HRES/8;
+    memmove(dst,src,(LINE_PER_SCREEN-1)*CHAR_HEIGHT*HRES/8);
     dst=(char*)video_bmp+Y_OFS*HRES/8;
-    memset(dst,0,HRES/8*CHEIGHT);
+    memset(dst,0,HRES/8*CHAR_HEIGHT);
 }//scroll_down()
 
 
 void cursor_right(void){
-    cx += CWIDTH;
-    if (cx>(CHAR_PER_LINE*CWIDTH)){
+    cx += CHAR_WIDTH;
+    if (cx>(CHAR_PER_LINE*CHAR_WIDTH)){
         cx = X_OFS;
-        cy += CHEIGHT;
-        if (cy>(LINE_PER_SCREEN*CHEIGHT)){
+        cy += CHAR_HEIGHT;
+        if (cy>(LINE_PER_SCREEN*CHAR_HEIGHT)){
             scroll_up();
-            cy -= CHEIGHT;
+            cy -= CHAR_HEIGHT;
         }
     }
 } // cursor_right()
 
 void cursor_left(void){
-    if (cx>=(X_OFS+CWIDTH)){
-        cx -= CWIDTH;
+    if (cx>=(X_OFS+CHAR_WIDTH)){
+        cx -= CHAR_WIDTH;
     }else{
-        cx = X_OFS+CWIDTH*(CHAR_PER_LINE-1);
-        if (cy>=(Y_OFS+CHEIGHT)){
-            cy -= CHEIGHT;
+        cx = X_OFS+CHAR_WIDTH*(CHAR_PER_LINE-1);
+        if (cy>=(Y_OFS+CHAR_HEIGHT)){
+            cy -= CHAR_HEIGHT;
         }else{
             scroll_down();
         }
@@ -89,16 +90,16 @@ void cursor_left(void){
 }// cursor_left()
 
 void cursor_up(void){
-    if (cy>=(Y_OFS+CHEIGHT)){
-        cy -= CHEIGHT;
+    if (cy>=(Y_OFS+CHAR_HEIGHT)){
+        cy -= CHAR_HEIGHT;
     }else{
         scroll_down();
     }
 }// cursor_up()
 
 void cursor_down(void){
-    if (cy<=(Y_OFS+(CHEIGHT*(LINE_PER_SCREEN-2)))){
-        cy += CHEIGHT;
+    if (cy<=(Y_OFS+(CHAR_HEIGHT*(LINE_PER_SCREEN-2)))){
+        cy += CHAR_HEIGHT;
     }else{
         scroll_up();
     }
@@ -106,10 +107,10 @@ void cursor_down(void){
 
 void crlf(void){
     cx=X_OFS;
-    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
+    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
         scroll_up();
     }else{
-        cy += CHEIGHT;
+        cy += CHAR_HEIGHT;
     }
 }//crlf()
 
@@ -124,12 +125,12 @@ void put_char(dev_t channel, char c){
                 break;
             case TAB:
                 cx += (cx%tab_width);
-                if (cx>=(X_OFS+CHAR_PER_LINE*CWIDTH)){
+                if (cx>=(X_OFS+CHAR_PER_LINE*CHAR_WIDTH)){
                     cx = X_OFS;
-                    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHEIGHT)){
+                    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
                         scroll_up();
                     }else{
-                        cy += CHEIGHT;
+                        cy += CHAR_HEIGHT;
                     }
                 }
                 break;
@@ -139,22 +140,34 @@ void put_char(dev_t channel, char c){
             default:
                 if ((c<32) || (c>(FONT_SIZE+32))) break;
                 c -=32;
-                b=x>>5;
+                b=x>>5; // position index ligne video_bmp
                 r=0;
-                l=27-(x&0x1f);
+                l=(32-CHAR_WIDTH)-(x&0x1f); // décalage  à l'intérieur de l'entier
                 if (l<0){
                     r=-l;
                 }
-                for (i=0;i<7;i++){
+                for (i=0;i<8;i++){
                     if (r){
-                        video_bmp[y][b] &= ~(0x1f>>r);
-                        video_bmp[y][b] |= font5x7[c][i]>>r;
-                        video_bmp[y][b+1] &= ~(0x1f<<32-r);
-                        video_bmp[y][b+1] |= font5x7[c][i]<<(32-r);
+                        if (flags & INV_VID){
+                            video_bmp[y][b] |= (0x3f>>r);
+                            video_bmp[y][b] &=~(font6x8[c][i]>>r);
+                            video_bmp[y][b+1] |= (0x3f<<32-r);
+                            video_bmp[y][b+1] &= ~(font6x8[c][i]<<(32-r));
+                        }else{
+                            video_bmp[y][b] &= ~(0x3f>>r);
+                            video_bmp[y][b] |= font6x8[c][i]>>r;
+                            video_bmp[y][b+1] &= ~(0x3f<<32-r);
+                            video_bmp[y][b+1] |= font6x8[c][i]<<(32-r);
+                        }
                         y++;
                     } else{
-                        video_bmp[y][b] &= ~(0x1f<<l);
-                        video_bmp[y++][b] |= font5x7[c][i]<<l;
+                        if (flags & INV_VID){
+                            video_bmp[y][b] |= (0x3f<<l);
+                            video_bmp[y++][b] &=~(font6x8[c][i]<<l);
+                        }else{
+                            video_bmp[y][b] &= ~(0x3f<<l);
+                            video_bmp[y++][b] |= font6x8[c][i]<<l;
+                        }
                     }
                 }
                 cursor_right();
@@ -235,9 +248,8 @@ void clear_eol(void){
     int x,y;
     x=cx;
     y=cy;
-    while (cx<(X_OFS+CWIDTH*(CHAR_PER_LINE-1))){
+    while (cx<(X_OFS+CHAR_WIDTH*(CHAR_PER_LINE-2))){
         put_char(LOCAL_CON, 32);
-        cursor_right();
     }
     put_char(LOCAL_CON, 32);
     cx=x;
@@ -246,16 +258,16 @@ void clear_eol(void){
 
 text_coord_t get_curpos(){
     text_coord_t cpos;
-    cpos.x = (cx-X_OFS)/CWIDTH;
-    cpos.y = (cy-Y_OFS)/CHEIGHT;
+    cpos.x = (cx-X_OFS)/CHAR_WIDTH;
+    cpos.y = (cy-Y_OFS)/CHAR_HEIGHT;
     return cpos;
 } // get_cursor_pos()
 
 void set_curpos(unsigned short x, unsigned short y){// {x,y} coordonnée caractère
     if (x>(CHAR_PER_LINE-1) || y>(LINE_PER_SCREEN-1))
         return;
-    cx=x*CWIDTH+X_OFS;
-    cy=y*CHEIGHT+Y_OFS;
+    cx=x*CHAR_WIDTH+X_OFS;
+    cy=y*CHAR_HEIGHT+Y_OFS;
 }//set_curpos()
 
 void invert_char(void){// inverse vidéo du caractère à la position courante
@@ -264,17 +276,17 @@ void invert_char(void){// inverse vidéo du caractère à la position courante
     y=cy;
     b=x>>5;
     r=0;
-    l=27-(x&0x1f);
+    l=(32-CHAR_WIDTH)-(x&0x1f);
     if (l<0){
         r=-l;
     }
-    for (i=8;i;i--){
+    for (i=9;i;i--){
         if (r){
-            video_bmp[y][b] ^= (0x1f>>r);
-            video_bmp[y][b+1] ^= (0x1f<<32-r);
+            video_bmp[y][b] ^= (0x3f>>r);
+            video_bmp[y][b+1] ^= (0x3f<<32-r);
             y++;
         } else{
-            video_bmp[y++][b] ^= (0x1f<<l);
+            video_bmp[y++][b] ^= (0x3f<<l);
         }
     }
 }//invert_char()
@@ -284,15 +296,15 @@ static void toggle_underscore(void){
     x=cx;
     b=x>>5;
     r=0;
-    l=27-(x&0x1f);
+    l=(32-CHAR_WIDTH)-(x&0x1f);
     if (l<0){
         r=-l;
     }
     if (r){
-        video_bmp[cy+CHEIGHT-1][b] ^= (0x1f>>r);
-        video_bmp[cy+CHEIGHT-1][b+1] ^= (0x1f<<32-r);
+        video_bmp[cy+CHAR_HEIGHT-1][b] ^= (0x3f>>r);
+        video_bmp[cy+CHAR_HEIGHT-1][b+1] ^= (0x3f<<32-r);
     } else{
-        video_bmp[cy+CHEIGHT-1][b] ^= (0x1f<<l);
+        video_bmp[cy+CHAR_HEIGHT-1][b] ^= (0x3f<<l);
     }
 }//toggle_underscore()
 
@@ -393,3 +405,11 @@ unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_cha
     }
     return count;
 } // readline()
+
+void invert_video(unsigned char invert){
+    if (invert){
+        flags |= INV_VID;
+    }else{
+        flags &= ~INV_VID;
+    }
+}//invert_video()

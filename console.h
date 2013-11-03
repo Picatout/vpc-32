@@ -36,11 +36,16 @@ extern "C" {
 #include "hardware/ntsc.h"
 #include "hardware/HardwareProfile.h"
     
-#define LINE_PER_SCREEN 28
-#define CHEIGHT (CHAR_HEIGHT+1) // espace vertical occupé par un caractère + interligne
-#define CWIDTH (CHAR_WIDTH+1) // espace horizontal occupé par un caractère + inter-char
-#define CHAR_PER_LINE ((int)(HRES/CWIDTH)-1)
+#define LINE_PER_SCREEN ((int)VRES/CHAR_HEIGHT)
+#define CHAR_PER_LINE ((int)(HRES/CHAR_WIDTH)-1)
 #define TAB_WIDTH 4
+
+#define ESC 27
+#define CR  13
+#define LF  10
+#define TAB 9
+#define SPACE 32
+
 
 typedef  char dev_t;
 
@@ -76,7 +81,7 @@ extern unsigned char comm_channel;
     unsigned short get_key(dev_t channel); // lecture touches clavier
     unsigned short wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
     unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char); // lit une ligne au clavier, retourne la longueur de texte.
-
+    void invert_video(unsigned char invert); // inverse vidéo des caractèrs noir/blanc
 #ifdef	__cplusplus
 }
 #endif

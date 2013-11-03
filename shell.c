@@ -103,7 +103,7 @@ typedef enum CMDS {CMD_CD,CMD_DIR,CMD_DEL,CMD_REN,CMD_ED,CMD_CPY,CMD_SND,CMD_RCV
 
 #define CMD_LEN 13
 const char *commands[CMD_LEN]={
-    "cd", "dir","del","ren","edit","copy","send","receive","forth","clear","reboot","more","mkdir"};
+    "cd", "dir","del","ren","edit","copy","send","receive","forth","cls","reboot","more","mkdir"};
 
 int cmd_search(char *target){
     int i;
@@ -281,7 +281,7 @@ void receive(int i){ // reçois un fichier via uart
 
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
-    char *fmt, *buff, *rbuff, c, prev;
+    char *fmt, *buff, *rbuff, c, prev,key;
     int n,lcnt;
     text_coord_t cpos;
     FRESULT error=FR_OK;
@@ -295,7 +295,8 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                 print(comm_channel,fmt);
                 lcnt=0;
                 prev=0;
-                while (f_read(fh,buff,512,&n)==FR_OK){
+                key=0;
+                while (key!=ESC && f_read(fh,buff,512,&n)==FR_OK){
                     if (!n) break;
                     rbuff=buff;
                     for(;n;n--){
@@ -306,15 +307,24 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                         if ((c!=9 && c!='\r') && (c<32 || c>126)) {c=32;}
                         put_char(comm_channel,c);
                         prev=c;
-                        cpos=get_curpos();
-                        if (cpos.x==0){
-                            lcnt++;
-                            if ((comm_channel==LOCAL_CON) && lcnt==(LINE_PER_SCREEN-1)){
-                                print(comm_channel,"-- next --");
-                                wait_key(comm_channel);
-                                set_curpos(cpos.x,cpos.y);
-                                clear_eol();
-                                lcnt=0;
+                        if (comm_channel==LOCAL_CON){
+                            cpos=get_curpos();
+                            if (cpos.x==0){
+                                lcnt++;
+                                if (lcnt==(LINE_PER_SCREEN-1)){
+                                    invert_video(TRUE);
+                                    print(comm_channel,"-- next --");
+                                    invert_video(FALSE);
+                                    key=wait_key(comm_channel);
+                                    if (key=='q' || key==ESC){key=ESC; break;}
+                                    set_curpos(cpos.x,cpos.y);
+                                    clear_eol();
+                                    if (key==CR){
+                                        lcnt--;
+                                    }else{
+                                        lcnt=0;
+                                    }
+                                }
                             }
                         }
                     }

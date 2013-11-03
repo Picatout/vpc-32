@@ -1608,9 +1608,11 @@ void wordsf(void)
 // coretim ( -- u )
 void coretim(void) {PUSH(ReadCoreTimer());}
 
+// msectim ( -- u)  milliseconds timer
+void msectim(void) {PUSH(ticks());}
 
-// ms ( u -- )
-void msec(void) {delay_us(POP*1000);}
+// pause ( u -- )
+void pause(void) {delay_us(POP*1000);}
 
 
 // flash ( -- )
@@ -1782,8 +1784,8 @@ const PRIMWORD primwords[] =
 //	{5,pr|4,"only",nop}, {6,pr|5,"order",nop}, {7,pr|10,"vocabulary",nop},
 	{8,pr|5,"words",wordsf},
 	// Device
-	{1,pr|7,"coretim",coretim}, {2,pr|2,"ms",msec}, {3,pr|5,"flash",flash}, {4,pr|6,">flash",toflash},
-	{5,pr|6,";flash",endflash}, 
+	{1,pr|7,"coretim",coretim}, {2,pr|2,"pause",pause}, {3,pr|5,"flash",flash}, {4,pr|6,">flash",toflash},
+        {5,pr|6,";flash",endflash},
 #ifndef VPC_32    
         {6,pr|7,"devhead",devhead}, {7,pr|7,"devcall",devcall},
 #endif
@@ -1795,6 +1797,7 @@ const PRIMWORD primwords[] =
 #ifdef VPC_32
         {9,pr|4,"beep",beep},
         {10,pr|4,"tune",play_tune},
+        {11,pr|7,"msectim",msectim},
 #endif
 	{0xFF,pr,"",nop}
 

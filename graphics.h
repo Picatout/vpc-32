@@ -15,27 +15,25 @@
 *     You should have received a copy of the GNU General Public License
 *     along with VPC-32.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 /* 
- * File:   font.h
+ * File:   graphics.h
  * Author: Jacques Deschênes
  *
- * Created on 23 août 2013, 07:32
+ * Created on 2 novembre 2013, 19:57
  */
 
-#ifndef FONT_H
-#define	FONT_H
+#ifndef GRAPHICS_H
+#define	GRAPHICS_H
+
+void plot(int x, int y);
+void line(int x1, int y1, int x2, int y2);
+void rectangle(int x1, int y1, int x2, int y2);
+void ellipse (int xc, int yc, int rx, int ry);
+void polygon(int points[],int vertices);
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-#define CHAR_HEIGHT 8
-#define CHAR_WIDTH 6   // incluant l'espace à droite
-#define FONT_SIZE 96  // nombre de caractères dans la table
-    
-
-extern const unsigned char font6x8[FONT_SIZE][CHAR_HEIGHT];
 
 
 
@@ -44,5 +42,5 @@ extern const unsigned char font6x8[FONT_SIZE][CHAR_HEIGHT];
 }
 #endif
 
-#endif	/* FONT_H */
+#endif	/* GRAPHICS_H */
 

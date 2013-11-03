@@ -1,18 +1,19 @@
 build/default/production/vpc-32.o:  \
 vpc-32.c  \
-hardware/HardwareProfile.h  \
- hardware/ntsc.h  \
+graphics.h  \
+ hardware/HardwareProfile.h  \
+hardware/ntsc.h  \
 hardware/serial_comm.h  \
-hardware/keyboard.h  \
- hardware/Pinguino/diskio.h  \
-hardware/Pinguino/integer.h  \
- hardware/Pinguino/ff.h  \
-hardware/Pinguino/typedef.h  \
- hardware/Pinguino/ffconf.h  \
+ hardware/keyboard.h  \
+hardware/Pinguino/diskio.h  \
+ hardware/Pinguino/integer.h  \
+hardware/Pinguino/ff.h  \
+ hardware/Pinguino/typedef.h  \
+hardware/Pinguino/ffconf.h  \
 console.h  \
 font.h  \
-hardware/Pinguino/ff.h  \
- vpForth/opcodes.h  \
-vpForth/vpForth.h  \
+ hardware/Pinguino/ff.h  \
 vpForth/opcodes.h  \
+vpForth/vpForth.h  \
+ vpForth/opcodes.h  \
 sound.h 

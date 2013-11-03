@@ -33,63 +33,155 @@
 #include "hardware/Pinguino/ff.h"
 
 #define BUFF_SIZE 8192 // dimension tampon editeur.
+#define LOWER 0   // quel buffer utilisé
+#define UPPER 1
 
 static const char *ED_TEMP="ed.tmp";
 
-static unsigned short line, col; // position du curseur texte
 
-static char *ed_buff=NULL;
-static char *fname=NULL;
-static FILINFO *fi=NULL;
-static FIL     *fh=NULL;
+#define  MODIFIED 1
+#define  NEW 2
+#define  F_INSERT 4  // 1=insert, 0=overwrite
 
-FRESULT open_for_edit(char *file_name){
+
+static unsigned char edFlags=0;  // indicateurs booléens.
+static unsigned int fsize=0;    // grosseur du fichier.
+static unsigned short sline=0; // position du curseur
+static unsigned short scol=0;  // à l'écran.
+static unsigned int bline=0;    // position du curseur
+static unsigned int bcol=0;     // dans le texte.
+static char *ipos=0;  // pointeur du point d'insertion dans le tampon.
+static char *tpos=0;  // position de la fin du texte après la fente.
+static char *ed_buff=NULL;  // pointeur début du tampon texte.
+static char *ftemp=NULL;   // nom du fichier temporaire
+static char *fname=NULL;   // nom du fichier
+static FILINFO *fi=NULL;   // information fichier (File Control Block).
+static FIL     *fn=NULL;  // handle fichier édité.
+static FIL     *ft=NULL;  // handle fichier temporaire.
+
+
+/*
+ * copie le fichier source dans le fichier temporaire.
+ * les fins de ligne CRLF sont converties en LF.
+ * les TAB sont convertis en espaces.
+ */
+void read_file(unsigned int i){
     FRESULT error=FR_OK;
-    if (file_name){
-        fname=file_name;
-        error=f_stat(fname,fi);
-        if (error==FR_OK){
-            error=f_open(fh,fname,FA_WRITE);
-
-        }else if (error==FR_NO_FILE){
-            error=f_open(fh,fname,FA_CREATE_NEW|FA_WRITE);
-        }
-    }else{
-        fname=(char *)ED_TEMP;
-        error=f_unlink(fname);
-        error=f_open(fh,fname,FA_CREATE_NEW|FA_WRITE);
+    unsigned int j,cnt, size=0,line,col;
+    unsigned char prev, c;
+    for(;i && !error;i--){
+        error=f_read(fn,ed_buff,512,&cnt);
+        j=0;
+        c=0;
+        line=0;
+        col=0;
+        tpos=ed_buff+516;
+        while (cnt){
+            prev=c;
+            c= *ed_buff++;
+            cnt--;
+            switch (c){
+                case CR:
+                    *ipos++=LF;
+                    col=0;
+                    line++;
+                    j++;
+                    break;
+                case LF:
+                    if (prev!=CR){
+                        *ipos++=LF;
+                        col=0;
+                        line++;
+                        j++;
+                    }
+                    break;
+                case TAB:
+                    *ipos++=SPACE;
+                    col++;
+                    j++;
+                    while(col % TAB_WIDTH){
+                        *ipos++=SPACE;
+                        col++;
+                        j++;
+                    }
+                    break;
+                default:
+                    if (c<32 || c>127){
+                        *ipos++=127;
+                    }else{
+                        *ipos++=c;
+                    }
+                    col++;
+                    j++;
+            }
+        }//while(j)
+        error=f_write(ft,ed_buff+516,j,&cnt);
+        size+=cnt;
     }
-    return error;
-}//opne_for_edit()
+    error=f_close(fn);
+    fsize=size;
+    error=f_lseek(ft,0);
+    if (size>BUFF_SIZE/3){
+        error=f_read(ft,ed_buff+BUFF_SIZE*2/3,BUFF_SIZE/3,&cnt);
+    }else{
+        error=f_read(ft,ed_buff+BUFF_SIZE-size,size,&cnt);
+    }
+
+}//read_file()
+
+void update_window(){
+    text_coord_t curpos;
+    
+}//update_window()
 
 void close_file(){
 }//close_file()
-
-void update_window(){
-}//update_window()
 
 void edit_file(){
     FRESULT error;
     unsigned int i;
     unsigned short c;
-    if (fi->fsize > (BUFF_SIZE/2)){
-        error=f_read(fh,ed_buff,(BUFF_SIZE/2),&i);
-    }else{
-        error=f_read(fh,ed_buff,fi->fsize,&i);
-    }
     if (error==FR_OK){
-        line=0;
-        col=0;
+        bline=0;
+        bcol=0;
+        sline=0;
+        scol=0;
+        edFlags |= F_INSERT;
+        set_cursor(CR_UNDER);
+        clear_screen();
         update_window();
         while (1){
             c=wait_key(comm_channel);
             switch(c){
             }//switch
-        }
+        }//while
     }else{
-        error=f_close(fh);
+        error=f_close(fn);
+        error=f_close(ft);
+        error=f_unlink(ftemp);
     }
 }//edit_file()
+
+FRESULT open_for_edit(char *file_name){
+    FRESULT error=FR_OK;
+    // fichier de travail temporaire
+    ftemp=(char *)ED_TEMP;
+    error=f_unlink(ftemp); // supprime s'il existe déjà.
+    error=f_open(ft,ftemp,FA_CREATE_NEW|FA_WRITE);
+    edFlags=0;
+    if (!error && file_name){
+        fname=file_name;
+        error=f_stat(fname,fi);
+        if (error==FR_OK){
+            error=f_open(fn,fname,FA_READ);
+            read_file(fn->fsize);
+        }else if (error==FR_NO_FILE){
+            fn=NULL;
+            edFlags |= NEW;
+        }
+    }
+    return error;
+}//open_for_edit()
 
 void ed(char *file_name){
     FRESULT error;
@@ -97,20 +189,22 @@ void ed(char *file_name){
         print(comm_channel, "This editor only works on local console.\r");
     }else{
         fi=malloc(sizeof(FILINFO));
-        fh=malloc(sizeof(FIL));
+        fn=malloc(sizeof(FIL));
+        ft=malloc(sizeof(FIL));
         ed_buff=calloc(BUFF_SIZE,sizeof(char));
-        if (fi && fh && ed_buff){
+        if (fi && fn && ft && ed_buff){
             if ((error=open_for_edit(file_name))==FR_OK){
                 edit_file();
             }else{
                 print_error_msg(ERR_FIO,"",error);
             }
         }else{
-            print_error_msg(ERR_ALLOC,"Not enough memory\r",0);
+            print_error_msg(ERR_ALLOC,"Not enough memory.\r",0);
         }
     }//else
     free(fi);
-    free(fh);
+    free(fn);
+    free(ft);
     free(ed_buff);
 } // ed()
 
