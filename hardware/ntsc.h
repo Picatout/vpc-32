@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#define VRES 230  // résolution verticale
+#define VRES 224  // résolution verticale
 #define HRES 320  // résolution horizontale
 
 extern unsigned int video_bmp[VRES][HRES/32];

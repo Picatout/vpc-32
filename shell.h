@@ -33,6 +33,7 @@ extern "C" {
     
 typedef enum {
     ERR_NONE=0,
+    ERR_NOT_DONE,
     ERR_ALLOC,
     ERR_USAGE,
     ERR_FIL_OPEN,
@@ -40,11 +41,13 @@ typedef enum {
     ERR_MKDIR,
     ERR_NOTEXIST,
     ERR_DENIED,
-    ERR_FIO
+    ERR_FIO,
+    ERR_NO_SDCARD
 } SH_ERROR;
 
 
-void print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code);
+
+void print_error_msg(SH_ERROR err_code, const char *detail, FRESULT io_code);
 
 void shell(void);
 

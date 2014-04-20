@@ -6,7 +6,7 @@ Copyright 2013, Jacques Deschênes
 L'ensemble du projet logiciel sauf ce qui est sous droits réservés par Microchip ou autre ayant droit, est sous GPLv3
 Lire copying.txt  au  sujet de GPLv3.
 
-Le projet KiCad est sous licence Creative Commons  CC BY-SA
+Le projet schématique KiCad est sous licence Creative Commons  CC BY-SA
 Lire à ce sujet: http://creativecommons.org/licenses/by-sa/2.0/legalcode
 
 jd_temp@yahoo.fr

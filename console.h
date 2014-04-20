@@ -45,7 +45,7 @@ extern "C" {
 #define LF  10
 #define TAB 9
 #define SPACE 32
-
+#define FF 12
 
 typedef  char dev_t;
 

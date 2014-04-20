@@ -33,6 +33,7 @@
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
+#include "hardware/Pinguino/fileio.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
 #include "vpForth/opcodes.h"
@@ -79,6 +80,7 @@ const char *msg1=" ntsc video target\r";
 const char *msg2="0123456789012345678901234567890123456789012345678901"; // 52 caractères par ligne
 
 
+
 void test_pattern(void){
     int i,j;
     for (i=0;i<VRES;i++){
@@ -103,13 +105,13 @@ const int pts[6]={HRES/2,VRES/2,HRES/2+HRES/3,VRES/2+VRES/3,HRES/2-HRES/3,VRES/2
 
 void graphics_test(){ // test des fonctions graphiques
     int i;
-    rectangle(50,50,200,200);
-//    polygon(pts,3);
-//    line(HRES/2,0,HRES/2,VRES-1);
-//    line(0,VRES/2,HRES-1,VRES/2);
-   // for (i=0;i<100;i++){
-   //     ellipse(HRES/3+i,VRES/3+i,50,30);
-   // }
+    rectangle(20,40,300,200);
+    polygon(pts,3);
+    circle(HRES/2,VRES/2,100);
+//    for (i=0;i<100;i++){
+//        ellipse(HRES/3+i,VRES/3+i,50,30);
+//    }
+    besiez(20,200,20,40,300,40);
 }//graphics_test
 
 const unsigned int e3k[]={ // rencontre du 3ième type
@@ -143,6 +145,9 @@ void main(void) {
     UartPrint(STDOUT,"SD initialization: ");
     if (!mount(0)){
         UartPrint(STDOUT,"Failed\r");
+        SDCardReady=FALSE;
+    }else{
+        SDCardReady=TRUE;
     }
     UartPrint(STDOUT,"sound initialization.\r");
     tune(&e3k[0]);

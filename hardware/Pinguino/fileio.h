@@ -56,6 +56,9 @@ typedef struct {
 } DIRTABLE;
 
 // globals
+
+extern BOOL SDCardReady;
+
 char SDCS;
 
 char FError; // error mail box

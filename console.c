@@ -28,8 +28,6 @@
 #include "hardware/serial_comm.h"
 #include "hardware/keyboard.h"
 
-#define X_OFS  ((HRES-CHAR_PER_LINE*CHAR_WIDTH)/2)  // offset vidéo position curseur x
-#define Y_OFS  ((VRES-LINE_PER_SCREEN*CHAR_HEIGHT)/2)  // offset vidéo position curseur y
 
 // indicateurs booléens
 #define CUR_SHOW 1  // curseur actif
@@ -37,7 +35,7 @@
 #define INV_VID  4  // inverse vidéo
 
 
-static unsigned short cx=X_OFS, cy=Y_OFS;  // coordonnée courante du curseur texte en pixels.
+static unsigned short cx=0, cy=0;  // coordonnée courante du curseur texte en pixels.
 static unsigned char tab_width=TAB_WIDTH;
 static cursor_t cur_shape=CR_UNDER;
 static unsigned short flags=0;
@@ -47,19 +45,19 @@ unsigned char comm_channel=LOCAL_CON;
 
 void scroll_up(void){
     char *src, *dst;
-    dst = (char*)video_bmp+Y_OFS*HRES/8;
-    src = (char*)video_bmp +(CHAR_HEIGHT+Y_OFS)*HRES/8;
+    dst = (char*)video_bmp;
+    src = (char*)video_bmp +(CHAR_HEIGHT)*HRES/8;
     memmove(dst,src,(LINE_PER_SCREEN-1)*CHAR_HEIGHT*HRES/8);
-    dst= (char*)video_bmp+(CHAR_HEIGHT*(LINE_PER_SCREEN-1)+Y_OFS)*HRES/8;
+    dst= (char*)video_bmp+(CHAR_HEIGHT*(LINE_PER_SCREEN-1))*HRES/8;
     memset(dst,0,HRES/8*CHAR_HEIGHT);
 }//scroll_up();
 
 void scroll_down(void){
     char *src, *dst;
-    src = (char*)video_bmp+Y_OFS*HRES/8;
-    dst = (char*)video_bmp+(CHAR_HEIGHT+Y_OFS)*HRES/8;
+    src = (char*)video_bmp;
+    dst = (char*)video_bmp+(CHAR_HEIGHT)*HRES/8;
     memmove(dst,src,(LINE_PER_SCREEN-1)*CHAR_HEIGHT*HRES/8);
-    dst=(char*)video_bmp+Y_OFS*HRES/8;
+    dst=(char*)video_bmp;
     memset(dst,0,HRES/8*CHAR_HEIGHT);
 }//scroll_down()
 
@@ -67,7 +65,7 @@ void scroll_down(void){
 void cursor_right(void){
     cx += CHAR_WIDTH;
     if (cx>(CHAR_PER_LINE*CHAR_WIDTH)){
-        cx = X_OFS;
+        cx = 0;
         cy += CHAR_HEIGHT;
         if (cy>(LINE_PER_SCREEN*CHAR_HEIGHT)){
             scroll_up();
@@ -77,11 +75,11 @@ void cursor_right(void){
 } // cursor_right()
 
 void cursor_left(void){
-    if (cx>=(X_OFS+CHAR_WIDTH)){
+    if (cx>=(CHAR_WIDTH)){
         cx -= CHAR_WIDTH;
     }else{
-        cx = X_OFS+CHAR_WIDTH*(CHAR_PER_LINE-1);
-        if (cy>=(Y_OFS+CHAR_HEIGHT)){
+        cx = (CHAR_PER_LINE-1);
+        if (cy>=CHAR_HEIGHT){
             cy -= CHAR_HEIGHT;
         }else{
             scroll_down();
@@ -90,7 +88,7 @@ void cursor_left(void){
 }// cursor_left()
 
 void cursor_up(void){
-    if (cy>=(Y_OFS+CHAR_HEIGHT)){
+    if (cy>=CHAR_HEIGHT){
         cy -= CHAR_HEIGHT;
     }else{
         scroll_down();
@@ -98,7 +96,7 @@ void cursor_up(void){
 }// cursor_up()
 
 void cursor_down(void){
-    if (cy<=(Y_OFS+(CHAR_HEIGHT*(LINE_PER_SCREEN-2)))){
+    if (cy<=((CHAR_HEIGHT*(LINE_PER_SCREEN-2)))){
         cy += CHAR_HEIGHT;
     }else{
         scroll_up();
@@ -106,8 +104,8 @@ void cursor_down(void){
 }//cursor_down()
 
 void crlf(void){
-    cx=X_OFS;
-    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
+    cx=0;
+    if (cy==((LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
         scroll_up();
     }else{
         cy += CHAR_HEIGHT;
@@ -125,9 +123,9 @@ void put_char(dev_t channel, char c){
                 break;
             case TAB:
                 cx += (cx%tab_width);
-                if (cx>=(X_OFS+CHAR_PER_LINE*CHAR_WIDTH)){
-                    cx = X_OFS;
-                    if (cy==(Y_OFS+(LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
+                if (cx>=(CHAR_PER_LINE*CHAR_WIDTH)){
+                    cx = 0;
+                    if (cy==((LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
                         scroll_up();
                     }else{
                         cy += CHAR_HEIGHT;
@@ -179,8 +177,8 @@ void put_char(dev_t channel, char c){
 
 void clear_screen(){
     memset(video_bmp,0,HRES/8*VRES);
-    cx=X_OFS;
-    cy=Y_OFS;
+    cx=0;
+    cy=0;
 } // clear_screen()
 
 void print(dev_t channel, const char *text){
@@ -248,7 +246,7 @@ void clear_eol(void){
     int x,y;
     x=cx;
     y=cy;
-    while (cx<(X_OFS+CHAR_WIDTH*(CHAR_PER_LINE-2))){
+    while (cx<(CHAR_WIDTH*(CHAR_PER_LINE-2))){
         put_char(LOCAL_CON, 32);
     }
     put_char(LOCAL_CON, 32);
@@ -258,16 +256,16 @@ void clear_eol(void){
 
 text_coord_t get_curpos(){
     text_coord_t cpos;
-    cpos.x = (cx-X_OFS)/CHAR_WIDTH;
-    cpos.y = (cy-Y_OFS)/CHAR_HEIGHT;
+    cpos.x = cx/CHAR_WIDTH;
+    cpos.y = cy/CHAR_HEIGHT;
     return cpos;
 } // get_cursor_pos()
 
 void set_curpos(unsigned short x, unsigned short y){// {x,y} coordonnée caractère
     if (x>(CHAR_PER_LINE-1) || y>(LINE_PER_SCREEN-1))
         return;
-    cx=x*CHAR_WIDTH+X_OFS;
-    cy=y*CHAR_HEIGHT+Y_OFS;
+    cx=x*CHAR_WIDTH;
+    cy=y*CHAR_HEIGHT;
 }//set_curpos()
 
 void invert_char(void){// inverse vidéo du caractère à la position courante

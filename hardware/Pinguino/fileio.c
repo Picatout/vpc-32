@@ -45,6 +45,8 @@
  will mount only the first partition on the disk/card
  --------------------------------------------------------------------------*/
 
+BOOL SDCardReady;
+
 static FATFS _Fat;
 
 char mount(unsigned char pin) {

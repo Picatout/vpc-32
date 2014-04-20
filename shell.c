@@ -43,12 +43,15 @@
 #include "hardware/Pinguino/ff.h"
 #include "hardware/Pinguino/fileio.h"
 #include <plib.h>
+#include "shell.h"
 
 #define MAX_LINE_LEN 80
 #define MAX_TOKEN 5
 
+/*
 typedef enum {
     ERR_NONE=0,
+    ERR_NOT_DONE,
     ERR_ALLOC,
     ERR_USAGE,
     ERR_FIL_OPEN,
@@ -58,9 +61,11 @@ typedef enum {
     ERR_DENIED,
     ERR_FIO
 } SH_ERROR;
+*/
 
 const char *ERR_MSG[]={
     "no error\r",
+    "not implemented yet.\r",
     "Memory allocation error.\r",
     "Bad usage.\r",
     "File open error.\r",
@@ -68,10 +73,11 @@ const char *ERR_MSG[]={
     "Mkdir error.\r",
     "file does not exist.\r",
     "operation denied.\r",
-    "disk operation error, code is %d \r"
+    "disk operation error, code is %d \r",
+    "no SD card detected.\r"
 };
 
-print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code){
+void print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code){
     char *fmt;
     if (err_code==ERR_FIO){
         fmt=malloc(64);
@@ -83,7 +89,7 @@ print_error_msg(SH_ERROR err_code,const char *detail,FRESULT io_code){
     }else{
        print(comm_channel,ERR_MSG[err_code]);
     }
-    if (strlen(detail)){
+    if (detail){
        print(comm_channel,detail);
     }
 }//print_error_msg()
@@ -98,12 +104,12 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
-typedef enum CMDS {CMD_CD,CMD_DIR,CMD_DEL,CMD_REN,CMD_ED,CMD_CPY,CMD_SND,CMD_RCV,
-                   CMD_FORTH, CMD_CLEAR,CMD_REBOOT,CMD_MORE,CMD_MKDIR} cmds_t;
+typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,CMD_FORTH,
+                   CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND} cmds_t;
 
-#define CMD_LEN 13
-const char *commands[CMD_LEN]={
-    "cd", "dir","del","ren","edit","copy","send","receive","forth","cls","reboot","more","mkdir"};
+#define CMD_LEN 15
+const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","format","forth",
+                               "help","mkdir","more","reboot","receive","ren","send"};
 
 int cmd_search(char *target){
     int i;
@@ -114,6 +120,30 @@ int cmd_search(char *target){
     }
     return i;
 }//cmd_search()
+
+void display_cmd_list(){
+    int i;
+    text_coord_t pos;
+    for(i=0;i<CMD_LEN;i++){
+        pos=get_curpos();
+        if (pos.x>(CHAR_PER_LINE-strlen(commands[i])-2)){
+            put_char(comm_channel,'\r');
+        }
+        print(comm_channel,commands[i]);
+        if (i<(CMD_LEN-1)){
+            print(comm_channel," ");
+        }
+    }
+    put_char(comm_channel,'\r');
+}
+
+void cmd_format(int i){
+    if (i==2){
+        print_error_msg(ERR_NOT_DONE,NULL,0);
+    }else{
+        print(comm_channel,"USAGE: format volume_name\r");
+    }
+}
 
 int next_token(void){
     unsigned char loop,quote,escape;
@@ -171,6 +201,14 @@ int next_token(void){
 
 void cd(int i){ // change le répertoire courant.
     char *path;
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     FRESULT error=FR_OK;
    if (i==2){
        error=f_chdir(cmd_tokens[1]);
@@ -190,6 +228,14 @@ void cd(int i){ // change le répertoire courant.
 
 void del(int i){ // efface un fichier
     FILINFO *fi;
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     FRESULT error=FR_OK;
     if (i==2){
         fi=malloc(sizeof(FILINFO));
@@ -216,6 +262,14 @@ void del(int i){ // efface un fichier
 }//del()
 
 void ren(int i){ // renomme un fichier
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     if (i==3){
         f_rename(cmd_tokens[1],cmd_tokens[2]);
     }else{
@@ -227,6 +281,14 @@ void copy(int i){ // copie un fichier
     FIL *fsrc, *fnew;
     char *buff;
     int n;
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     FRESULT error;
     if (i==3){
         fsrc=malloc(sizeof(FIL));
@@ -265,6 +327,7 @@ void copy(int i){ // copie un fichier
 void send(int i){ // envoie un fichier via uart
     // to do
    if (i==2){
+       print_error_msg(ERR_NOT_DONE,NULL,0);
    }else{
        print(comm_channel, "send file via serial, USAGE: send file_name\r");
    }
@@ -273,6 +336,7 @@ void send(int i){ // envoie un fichier via uart
 void receive(int i){ // reçois un fichier via uart
     // to do
    if (i==2){
+       print_error_msg(ERR_NOT_DONE,NULL,0);
    }else{
        print(comm_channel, "receive file from serial, USAGE: receive file_name\r");
    }
@@ -284,6 +348,14 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     char *fmt, *buff, *rbuff, c, prev,key;
     int n,lcnt;
     text_coord_t cpos;
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     FRESULT error=FR_OK;
     if (i==2){
         fh=malloc(sizeof(FIL));
@@ -355,7 +427,14 @@ void editor(int i){ // lance l'éditeur de texte
 void mkdir(int i){
     FRESULT error=FR_OK;
     char *fmt;
-
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     if (i==2){
         fmt=malloc(CHAR_PER_LINE+1);
         if (fmt && (error=f_mkdir(cmd_tokens[1])==FR_OK)){
@@ -374,6 +453,14 @@ void mkdir(int i){
 }// mkdir()
 
 void list_directory(int i){
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
     if (i>1){
         listDir(cmd_tokens[1]);
     }else{
@@ -383,11 +470,17 @@ void list_directory(int i){
 
 void execute_cmd(int i){
         switch (cmd_search(cmd_tokens[0])){
+            case CMD_HELP:
+                display_cmd_list();
+                break;
             case CMD_CD:
                 cd(i);
                 break;
             case CMD_DIR: // liste des fichiers sur la carte SD
                 list_directory(i);
+                break;
+            case CMD_FORMAT:
+                cmd_format(i);
                 break;
             case CMD_MKDIR:
                 mkdir(i);
@@ -414,7 +507,11 @@ void execute_cmd(int i){
                 copy(i);
                 break;
             case CMD_CLEAR: // efface l'écran
-                clear_screen();
+                if (comm_channel==LOCAL_CON){
+                    clear_screen();
+                }else{
+                    print(comm_channel,"\E[2J\E[H"); // VT100 commands
+                }
                 break;
             case CMD_MORE:
                 more(i);

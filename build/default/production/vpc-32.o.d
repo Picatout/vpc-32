@@ -10,6 +10,9 @@ hardware/Pinguino/diskio.h  \
 hardware/Pinguino/ff.h  \
  hardware/Pinguino/typedef.h  \
 hardware/Pinguino/ffconf.h  \
+ hardware/Pinguino/fileio.h  \
+hardware/Pinguino/sdmmc.h  \
+ hardware/Pinguino/../HardwareProfile.h  \
 console.h  \
 font.h  \
  hardware/Pinguino/ff.h  \
