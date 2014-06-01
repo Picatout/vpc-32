@@ -30,7 +30,7 @@
 #include "ntsc.h"
 
 /*
- *  la fréqueence PBCLK influence la largeur des pixels vidéo. Comme PBCLK==SYSCLK
+ *  la fréquence PBCLK influence la largeur des pixels vidéo. Comme PBCLK==SYSCLK
  *  on peut allonger les pixels en diminuant la fréquence légèrement.
  *  pour une résolution horizontale de 320 pixels et une fréquence de 40Mhz le
  *  meilleur diviseur pour le générateur BGR du SPI est de 2 ce qui donne

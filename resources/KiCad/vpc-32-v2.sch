@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "19 apr 2014"
+Date "1 jun 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -773,16 +773,6 @@ F 3 "" H 3300 7200 60  0000 C CNN
 $EndComp
 Text GLabel 7850 900  1    39   Input ~ 0
 +3,3v
-Text GLabel 6250 5700 0    39   Input ~ 0
-RB0
-Text GLabel 6250 5800 0    39   Input ~ 0
-RB1
-Text GLabel 6250 5900 0    39   Input ~ 0
-RB12
-Text GLabel 6250 6000 0    39   Input ~ 0
-RB13
-Text GLabel 6250 6100 0    39   Input ~ 0
-RB14
 Text Notes 7550 7550 0    59   ~ 0
 VPC-32
 Text Notes 10700 7650 0    59   ~ 0
@@ -899,9 +889,9 @@ STATUS
 Text GLabel 6900 4150 2    39   Input ~ 0
 SDO2
 Text GLabel 5000 3350 0    39   Input ~ 0
-PGED1
+PGED1/snes_clock
 Text GLabel 4750 3450 0    39   Input ~ 0
-PGEC1
+PGEC1/~CS1
 $Comp
 L GND #PWR16
 U 1 1 5225165F
@@ -916,12 +906,12 @@ $EndComp
 $Comp
 L CONN_5 P3
 U 1 1 5225CECE
-P 6750 5900
-F 0 "P3" V 6700 5900 50  0000 C CNN
-F 1 "XBUS" V 6800 5900 50  0000 C CNN
-F 2 "" H 6750 5900 60  0000 C CNN
-F 3 "" H 6750 5900 60  0000 C CNN
-	1    6750 5900
+P 10550 3700
+F 0 "P3" V 10500 3700 50  0000 C CNN
+F 1 "gempad 1" V 10600 3700 50  0000 C CNN
+F 2 "" H 10550 3700 60  0000 C CNN
+F 3 "" H 10550 3700 60  0000 C CNN
+	1    10550 3700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1142,16 +1132,6 @@ Wire Wire Line
 Wire Wire Line
 	7850 1000 7850 900 
 Wire Wire Line
-	6350 5700 6250 5700
-Wire Wire Line
-	6350 5800 6250 5800
-Wire Wire Line
-	6350 5900 6250 5900
-Wire Wire Line
-	6350 6000 6250 6000
-Wire Wire Line
-	6350 6100 6250 6100
-Wire Wire Line
 	3650 3250 3650 3200
 Connection ~ 3650 3250
 Wire Wire Line
@@ -1302,4 +1282,202 @@ F 3 "" H 1350 7000 60  0000 C CNN
 $EndComp
 Wire Wire Line
 	1350 6800 1350 7000
+$Comp
+L 23LC1024 U?
+U 1 1 538B5D93
+P 2150 5950
+F 0 "U?" H 2150 5750 60  0000 C CNN
+F 1 "23LC1024" H 2150 6250 60  0000 C CNN
+F 2 "" H 2150 5950 60  0000 C CNN
+F 3 "" H 2150 5950 60  0000 C CNN
+	1    2150 5950
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 538B5DB9
+P 1650 5400
+F 0 "R?" V 1730 5400 50  0000 C CNN
+F 1 "10k" V 1650 5400 50  0000 C CNN
+F 2 "" H 1650 5400 60  0000 C CNN
+F 3 "" H 1650 5400 60  0000 C CNN
+	1    1650 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 538B5DD3
+P 2900 5400
+F 0 "R?" V 2980 5400 50  0000 C CNN
+F 1 "10k" V 2900 5400 50  0000 C CNN
+F 2 "" H 2900 5400 60  0000 C CNN
+F 3 "" H 2900 5400 60  0000 C CNN
+	1    2900 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 538B5DD9
+P 1200 5400
+F 0 "R?" V 1280 5400 50  0000 C CNN
+F 1 "10k" V 1200 5400 50  0000 C CNN
+F 2 "" H 1200 5400 60  0000 C CNN
+F 3 "" H 1200 5400 60  0000 C CNN
+	1    1200 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L C C?
+U 1 1 538B5DDF
+P 3150 5950
+F 0 "C?" H 3200 6050 50  0000 L CNN
+F 1 "100nF" H 3200 5850 50  0000 L CNN
+F 2 "" H 3150 5950 60  0000 C CNN
+F 3 "" H 3150 5950 60  0000 C CNN
+	1    3150 5950
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 538B5DE5
+P 3150 6250
+F 0 "#PWR?" H 3150 6250 30  0001 C CNN
+F 1 "GND" H 3150 6180 30  0001 C CNN
+F 2 "" H 3150 6250 60  0000 C CNN
+F 3 "" H 3150 6250 60  0000 C CNN
+	1    3150 6250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2650 5750 3150 5750
+Wire Wire Line
+	3150 6150 3150 6250
+Text GLabel 1000 5150 0    39   Input ~ 0
++3,3V
+Wire Wire Line
+	1000 5150 3150 5150
+Wire Wire Line
+	3150 5150 3150 5750
+Wire Wire Line
+	1650 5650 1650 5750
+Wire Wire Line
+	1650 5950 1200 5950
+Wire Wire Line
+	1200 5950 1200 5650
+$Comp
+L GND #PWR?
+U 1 1 538B60FA
+P 1650 6150
+F 0 "#PWR?" H 1650 6150 30  0001 C CNN
+F 1 "GND" H 1650 6080 30  0001 C CNN
+F 2 "" H 1650 6150 60  0000 C CNN
+F 3 "" H 1650 6150 60  0000 C CNN
+	1    1650 6150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 6050 1650 6150
+Wire Wire Line
+	2650 5850 2900 5850
+Wire Wire Line
+	2900 5850 2900 5650
+Text GLabel 2750 5950 2    39   Input ~ 0
+SCLK2
+Wire Wire Line
+	2650 5950 2750 5950
+Text GLabel 2750 6050 2    39   Input ~ 0
+SPI2/SDO
+Wire Wire Line
+	2650 6050 2750 6050
+Text GLabel 1550 5850 0    39   Input ~ 0
+SPI2/SDI
+Wire Wire Line
+	1650 5850 1550 5850
+Text GLabel 1500 5750 0    39   Input ~ 0
+~CS1
+Wire Wire Line
+	1650 5750 1500 5750
+$Comp
+L CONN_5 P?
+U 1 1 538B65A3
+P 10550 4600
+F 0 "P?" V 10500 4600 50  0000 C CNN
+F 1 "gamepad 2" V 10600 4600 50  0000 C CNN
+F 2 "" H 10550 4600 60  0000 C CNN
+F 3 "" H 10550 4600 60  0000 C CNN
+	1    10550 4600
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 538B65CC
+P 10150 4900
+F 0 "#PWR?" H 10150 4900 30  0001 C CNN
+F 1 "GND" H 10150 4830 30  0001 C CNN
+F 2 "" H 10150 4900 60  0000 C CNN
+F 3 "" H 10150 4900 60  0000 C CNN
+	1    10150 4900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 538B65D2
+P 10150 4000
+F 0 "#PWR?" H 10150 4000 30  0001 C CNN
+F 1 "GND" H 10150 3930 30  0001 C CNN
+F 2 "" H 10150 4000 60  0000 C CNN
+F 3 "" H 10150 4000 60  0000 C CNN
+	1    10150 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10150 3900 10150 4000
+Wire Wire Line
+	10150 4800 10150 4900
+Text GLabel 10150 3350 1    39   Input ~ 0
++3,3V
+Text GLabel 10150 4300 1    39   Input ~ 0
++3,3V
+Wire Wire Line
+	10150 3350 10150 3500
+Wire Wire Line
+	10150 4300 10150 4400
+Wire Wire Line
+	10150 4500 9850 4500
+Wire Wire Line
+	9850 4500 9850 3600
+Wire Wire Line
+	9700 3600 10150 3600
+Wire Wire Line
+	10150 4600 9950 4600
+Wire Wire Line
+	9950 4600 9950 3700
+Wire Wire Line
+	9700 3700 10150 3700
+Text GLabel 9700 3600 0    39   Input ~ 0
+snes_clock
+Text GLabel 9700 3700 0    39   Input ~ 0
+sens_latch
+Connection ~ 9850 3600
+Connection ~ 9950 3700
+Text GLabel 9700 3800 0    39   Input ~ 0
+snes_data 1
+Text GLabel 9750 4700 0    39   Input ~ 0
+snes_data 2
+Wire Wire Line
+	10150 3800 9700 3800
+Wire Wire Line
+	10150 4700 9750 4700
+Text GLabel 6850 3350 2    39   Input ~ 0
+snes_latch
+Text GLabel 6850 3450 2    39   Input ~ 0
+snes_data 1
+Text GLabel 6850 3550 2    39   Input ~ 0
+snes_data 2
+Wire Wire Line
+	6850 3350 6700 3350
+Wire Wire Line
+	6850 3450 6700 3450
+Wire Wire Line
+	6850 3550 6700 3550
 $EndSCHEMATC
