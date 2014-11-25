@@ -28,7 +28,7 @@ unsigned char writeSPI(unsigned char b)
 
 	SPI2BUF = b;						
 	while(!SPI2STATbits.SPIRBF);	// wait transfer complete
-	return SPI2BUF;					// read the received value
+	return SPI2BUF;			// read the received value
 
 /*
 	BUFFER = b;			            // write to buffer for TX

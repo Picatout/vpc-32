@@ -33,7 +33,7 @@ extern "C" {
 
 #include <GenericTypeDefs.h>
 #include "font.h"
-#include "hardware/ntsc.h"
+#include "hardware/tvout/ntsc.h"
 #include "hardware/HardwareProfile.h"
     
 #define LINE_PER_SCREEN ((int)VRES/CHAR_HEIGHT)

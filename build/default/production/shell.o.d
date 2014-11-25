@@ -1,10 +1,10 @@
 build/default/production/shell.o:  \
 shell.c  \
 hardware/HardwareProfile.h  \
- hardware/keyboard.h  \
+ hardware/ps2_kbd/keyboard.h  \
 console.h  \
 font.h  \
-hardware/ntsc.h  \
+hardware/tvout/ntsc.h  \
  hardware/Pinguino/ff.h  \
 hardware/Pinguino/typedef.h  \
  hardware/Pinguino/integer.h  \

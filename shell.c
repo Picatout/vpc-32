@@ -38,7 +38,7 @@
 
 #include <string.h>
 #include "hardware/HardwareProfile.h"
-#include "hardware/keyboard.h"
+#include "hardware/ps2_kbd/keyboard.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
 #include "hardware/Pinguino/fileio.h"
@@ -345,8 +345,8 @@ void receive(int i){ // reçois un fichier via uart
 
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
-    char *fmt, *buff, *rbuff, c, prev,key;
-    int n,lcnt;
+    char *fmt, *buff, *rbuff, c,key;
+    int n;
     text_coord_t cpos;
     if (!SDCardReady){
         if (!mount(0)){
@@ -365,36 +365,29 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
             if (fmt && buff){
                 sprintf(fmt,"File: %s, size %d bytes\r",cmd_tokens[1],fh->fsize);
                 print(comm_channel,fmt);
-                lcnt=0;
-                prev=0;
                 key=0;
                 while (key!=ESC && f_read(fh,buff,512,&n)==FR_OK){
                     if (!n) break;
                     rbuff=buff;
                     for(;n;n--){
                         c=*rbuff++;
-                        if (c=='\n'){
-                            if (prev=='\r'){c=32;}else{c='\r';}
-                        }
-                        if ((c!=9 && c!='\r') && (c<32 || c>126)) {c=32;}
+                        if ((c!=TAB && c!=CR) && (c<32 || c>126)) {c=32;}
                         put_char(comm_channel,c);
-                        prev=c;
                         if (comm_channel==LOCAL_CON){
                             cpos=get_curpos();
                             if (cpos.x==0){
-                                lcnt++;
-                                if (lcnt==(LINE_PER_SCREEN-1)){
+                                if (cpos.y>=(LINE_PER_SCREEN-1)){
+                                    cpos.y=LINE_PER_SCREEN-1;
                                     invert_video(TRUE);
                                     print(comm_channel,"-- next --");
                                     invert_video(FALSE);
                                     key=wait_key(comm_channel);
                                     if (key=='q' || key==ESC){key=ESC; break;}
-                                    set_curpos(cpos.x,cpos.y);
-                                    clear_eol();
                                     if (key==CR){
-                                        lcnt--;
+                                        set_curpos(cpos.x,cpos.y);
+                                        clear_eol();
                                     }else{
-                                        lcnt=0;
+                                        clear_screen();
                                     }
                                 }
                             }
@@ -495,7 +488,7 @@ void execute_cmd(int i){
                 editor(i);
                 break;
             case CMD_FORTH: // lance DIOS forth
-                cold();
+               // cold();
                 break;
             case CMD_SND:  // envoie un fichier vers la sortie uart
                 send(i);

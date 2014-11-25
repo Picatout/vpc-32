@@ -25,8 +25,8 @@
 
 #include "console.h"
 #include "hardware/HardwareProfile.h"
-#include "hardware/serial_comm.h"
-#include "hardware/keyboard.h"
+#include "hardware/serial_comm/serial_comm.h"
+#include "hardware/ps2_kbd/keyboard.h"
 
 
 // indicateurs booléens
@@ -64,10 +64,10 @@ void scroll_down(void){
 
 void cursor_right(void){
     cx += CHAR_WIDTH;
-    if (cx>(CHAR_PER_LINE*CHAR_WIDTH)){
+    if (cx>=(CHAR_PER_LINE*CHAR_WIDTH)){
         cx = 0;
         cy += CHAR_HEIGHT;
-        if (cy>(LINE_PER_SCREEN*CHAR_HEIGHT)){
+        if (cy>=((LINE_PER_SCREEN-1)*CHAR_HEIGHT)){
             scroll_up();
             cy -= CHAR_HEIGHT;
         }
@@ -119,6 +119,7 @@ void put_char(dev_t channel, char c){
     if (channel==LOCAL_CON){
         switch (c){
             case CR:
+            case NL:
                 crlf();
                 break;
             case TAB:

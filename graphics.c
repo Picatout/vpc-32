@@ -23,7 +23,7 @@
  *  REF: http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
  *  REF: http://members.chello.at/~easyfilter/bresenham.html
  */
-#include "hardware/ntsc.h"
+#include "hardware/tvout/ntsc.h"
 #include <math.h>
 
 int getPixel(int x, int y){

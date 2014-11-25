@@ -35,7 +35,7 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define FREE_RAM 16384
+#define FREE_RAM 48000
 
 #define LOCAL_CON 0  // console vidéo locale
 #define SERIAL_CON STDIO // console rs-232
@@ -59,6 +59,9 @@
 #define RAM_END				 	0xA0000000+BMXDRMSZ-1
 
 #define STATUS_LED  BIT_3
+#define CS1 BIT_1
+#define _spiram_select (PORTB |= CS1)
+#define _spiram_disable (PORTB &= ~CS1)
 #define _status_on()  (PORTB |=STATUS_LED)
 #define _status_off() (PORTB &=~STATUS_LED)
 #define _write_on() _status_on()
@@ -69,7 +72,9 @@
 
 #define USE_CORE_TIMER  // mettre en commentaire si on n'utilise pas le core timer
 
-
+#define SRAM_PORT PORTB
+#define SRAM_TRIS TRISB
+#define SRAM_SEL  BIT_1
 
 void HardwareInit();
 #ifdef USE_CORE_TIMER

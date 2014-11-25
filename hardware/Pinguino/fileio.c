@@ -30,7 +30,7 @@
 #include "sdmmc.h"
 #include "ff.h"					// Fat Filesystem
 #include "diskio.h"				// card access functions
-#include "../serial_comm.h"
+#include "../serial_comm/serial_comm.h"
 #include "../../console.h"
 
 //#define SD_DEBUG

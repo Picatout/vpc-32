@@ -23,22 +23,24 @@
  * Created on 26 août 2013, 07:38
  */
 
+#define DEBUG
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <plib.h>
 #include "graphics.h"
 
 #include "hardware/HardwareProfile.h"
-#include "hardware/ntsc.h"
-#include "hardware/serial_comm.h"
-#include "hardware/keyboard.h"
+#include "hardware/tvout/ntsc.h"
+#include "hardware/serial_comm/serial_comm.h"
+#include "hardware/ps2_kbd/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
 #include "hardware/Pinguino/fileio.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
 #include "vpForth/opcodes.h"
 #include "vpForth/vpForth.h"
-#include "sound.h"
+#include "hardware/sound/sound.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -76,8 +78,9 @@
 
 
 
+#if defined DEBUG
 const char *msg1=" ntsc video target\r";
-const char *msg2="0123456789012345678901234567890123456789012345678901"; // 52 caractères par ligne
+const char *msg2="012345678901234567890123456789012345678901234567890123567"; // 58 caractères par ligne
 
 
 
@@ -112,7 +115,10 @@ void graphics_test(){ // test des fonctions graphiques
 //        ellipse(HRES/3+i,VRES/3+i,50,30);
 //    }
     besiez(20,200,20,40,300,40);
+    delay_ms(500);
 }//graphics_test
+
+#endif
 
 const unsigned int e3k[]={ // rencontre du 3ième type
 784,500, // sol4
@@ -128,7 +134,9 @@ void main(void) {
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     ln_cnt=0;
     video=0;
+#if defined DEBUG
     test_pattern();
+#endif
     UartPrint(STDOUT,"video initialization\r");
     VideoInit();
     delay_ms(500);
@@ -149,12 +157,17 @@ void main(void) {
     }else{
         SDCardReady=TRUE;
     }
+    UartPrint(STDOUT,"SRAM initialization");
+    sram_init();
     UartPrint(STDOUT,"sound initialization.\r");
     tune(&e3k[0]);
     UartPrint(STDOUT,"initialization completed.\r");
-    set_cursor(CR_BLOCK);
+    set_cursor(CR_BLOCK); // sauvegare video_buffer dans SRAM
     clear_screen();
+#if defined __DEBUG
     graphics_test();
+    clear_screen();
+#endif
     shell();
 } // main()
 

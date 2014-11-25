@@ -36,7 +36,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "17 nov 2014"
+Date "24 nov 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -886,7 +886,7 @@ STATUS
 Text GLabel 3600 5000 0    39   Input ~ 0
 STATUS
 Text GLabel 6900 4150 2    39   Input ~ 0
-SDO2
+SPI/SDO
 Text GLabel 5000 3350 0    39   Input ~ 0
 PGED1/snes_clock
 Text GLabel 4750 3450 0    39   Input ~ 0

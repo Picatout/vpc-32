@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/VPC-32.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=VPC-32.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=vpc-32.x/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=vpc-32/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/vpc-32.x/bin
+makeDirectory ${TMPDIR}/vpc-32/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/vpc-32.x.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/vpc-32.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/vpc-32.x.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/vpc-32.tar *
 checkReturnCode
 
 # Cleanup
