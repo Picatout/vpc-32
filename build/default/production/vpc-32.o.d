@@ -13,10 +13,12 @@ hardware/Pinguino/typedef.h  \
 hardware/Pinguino/fileio.h  \
  hardware/Pinguino/sdmmc.h  \
 hardware/Pinguino/../HardwareProfile.h  \
- console.h  \
+ hardware/Pinguino/../store/store_spi.h  \
+ hardware/Pinguino/../store/../HardwareProfile.h  \
+console.h  \
 font.h  \
-hardware/Pinguino/ff.h  \
+ hardware/Pinguino/ff.h  \
 vpForth/opcodes.h  \
- vpForth/vpForth.h  \
-vpForth/opcodes.h  \
+vpForth/vpForth.h  \
+ vpForth/opcodes.h  \
 hardware/sound/sound.h 

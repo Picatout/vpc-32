@@ -27,7 +27,7 @@
 #define TINYFORTH_H
 #include "opcodes.h"
 
-#define RAM_SPACE FREE_RAM
+#define RAM_SPACE HEAP_SIZE
 #define FLASH_SPACE 2048
 
 #define SYSTEM_NAME "vpFORTH "

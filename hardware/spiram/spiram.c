@@ -20,8 +20,6 @@
 #include "spiram.h"
 #include "../Pinguino/sdmmc.h"
 
-#define sram_enable() {SRAM_PORT &= ~SRAM_SEL;}
-#define sram_disable() {SRAM_PORT |= SRAM_SEL;}
 
 
 void sram_cmd(unsigned char cmd, unsigned addr){
@@ -32,69 +30,71 @@ void sram_cmd(unsigned char cmd, unsigned addr){
 }
 
 
-// périphérique SPI2 initialisé par initSD() dans sdmmc.c
-void sram_init(){
-    SRAM_PORT |= SRAM_SEL;  // garde SPIRAM désactivée
-    SRAM_TRIS &= ~SRAM_SEL; // CS1 en mode sortie
-}
-
 
 void sram_write_mode(unsigned char mode){
-    sram_enable();
+    _sram_enable();
     writeSPI(SRAM_WRMR);
     writeSPI(mode);
-    sram_disable();
+    _sram_disable();
 }
+
 
 unsigned char sram_read_mode(){
     unsigned char mode;
-    sram_enable();
+    _sram_enable();
     writeSPI(SRAM_RDMR);
     mode=writeSPI(0);
-    sram_disable();
+    _sram_disable();
     return mode;
 }
 
+// use sequencial mode
+void sram_init(){
+    if (!store_initialized) store_spi_init();
+    sram_write_mode(SRAM_SQMD);
+}
+
+
 void sram_clear(){
     unsigned i;
-    sram_enable();
+    _sram_enable();
     sram_cmd(SRAM_WRITE,0);
     for (i=0;i<SRAM_SIZE;i++) writeSPI(0);
-    sram_disable();
+    _sram_disable();
 }
 
 
 unsigned char sram_read_byte(unsigned addr){
     unsigned char b;
 
-    sram_enable();
+    _sram_enable();
     sram_cmd(SRAM_READ,addr);
     b=writeSPI(0);
-    sram_disable();
+    _sram_disable();
     return b;
 }
 
 void sram_write_byte(unsigned addr, unsigned char byte){
-    sram_enable();
+    _sram_enable();
     sram_cmd(SRAM_WRITE,addr);
     writeSPI(byte);
-    sram_disable();
+    _sram_disable();
 }
 
 void sram_read_block(unsigned addr, unsigned char buffer[], unsigned count){
     unsigned i;
-    sram_enable();
+    _sram_enable();
     sram_cmd(SRAM_READ,addr);
     for (i=0;i<count;i++) buffer[i]=writeSPI(0);
-    sram_disable();
+    _sram_disable();
 }
 
 void sram_write_block(unsigned addr, unsigned char buffer[],unsigned count){
     unsigned i;
-    sram_enable();
+    _sram_enable();
     sram_cmd(SRAM_WRITE,addr);
     for (i=0;i<count;i++) writeSPI(buffer[i]);
-    sram_disable();
+    _sram_disable();
 }
 
 

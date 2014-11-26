@@ -90,6 +90,36 @@ void delay_ms(unsigned int msec){
 #endif
 } // delay_ms()
 
+// détermine la mémoire disponible
+// sur le heap
+// essais successifs par division binaire
+unsigned free_heap(){
+    unsigned toobig,size,tmp;
+    void *ptr=NULL;
+
+    size=RAM_SIZE;
+    while (!ptr){
+        ptr=malloc(size);
+        if (!ptr){
+            toobig=size;
+            size >>=1;
+        }
+    }
+
+    while (toobig-size>16){
+        if (ptr) free(ptr);
+        tmp=size;
+        size+=(toobig-size)>>1;
+        ptr=malloc(size);
+        if (!ptr){
+            toobig=size;
+            size=tmp;
+        }
+    }
+    if (ptr) free(ptr);
+    return size;
+}
+
 #ifdef USE_CORE_TIMER
   //déclaration du gestionnaire d'interruption
    void __ISR(_CORE_TIMER_VECTOR, IPL1SOFT)  CoreTimerHandler(void){

@@ -28,6 +28,8 @@
 
 #include <p32xxxx.h>
 
+#define DEBUG
+
 #define VPC_32
 
 #define STDIO   UART2
@@ -35,7 +37,7 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define FREE_RAM 48000
+#define HEAP_SIZE 48000
 
 #define LOCAL_CON 0  // console vidéo locale
 #define SERIAL_CON STDIO // console rs-232
@@ -53,35 +55,41 @@
 #define CORE_TICK_RATE (mGetSystemClock()/2/1000) // system tick 1msec
 #define CLK_PER_USEC (SYSCLK/1000000L)
 
-#define FLASH_BEG			 	0x9D000000
-#define FLASH_END			 	0x9D000000+BMXPFMSZ-1
-#define RAM_BEG				 	0xA0000000
-#define RAM_END				 	0xA0000000+BMXDRMSZ-1
-
-#define STATUS_LED  BIT_3
-#define CS1 BIT_1
-#define _spiram_select (PORTB |= CS1)
-#define _spiram_disable (PORTB &= ~CS1)
-#define _status_on()  (PORTB |=STATUS_LED)
-#define _status_off() (PORTB &=~STATUS_LED)
-#define _write_on() _status_on()
-#define _write_off() _status_off()
-#define _read_on() _status_on()
-#define _read_off() _status_off()
+#define FLASH_BEG 	0x9D000000
+#define FLASH_END 	(0x9D000000+BMXPFMSZ-1)
+#define RAM_BEG	 	0xA0000000
+#define RAM_END		(0xA0000000+BMXDRMSZ-1)
+#define RAM_SIZE        (RAM_END-RAM_BEG+1)
 
 
 #define USE_CORE_TIMER  // mettre en commentaire si on n'utilise pas le core timer
 
-#define SRAM_PORT PORTB
-#define SRAM_TRIS TRISB
+//SDcard and SPIRAM share same SPI channel
+//SPI2 used by storage devices 
+#define STORE_SPICON SPI2CON
+#define STORE_SPIBRG SPI2BRG
+#define STORE_SPISTATbits SPI2STATbits
+#define STORE_SPIBUF SPI2BUF
+
+//storage devices select on PORTB
+#define STORE_PORT PORTB
+#define STORE_TRIS TRISB
+//bit used for select lines
 #define SRAM_SEL  BIT_1
+#define SDC_SEL BIT_2
+// storage device activity LED
+#define STATUS_LED  BIT_3
+#define _status_on() PORTB |= STATUS_LED
+#define _status_off() PORTB &=~STATUS_LED
+
+unsigned int heap_size;
 
 void HardwareInit();
+unsigned free_heap();
+
+
 #ifdef USE_CORE_TIMER
 unsigned int ticks(void);
-
-
-
 #endif
 void delay_us(unsigned int usec);
 void delay_ms(unsigned int msec);

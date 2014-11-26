@@ -104,12 +104,14 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
+
 typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,CMD_FORTH,
                    CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND} cmds_t;
 
 #define CMD_LEN 15
 const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","format","forth",
                                "help","mkdir","more","reboot","receive","ren","send"};
+
 
 int cmd_search(char *target){
     int i;
@@ -546,7 +548,10 @@ int tokenize(){ // découpe la ligne d'entrée en mots
 
 void shell(void){
     int i;
-    print(comm_channel,"VPC-32 shell\r16384 bytes free RAM.\r");
+    
+    print(comm_channel,"VPC-32 shell\rfree RAM (bytes): ");
+    print_int(comm_channel,free_heap(),0);
+    crlf();
     free_tokens();
     while (1){
         print(comm_channel,prompt);

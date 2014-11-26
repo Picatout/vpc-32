@@ -30,6 +30,8 @@
 extern "C" {
 #endif
 
+#include "../store/store_spi.h"
+
 //sram commands
 #define SRAM_READ (3)
 #define SRAM_WRITE (2)
@@ -41,7 +43,7 @@ extern "C" {
 #define SRAM_BTMOD (0x00)
 #define SRAM_PGMD (0x80)
 #define SRAM_SQMD (0x40)
-// octets dans SRAM 23LC1024
+// 23LC1024 size in bytes
 #define SRAM_SIZE (131072)
 
     void sram_init();

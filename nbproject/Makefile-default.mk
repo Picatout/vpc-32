@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c
+SOURCEFILES_QUOTED_IF_SPACED=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c hardware/store/store_spi.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o.d ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/serial_comm/serial_comm.o.d ${OBJECTDIR}/hardware/sound/sound.o.d ${OBJECTDIR}/hardware/spiram/spiram.o.d ${OBJECTDIR}/hardware/tvout/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/graphics.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/hardware/store/store_spi.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o.d ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/serial_comm/serial_comm.o.d ${OBJECTDIR}/hardware/sound/sound.o.d ${OBJECTDIR}/hardware/spiram/spiram.o.d ${OBJECTDIR}/hardware/tvout/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/graphics.o.d ${OBJECTDIR}/hardware/store/store_spi.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o
+OBJECTFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/hardware/store/store_spi.o
 
 # Source Files
-SOURCEFILES=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c
+SOURCEFILES=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c hardware/store/store_spi.c
 
 
 CFLAGS=
@@ -196,6 +196,12 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/graphics.o 
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -DSD_DEBUG -MMD -MF "${OBJECTDIR}/graphics.o.d" -o ${OBJECTDIR}/graphics.o graphics.c    -D_SUPPRESS_PLIB_WARNING
 	
+${OBJECTDIR}/hardware/store/store_spi.o: hardware/store/store_spi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware/store 
+	@${RM} ${OBJECTDIR}/hardware/store/store_spi.o.d 
+	@${RM} ${OBJECTDIR}/hardware/store/store_spi.o 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/store/store_spi.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -DSD_DEBUG -MMD -MF "${OBJECTDIR}/hardware/store/store_spi.o.d" -o ${OBJECTDIR}/hardware/store/store_spi.o hardware/store/store_spi.c    -D_SUPPRESS_PLIB_WARNING
+	
 else
 ${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o: hardware/ps2_kbd/QWERTY.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR}/hardware/ps2_kbd 
@@ -299,6 +305,12 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/graphics.o 
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -DSD_DEBUG -MMD -MF "${OBJECTDIR}/graphics.o.d" -o ${OBJECTDIR}/graphics.o graphics.c    -D_SUPPRESS_PLIB_WARNING
 	
+${OBJECTDIR}/hardware/store/store_spi.o: hardware/store/store_spi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/hardware/store 
+	@${RM} ${OBJECTDIR}/hardware/store/store_spi.o.d 
+	@${RM} ${OBJECTDIR}/hardware/store/store_spi.o 
+	@${FIXDEPS} "${OBJECTDIR}/hardware/store/store_spi.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -DSD_DEBUG -MMD -MF "${OBJECTDIR}/hardware/store/store_spi.o.d" -o ${OBJECTDIR}/hardware/store/store_spi.o hardware/store/store_spi.c    -D_SUPPRESS_PLIB_WARNING
+	
 endif
 
 # ------------------------------------------------------------------------------------
@@ -312,12 +324,12 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}           -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC00490:0x1FC00BEF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,--defsym=_min_heap_size=16384,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}           -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC00490:0x1FC00BEF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,--defsym=_min_heap_size=48000,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem
 	
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=_min_heap_size=16384,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=_min_heap_size=48000,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem
 	${MP_CC_DIR}/xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/vpc-32.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
 endif
 

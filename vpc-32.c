@@ -23,7 +23,6 @@
  * Created on 26 août 2013, 07:38
  */
 
-#define DEBUG
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -130,6 +129,7 @@ const unsigned int e3k[]={ // rencontre du 3ième type
 };
 
 void main(void) {
+    heap_size=free_heap();
     HardwareInit();
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     ln_cnt=0;
@@ -164,9 +164,18 @@ void main(void) {
     UartPrint(STDOUT,"initialization completed.\r");
     set_cursor(CR_BLOCK); // sauvegare video_buffer dans SRAM
     clear_screen();
-#if defined __DEBUG
+#if defined DEBUG
     graphics_test();
+    sram_write_block(100000,video_bmp,BMP_SIZE);
+    delay_ms(1000);
     clear_screen();
+    delay_ms(1000);
+    sram_read_block(100000,video_bmp,BMP_SIZE);
+    delay_ms(1000);
+    clear_screen();
+    print(comm_channel,"heap_size: ");
+    print_int(comm_channel,heap_size,0);
+    crlf();
 #endif
     shell();
 } // main()
