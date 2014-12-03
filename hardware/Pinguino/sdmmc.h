@@ -113,11 +113,9 @@ unsigned char writeSPI(unsigned char);
 
 void initSD(void);		// initializes I/O pins and SPI
 
-#define disableSD() _sdc_disable();writeSPI(255)
-#define enableSD()  _sdc_enable()
 
-//void disableSD(void);	// deselect SD card
-//void enableSD(void);	// select SD card
+void disableSD(void);	// deselect SD card
+void enableSD(void);	// select SD card
 
 int sendSDCmd(unsigned char, unsigned);
                         // send command to SD card

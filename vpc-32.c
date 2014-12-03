@@ -37,8 +37,8 @@
 #include "hardware/Pinguino/fileio.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
-#include "vpForth/opcodes.h"
-#include "vpForth/vpForth.h"
+#include "vpcBASIC/vm.h"
+#include "vpcBASIC/vpcBASIC.h"
 #include "hardware/sound/sound.h"
 
 // PIC32MX150F128B Configuration Bit Settings
@@ -70,14 +70,14 @@
 
 // DEVCFG0
 #pragma config JTAGEN = OFF             // JTAG Enable (JTAG Disabled)
-#pragma config ICESEL = ICS_PGx1        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config ICESEL = RESERVED        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 
 
 
-#if defined DEBUG
+#if defined _DEBUG_
 const char *msg1=" ntsc video target\r";
 const char *msg2="012345678901234567890123456789012345678901234567890123567"; // 58 caractères par ligne
 
@@ -155,16 +155,17 @@ void main(void) {
         UartPrint(STDOUT,"Failed\r");
         SDCardReady=FALSE;
     }else{
+        UartPrint(STDOUT,"succeeded\r");
         SDCardReady=TRUE;
     }
-    UartPrint(STDOUT,"SRAM initialization");
+    UartPrint(STDOUT,"SRAM initialization\r");
     sram_init();
     UartPrint(STDOUT,"sound initialization.\r");
     tune(&e3k[0]);
     UartPrint(STDOUT,"initialization completed.\r");
     set_cursor(CR_BLOCK); // sauvegare video_buffer dans SRAM
     clear_screen();
-#if defined DEBUG
+#if defined _DEBUG_
     graphics_test();
     sram_write_block(100000,video_bmp,BMP_SIZE);
     delay_ms(1000);

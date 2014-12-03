@@ -31,11 +31,14 @@
         <itemPath>hardware/HardwareProfile.h</itemPath>
         <itemPath>hardware/Pinguino/typedef.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="VM" projectFiles="true">
+        <itemPath>vpcForth/TinyForth.h</itemPath>
+        <itemPath>vpcForth/vm.h</itemPath>
+      </logicalFolder>
       <itemPath>font.h</itemPath>
       <itemPath>console.h</itemPath>
       <itemPath>hardware/Pinguino/ff.h</itemPath>
       <itemPath>hardware/Pinguino/ffconf.h</itemPath>
-      <itemPath>sound.h</itemPath>
       <itemPath>editor.h</itemPath>
       <itemPath>shell.h</itemPath>
       <itemPath>graphics.h</itemPath>
@@ -74,6 +77,10 @@
         </logicalFolder>
         <itemPath>hardware/HardwareProfile.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="VM" projectFiles="true">
+        <itemPath>vpcForth/TinyForth.c</itemPath>
+        <itemPath>vpcForth/vm.S</itemPath>
+      </logicalFolder>
       <itemPath>console.c</itemPath>
       <itemPath>font.c</itemPath>
       <itemPath>hardware/Pinguino/fileio.c</itemPath>
@@ -95,6 +102,7 @@
     <Elem>DiosForth.X/source/VM</Elem>
     <Elem>DiosForth.X/source/NVMem</Elem>
     <Elem>DiosForth.X/source/UART</Elem>
+    <Elem>vpcForth</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -147,7 +155,7 @@
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
-        <property key="preprocessor-macros" value="SD_DEBUG"/>
+        <property key="preprocessor-macros" value="_DEBUG_"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="use-cci" value="false"/>
@@ -277,7 +285,6 @@
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
@@ -295,7 +302,7 @@
         <property key="memories.programmemory.partition2.start"
                   value="${memories.programmemory.partition2.start.value}"/>
         <property key="memories.programmemory.start" value="0x1d000000"/>
-        <property key="poweroptions.powerenable" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

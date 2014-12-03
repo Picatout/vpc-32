@@ -43,17 +43,17 @@ extern "C" {
 #define SRAM_SPIBUF STORE_SPIBUF
 
 // select/deselect macros
-#define _sram_enable()  STORE_PORT &= ~SRAM_SEL;\
+#define _sram_enable()  STORE_PORTCLR = SRAM_SEL;\
                         _status_on()
 
-#define _sram_disable() STORE_PORT |= SRAM_SEL;\
+#define _sram_disable() STORE_PORTSET = SRAM_SEL;\
                         _status_off()
 
-#define _sdc_enable()   STORE_PORT &= ~SDC_SEL //;\
-                        //_status_on()
+#define _sdc_enable()   STORE_PORTCLR = SDC_SEL
+                        
 
-#define _sdc_disable()  STORE_PORT |= SDC_SEL //;\
-                        //_status_off()
+#define _sdc_disable()  STORE_PORTSET = SDC_SEL
+                        
 
 
     extern unsigned char store_initialized;

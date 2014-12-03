@@ -18,7 +18,7 @@ hardware/Pinguino/../HardwareProfile.h  \
 console.h  \
 font.h  \
  hardware/Pinguino/ff.h  \
-vpForth/opcodes.h  \
-vpForth/vpForth.h  \
- vpForth/opcodes.h  \
-hardware/sound/sound.h 
+vpcForth/vm.h  \
+vpcForth/TinyForth.h  \
+vpcForth/vm.h  \
+ hardware/sound/sound.h 

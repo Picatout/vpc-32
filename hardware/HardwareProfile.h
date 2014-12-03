@@ -28,7 +28,6 @@
 
 #include <p32xxxx.h>
 
-#define DEBUG
 
 #define VPC_32
 
@@ -73,14 +72,16 @@
 
 //storage devices select on PORTB
 #define STORE_PORT PORTB
+#define STORE_PORTCLR PORTBCLR
+#define STORE_PORTSET PORTBSET
 #define STORE_TRIS TRISB
 //bit used for select lines
 #define SRAM_SEL  BIT_1
 #define SDC_SEL BIT_2
 // storage device activity LED
 #define STATUS_LED  BIT_3
-#define _status_on() PORTB |= STATUS_LED
-#define _status_off() PORTB &=~STATUS_LED
+#define _status_on() PORTBSET = STATUS_LED
+#define _status_off() PORTBCLR = STATUS_LED
 
 unsigned int heap_size;
 

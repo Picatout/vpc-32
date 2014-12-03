@@ -32,7 +32,7 @@ unsigned char store_initialized=0;
 void store_spi_init(){
     STORE_PORT |= SRAM_SEL|SDC_SEL;  // both devices disabled
     STORE_PORT &= ~STATUS_LED ; // status LED off
-    STORE_TRIS &= ~(SRAM_SEL+SDC_SEL+STATUS_LED); // CS1, CS2 and STATUS_LED as output
+    STORE_TRIS &= ~(SRAM_SEL|SDC_SEL|STATUS_LED); // CS1, CS2 and STATUS_LED as output
     STORE_SPICON = 0x8120;   // ON (0x8000), CKE=1 (0x100), CKP=0, Master mode (0x20)
     //SPI2 at maximum speed, this 20Mhz for 23LC1024
     if (mGetPeripheralClock()<40000000L){

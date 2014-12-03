@@ -185,16 +185,15 @@ unsigned listDir(const char *path) {
             p1 = s1 = s2 = 0;
             fmt=malloc(64);
             if (!fmt) {
-#if defined DEBUG
-                print(SERIAL_CON,"malloc failed in listDir()\r");
-#endif
                 res=-1;
             }else{
                 sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
                 print(comm_channel,fmt);
             }
+        }else{
+            return res;
         }
-	while (!res) {
+        while (!res) {
 		res = f_readdir(&dir, &Finfo);
 #ifdef SD_DEBUG
 //		put_rc(res);
@@ -243,7 +242,7 @@ unsigned listDir(const char *path) {
             }
         }
         free(fmt);
-	return s1;
+	return res;
 } // listDir
 
 char isDirectory(FILINFO file) {

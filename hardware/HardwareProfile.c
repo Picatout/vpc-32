@@ -54,7 +54,8 @@ void HardwareInit(){
    I2C1CONbits.DISSLW=1; // voir pic32mx1xxx/2xxx-errata.pdf rev. E, point 9
    RPA0R=0;  // pas de périphérique sur RA0 (keyboard clock)
    RPA1R=0;  // pas de périphérique sur RA1 (keyboard data)
-   RPB1R &= ~0xf; // pas de périphérique sur RPB1 (~CS1)
+   RPB1R=0;  // pas de périphérique sur RPB1 ~CS1 SRAM
+   RPB2R=0;  // pas de périphérique sur RPB2 ~CS2 SDCARD
    RPB3R=0; //  pas de périphérique sur RB3 (status LED)
    RPB15R=0; // pad de périphérique sur RB15
    TRISBCLR=STATUS_LED; // broche status LED en sortie
