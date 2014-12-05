@@ -4,6 +4,8 @@
 #include <math.h>
 #include "../hardware/serial_comm/serial_comm.h"
 #include "../hardware/HardwareProfile.h"
+#include "../hardware/spiram/spiram.h"
+#include "../console.h"
 #include "vpcBASIC.h"
 #include "vm.h"
 
@@ -26,12 +28,22 @@ typedef unsigned short WORD;
 typedef char *code_ptr;
 typedef int(*compfct)();
 
-typedef struct{
-    code_ptr cfa;
-    unsigned char flags;  //indicateurs et longueur nom
-    char name[NAME_LEN];
-} dict_entry_t;
 
+typedef struct{
+    uint16_t const_base; // début bloc de constantes
+    uint16_t const_read; // position du pointeur READ
+    uint16_t str_base;   // début block chaine de caractères
+    uint16_t str_read;   // poisition du pointeur READ
+    uint16_t var_base;   // début des variables
+    uint16_t var_count;  // nombre de variables
+} prog_header_t;
+
+// blocs SPIRAM utilisés pour le code source et la compilation
+#define SRC_BASE (0x10000)
+#define BIN_BASE (0x18000)
+#define VAR_BASE (0x1A000)
+#define CONST_BASE (0x1C00)
+#define STR_BASE (0x1E000)
 
 // variable systèmes
 // indices dans user[]
@@ -39,47 +51,50 @@ typedef struct{
 #define HERE 1
 #define STATE 2
 
-const char *keywords[]={
-"LET",
-"READ",
-"INPUT",
-"PRINT",
-"DATA",
-"RESTORE",
-"IF",
-"THEN",
-"FOR",
-"TO",
-"STEP",
-"NEXT",
-"DIM",
-"GOTO",
-"GOSUB",
-"ON",
-"RETURN",
-"END",
-"STOP",
-"DEF",
-"FNEND",
-"REM",
+#define STATEMENTS_COUNT (19)
+const char *statements[STATEMENTS_COUNT]={
 "CHANGE",
+"DATA",
+"DEF",
+"DIM",
+"END",
+"FOR",
+"GOSUB",
+"GOTO",
+"IF",
+"INPUT",
+"LET",
+"ON",
+"PRINT",
+"READ",
+"REM",
+"RESTORE",
+"RETURN",
+"STOP",
 };
 
-const char *functions[]={
-"SIN",  // sine
-"COS",  // cosine
-"TAN",  // tangent
-"COT",  // cotagent
-"ATN",  // arctagent
-"EXP",  // e^X
-"LOG",  // natural logarigth
+typedef enum eStatement {CHANGE,DATA,DEF,DIM,END,FOR,GOSUB,GOTO,IF,INPUT,LET,ON,PRINT,
+        READ,REM,RESTORE,RETURN,STOP} eStatement_t;
+
+
+#define FUNC_COUNT (13)
+const char *functions[FUNC_COUNT]={
 "ABS",  // absolute
-"SQR",  // square root
+"ATN",  // arctagent
+"COS",  // cosine
+"COT",  // cotagent
+"EXP",  // e^X
 "INT",  // integer part
+"LOG",  // natural logarigth
+"NUM",  // items count last input
 "RND",  // random number [0-1[
 "SGN",  // sign of number
-"NUM",  // items count last input
+"SIN",  // sine
+"SQR",  // square root
+"TAN",  // tangent
 };
+
+typedef enum eBasicFunc {ABS,ATN,COS,COT,EXP,INT,LOG,NUM,RND,SGN,SIN,SQR,TAN} eBasicFunc_t;
 
 // pointeurs
 char *here; // pointeur espace code
@@ -93,158 +108,95 @@ char error=0;
 code_ptr imm_code, mark;
 code_ptr cip; // pointeur vers tampon d'exécution immédiate
 
-/*
-const char *vm_tokens[]= { // mnémoniques bytecodes de la VM  index=bytecode
-    "BYE",
-    "?KEY",
-    "EMIT",
-    "LIT",
-    "FCALL",
-    "RET",
-    "BRA",
-    "?BRA",
-    "EXEC",
-    "!",
-    "@",
-    "C!",
-    "C@",
-    "R@",
-    "U@",
-    "U!",
-    ">R"
-    "R>",
-    "DROP",
-    "DUP",
-    "SWAP",
-    "OVER",
-    "PICK",
-    "+",
-    "-",
-    "*",
-    "/",
-    "MOD",
-    "0<",
-    "0=",
-    "AND",
-    "OR",
-    "XOR",
-    "INVERT",
-    "KEY",
-    "SFR",
-    "SET",
-    "CLEAR",
-    "TOGGLE",
-    "CLIT",
-    "WLIT",
-    ".\"",
-    "RCALL",
-    "TICKS",
-    "DELAY",
-    "?DUP",
-    "1+",
-    "1-",
-    "+!",
-    "2*",
-    "2/",
-    "2drop",
-    "rot",
-    "2dup",
-    "min",
-    "max",
-    "abs",
-    "<<",
-    ">>",
-    "/mod",
-    "?braz",
-    ".",
-    "dcnt",
-    "rcnt",
-    "=",
-    "<>",
-    "<",
-    ">",
-    "<=",
-    ">=",
-    "X@",
-    "X!",
-    "XLOOP",
-    "+XLOOP",
-    "USER"
-} ;
-*/
 
-// mots système enregistrés en mémoire flash
-const char space[]={ICLIT,32,IEMIT,IRET};
-const char spaces[]={IXSTORE,ICLIT,32,IEMIT,IXLOOP,IRET};
-const char cr[]={ICLIT,13,IEMIT,IRET};
-const char phere[]={ICLIT,HERE,IUSER,IFETCH,IRET}; // empile pointeur here
-const char base[]={ICLIT,BASE,IUSER,IRET}; // empile adresse de la variable base
-const char state[]={ICLIT,STATE,IUSER,IRET};// empile l'adresse de la variable state
+// compile les expressions
+void expression(){
 
-// registres spéciaux PIC32MX110F016B
-const char portb[]={IWLIT,0x20,0x61,ISFR,IRET};
-const char trisb[]={IWLIT,0x10,0x61,ISFR,IRET};
-const char anselb[]={IWLIT,0,0x61,ISFR,IRET};
-const char latb[]={IWLIT,0x30,0x61,ISFR,IRET};
+}
 
-/*
-const char dots[]={ICLIT,SPC,IEMIT,ICLIT,'(',IEMIT,ICLIT,SPC,IEMIT,IDCNT,
-                   IDUP,IDOT,ICLIT,')',IEMIT,ICLIT,SPC,IEMIT,IDUP,IQBRAZ,9,IDUP,ITOR,
-                   IMINUS1,IPICK,IDOT,IRFROM,IMINUS1,IBRA,-12,IDROP,IRET};
-*/
+// fonctions compilant
+// les déclarations
+void compile_dim(){
 
-void print_integer(int n);
-void compile_if();
-void compile_then();
-void compile_else();
-void compile_repeat();
-void compile_again();
-void compile_while();
-void compile_do();
-void compile_loop();
-void compile_ploop();
-void compile_begin();
-void compile_until();
-void compile_var();
-void compile_const();
-int compile_token(int);
-void column();
-void semi_column();
+}
+
+void compile_let(){
+
+}
+
+void compile_if(){
+
+}
+
+void compile_goto(){
+
+}
+
+void compile_gosub(){
+
+}
+
+void compile_for(){
+
+}
+
+void compile_read(){
+
+}
+
+void compile_input(){
+
+}
+
+void compile_print(){
+
+}
+
+void compile_data(){
+
+}
+
+void compile_restore(){
+
+}
+
+void compile_on(){
+
+}
+
+void compile_return(){
+
+}
+
+void compile_def(){
+
+}
+
+void compile_change(){
+
+}
+
+void compile_stop(){
+
+}
+
+void compile_end(){
+
+}
+
+void compile_function(){
+
+}
+
+void compile_comma(){
+
+}
+
+void semi_column(){
+
+}
 
 
-dict_entry_t system_dict[]={ // les mots compilant on len >127 
-    {(code_ptr)column,129,":"}, // :
-    {(code_ptr)semi_column,129,";"}, // ;
-    {(code_ptr)compile_var,131,"VAR"}, // var
-    {(code_ptr)compile_const,132,"CONST"},  // const
-    {(code_ptr)compile_if,130,"IF"}, // if
-    {(code_ptr)compile_then,132,"THEN"}, // then
-    {(code_ptr)compile_else,132,"ELSE"}, // else
-    {(code_ptr)compile_repeat,134,"REPEAT"},  //repeat
-    {(code_ptr)compile_again,133,"AGAIN"}, // again
-    {(code_ptr)compile_while,133,"WHILE"}, // while
-    {(code_ptr)compile_do,130,"DO"}, // do
-    {(code_ptr)compile_loop,132,"LOOP"}, // loop
-    {(code_ptr)compile_ploop,133,"+LOOP"}, // +loop
-    {(code_ptr)compile_begin,133,"BEGIN"}, // begin
-    {(code_ptr)compile_until,133,"UNTIL"}, // until
-//    {(code_ptr)dots,2,".S"}, // .s
-    {(code_ptr)space,5,"SPACE"},  // 'space'
-    {(code_ptr)spaces,6,"SPACES"}, // 'spces'
-    {(code_ptr)cr,2,"CR"},  // 'cr'
-    {(code_ptr)trisb,5,"TRISB"},  // 'trisb'
-    {(code_ptr)portb,5,"PORTB"},   // 'portb'
-    {(code_ptr)latb,4,"LATB"}, // 'latb'
-    {(code_ptr)anselb,6,"ANSELB"}, // 'anselb'
-    {(code_ptr)base,4,"BASE"},
-    {(code_ptr)phere,4,"HERE"},
-    {(code_ptr)state,5,"STATE"},
-};
-#define SYSTEM_COUNT 26
-
-
-
-dict_entry_t user_dict[USER_NAMES_SIZE];
 char free_slot=0;
 
 char tib[TIB_SIZE];
@@ -260,7 +212,7 @@ void upper(){
     for (i=first;i<=last;i++) if (tib[i]>='a' && tib[i]<='z') tib[i] -= 32;
 }// upper()
 
-int word(int c){
+int next_token(int c){
     int i;
     i=current;
     while  (i<ctib && tib[i]==c ) i++;
@@ -292,46 +244,6 @@ int is_name(dict_entry_t entry){
     return 1;
 }//is_name()
 
-int try_user(){
-    int i,len;
-    code_ptr cptr;
-    len=last-first+1;
-    if (user[STATE])cptr=here; else cptr=cip;
-    for(i=free_slot-1;i>-1;i--){
-        if (len==(user_dict[i].flags&15) && is_name(user_dict[i])){
-            *cptr++=IRCALL;
-            *cptr++=(int)user_dict[i].cfa;
-            *cptr++=(int)user_dict[i].cfa>>8;
-            if (user[STATE])here=cptr;else cip=cptr;
-            break;
-        }
-    }
-    if (i==-1) return 0; else return 1;
-}// try_user()
-
-int try_system(){
-    int i,len;
-    code_ptr cptr;
-   compfct f;
-   len=last-first+1;
-   if (user[STATE]) cptr=here;else cptr=cip;
-   for(i=SYSTEM_COUNT-1;i>-1;i--){
-        if (len==(system_dict[i].flags&15) && is_name(system_dict[i])){
-            if ((int)system_dict[i].name<0){
-                f=(compfct)system_dict[i].cfa;
-                f();
-                if (error) return 0;
-            }else{
-                *cptr++=IFCALL;
-                *cptr++=(int)system_dict[i].cfa;
-                *cptr++=(int)system_dict[i].cfa>>8;
-                if (user[STATE]) here=cptr;else cip=cptr;
-            }
-            return 1;
-        }
-    }
-    return 0;
-}// try_system()
 
 typedef struct{
     unsigned char len;
@@ -624,20 +536,24 @@ void print_integer(int n){
     UartPrint(STDOUT," ");
 }// print_integer()
 
+void statement(){
+    next_token();
+
+}
+
+void print_result(){
+
+}
+
 void compile_run(){ // analyse le contenu de TIB
     imm_code=here+256;
     cip=imm_code;
     current=0;
     error=0;
-    while (!error && current<ctib){
-        word(SPC);
-        upper();
-        if (!(try_user()||try_system()||try_token()||try_integer())){
-        }
-    }//while (current<ctib)
+    statement();
     if (!(error || user[STATE])){
         *cip=IEND;
-        StackVM((const unsigned char*)imm_code,user);
+        print_result(StackVM((const unsigned char*)imm_code,user));
     }else if (error && user[STATE]){
         here=mark;
         user[STATE]=IMMEDIATE;
@@ -650,7 +566,7 @@ void compile_run(){ // analyse le contenu de TIB
 #ifdef SIM
 const char test[]="32 emit";
 #endif
-void tForth(){ // démarrage système forth en mode interpréteur
+void vpcBasic(){ // démarrage système forth en mode interpréteur
     ram_code=malloc(free_heap());
     user[BASE]=10;
     here=(char*)ram_code;
@@ -666,10 +582,10 @@ void tForth(){ // démarrage système forth en mode interpréteur
 #endif
     while (1){
 #ifndef SIM
-        if ((ctib=UartReadln(STDIN,tib,TIB_SIZE-1)))compile_run();
+        print(comm_channel,">");
+        if ((ctib=readline(comm_channel,tib,TIB_SIZE-1)))compile_run();
 #else
         compile_run();
 #endif
-        UartPrint(STDOUT," ok\r");
     }// while(1)
 }//tForth()

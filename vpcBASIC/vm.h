@@ -17,9 +17,8 @@
 
 // op codes
 #define IEND 0
-#define IQRX (IEND+1)
-#define IEMIT (IQRX+1)
-#define ILIT (IEMIT+1)
+#define IREADLN (END+1)
+#define ILIT (IREADLN+1)
 #define ICALL (ILIT+1)
 #define IRET (ICALL+1)
 #define IBRA (IRET+1)
@@ -56,15 +55,9 @@
 #define IOR  (IAND+1)
 #define IXOR  (IOR+1)
 #define INOT  (IXOR+1)
-#define IKEY  (INOT+1)
-#define ISFR  (IKEY+1)
-#define ISET  (ISFR+1)
-#define ICLR  (ISET+1)
-#define ITGL  (ICLR+1)
-#define ICLIT (ITGL+1)
+#define ICLIT (INOT+1)
 #define IWLIT (ICLIT+1)
-#define IDOTQ (IWLIT+1)
-#define ITICKS (IDOTQ+1)
+#define ITICKS (IWLIT+1)
 #define IDELAY (ITICKS+1)
 #define IQDUP  (IDELAY+1)
 #define IPLUS1 (IQDUP+1)
@@ -95,8 +88,17 @@
 #define IXLOOP (IXSTORE+1)
 #define IPXLOOP (IXLOOP+1)
 #define IUSER (IPXLOOP+1)
+#define ISINE (IUSER+1)
+#define ICOS (ISINE+1)
+#define ITAN (ICOS+1)
+#define IATAN (ITAN+1)
+#define IACOS (IATAN+1)
+#define IASIN (IACOS+1)
+#define IRND (IASIN+1)
+#define ITRUNC (IRND+1)
+#define INUM (ITRUNC+1)
 
-#define LASTOP IUSER
+#define LASTOP INUM
 
 
 #define TOK_COUNT (LASTOP+1)

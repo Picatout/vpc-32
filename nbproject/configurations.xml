@@ -32,8 +32,8 @@
         <itemPath>hardware/Pinguino/typedef.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="VM" projectFiles="true">
-        <itemPath>vpcForth/TinyForth.h</itemPath>
-        <itemPath>vpcForth/vm.h</itemPath>
+        <itemPath>vpcBASIC/vm.h</itemPath>
+        <itemPath>vpcBASIC/vpcBASIC.h</itemPath>
       </logicalFolder>
       <itemPath>font.h</itemPath>
       <itemPath>console.h</itemPath>
@@ -78,8 +78,8 @@
         <itemPath>hardware/HardwareProfile.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="VM" projectFiles="true">
-        <itemPath>vpcForth/TinyForth.c</itemPath>
-        <itemPath>vpcForth/vm.S</itemPath>
+        <itemPath>vpcBASIC/vm.S</itemPath>
+        <itemPath>vpcBASIC/vpcBASIC.c</itemPath>
       </logicalFolder>
       <itemPath>console.c</itemPath>
       <itemPath>font.c</itemPath>
@@ -103,6 +103,7 @@
     <Elem>DiosForth.X/source/NVMem</Elem>
     <Elem>DiosForth.X/source/UART</Elem>
     <Elem>vpcForth</Elem>
+    <Elem>vpcBASIC</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

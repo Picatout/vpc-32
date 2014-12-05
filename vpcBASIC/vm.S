@@ -22,6 +22,19 @@
 //math fonctions
 .extern sinf
 .extern cosf
+.extern tanf
+.extern acosf
+.extern asinf
+.extern atanf
+.extern sqrtf
+.extern fabsf
+.extern powf
+.extern expf
+.extern logf
+.extern log10f
+.extern rintf
+.extern floorf
+.extern ceilf
 
 
 #define _getch UartGetch
@@ -92,8 +105,7 @@ rstack: .space RSTACK_SIZE
 .set macro
 
 
-.global StackVM,  flash_code
-# .global tokens
+.global StackVM
 
 .ent StackVM
 
@@ -680,6 +692,11 @@ gtez:        # '>=' ( n1 n2 -- t|f ) n1>=n2?
     b next
     li T, 0
 
+input:
+
+    b next
+    nop
+
 key:        #  ( -- char ) attend réception caractère par terminal
     addiu a0, zero, STDIO
     xor a1, zero, zero
@@ -688,38 +705,6 @@ key:        #  ( -- char ) attend réception caractère par terminal
     b next
     move T, v0  # T=v0
 
-sfr:        # ( reg -- sfr ) transforme la valeur de registre 16 bits en addresse SFR
-    lui w, SFR_SEG
-    andi T,T, 65535
-    b next
-    or  T,w,T
-
-set:        # ( bits sfr -- ) mets à 1 les bits du SFR
-    move w, T
-    lw t1, 0(dp)
-    addiu w, w,SFR_SET
-    sw t1, 0(w)
-    lw T, -CELL_SIZE(dp)
-    b next
-    addiu  dp, dp, -2*CELL_SIZE
-
-clear:      # ( bits sfr -- ) met à 0 les bits du SFR
-    move w, T
-    lw t1, 0(dp)
-    addiu w, w,SFR_CLEAR
-    sw t1, 0(w)
-    lw T, -CELL_SIZE(dp)
-    b next
-    addiu dp, dp, -2*CELL_SIZE
-
-invert:     # ( bits sfr -- ) inverse la valeur des bits
-    move w, T
-    addiu w, w,SFR_INV
-    lw t1, 0(dp)
-    sw t1, 0(w)
-    lw T, -CELL_SIZE(dp)
-    b next
-    addiu dp,dp,-2*CELL_SIZE
 
 dotq:      # '."' ( -- ) ip pointe vers le texte, le premier octet est le compte.
     _tpush
@@ -840,14 +825,14 @@ fetch_int:  # lit un entier little indian dans espace code VM, retourne dans v0
 
 
 opcodes_table:
-.word bye,qrx,emit,lit,call,ret,bra,qbra,exec,store,fetch,cstore
+.word bye,input,lit,call,ret,bra,qbra,exec,store,fetch,cstore
 .word cfetch,rfetch,ufetch,ustore,tor,rfrom,drop,dup,swap,over,pick
 .word plus,minus,star,ustar,mstar,umstar,slash,uslash,modulo,umsmod,msmod,ltz
 .word zequal, bitand,bitor
-.word bitxor,bitnot,key,sfr,set,clear,invert, clit, wlit, dotq, ticks, delay
+.word bitxor,bitnot,clit, wlit, ticks, delay
 .word qdup, oneplus, oneminus,plusstore, twostar, twoslash, twodrop, rot, twodup
 .word  min, max, abs, lshift, rshift, divmod, qbraz, dcnt, rcnt
 .word equal,nequal, less, greater,ltez,gtez, xfetch, xstore, loop, ploop,user
-
+.word sine, cos, tan, atan, acos, asin,random,trunc,num
 
 

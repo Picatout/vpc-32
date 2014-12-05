@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/store/store_spi.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c vpcForth/TinyForth.c vpcForth/vm.S
+SOURCEFILES_QUOTED_IF_SPACED=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/store/store_spi.c hardware/tvout/ntsc.c hardware/HardwareProfile.c vpcBASIC/vm.S vpcBASIC/vpcBASIC.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/store/store_spi.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/vpcForth/TinyForth.o ${OBJECTDIR}/vpcForth/vm.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o.d ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/serial_comm/serial_comm.o.d ${OBJECTDIR}/hardware/sound/sound.o.d ${OBJECTDIR}/hardware/spiram/spiram.o.d ${OBJECTDIR}/hardware/store/store_spi.o.d ${OBJECTDIR}/hardware/tvout/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/graphics.o.d ${OBJECTDIR}/vpcForth/TinyForth.o.d ${OBJECTDIR}/vpcForth/vm.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/store/store_spi.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/vpcBASIC/vm.o ${OBJECTDIR}/vpcBASIC/vpcBASIC.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o.d ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o.d ${OBJECTDIR}/hardware/Pinguino/sdmmc.o.d ${OBJECTDIR}/hardware/Pinguino/diskio.o.d ${OBJECTDIR}/hardware/serial_comm/serial_comm.o.d ${OBJECTDIR}/hardware/sound/sound.o.d ${OBJECTDIR}/hardware/spiram/spiram.o.d ${OBJECTDIR}/hardware/store/store_spi.o.d ${OBJECTDIR}/hardware/tvout/ntsc.o.d ${OBJECTDIR}/hardware/HardwareProfile.o.d ${OBJECTDIR}/vpcBASIC/vm.o.d ${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d ${OBJECTDIR}/console.o.d ${OBJECTDIR}/font.o.d ${OBJECTDIR}/hardware/Pinguino/fileio.o.d ${OBJECTDIR}/hardware/Pinguino/ff.o.d ${OBJECTDIR}/editor.o.d ${OBJECTDIR}/shell.o.d ${OBJECTDIR}/vpc-32.o.d ${OBJECTDIR}/graphics.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/store/store_spi.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o ${OBJECTDIR}/vpcForth/TinyForth.o ${OBJECTDIR}/vpcForth/vm.o
+OBJECTFILES=${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o ${OBJECTDIR}/hardware/ps2_kbd/keyboard.o ${OBJECTDIR}/hardware/Pinguino/sdmmc.o ${OBJECTDIR}/hardware/Pinguino/diskio.o ${OBJECTDIR}/hardware/serial_comm/serial_comm.o ${OBJECTDIR}/hardware/sound/sound.o ${OBJECTDIR}/hardware/spiram/spiram.o ${OBJECTDIR}/hardware/store/store_spi.o ${OBJECTDIR}/hardware/tvout/ntsc.o ${OBJECTDIR}/hardware/HardwareProfile.o ${OBJECTDIR}/vpcBASIC/vm.o ${OBJECTDIR}/vpcBASIC/vpcBASIC.o ${OBJECTDIR}/console.o ${OBJECTDIR}/font.o ${OBJECTDIR}/hardware/Pinguino/fileio.o ${OBJECTDIR}/hardware/Pinguino/ff.o ${OBJECTDIR}/editor.o ${OBJECTDIR}/shell.o ${OBJECTDIR}/vpc-32.o ${OBJECTDIR}/graphics.o
 
 # Source Files
-SOURCEFILES=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/store/store_spi.c hardware/tvout/ntsc.c hardware/HardwareProfile.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c vpcForth/TinyForth.c vpcForth/vm.S
+SOURCEFILES=hardware/ps2_kbd/QWERTY.c hardware/ps2_kbd/keyboard.c hardware/Pinguino/sdmmc.c hardware/Pinguino/diskio.c hardware/serial_comm/serial_comm.c hardware/sound/sound.c hardware/spiram/spiram.c hardware/store/store_spi.c hardware/tvout/ntsc.c hardware/HardwareProfile.c vpcBASIC/vm.S vpcBASIC/vpcBASIC.c console.c font.c hardware/Pinguino/fileio.c hardware/Pinguino/ff.c editor.c shell.c vpc-32.c graphics.c
 
 
 CFLAGS=
@@ -88,20 +88,20 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assembleWithPreprocess
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/vpcForth/vm.o: vpcForth/vm.S  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/vpcForth 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o.d 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o.ok ${OBJECTDIR}/vpcForth/vm.o.err 
-	@${FIXDEPS} "${OBJECTDIR}/vpcForth/vm.o.d" "${OBJECTDIR}/vpcForth/vm.o.asm.d" -t $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC} $(MP_EXTRA_AS_PRE)  -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/vpcForth/vm.o.d"  -o ${OBJECTDIR}/vpcForth/vm.o vpcForth/vm.S  -Wa,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_AS_POST),-MD="${OBJECTDIR}/vpcForth/vm.o.asm.d",--defsym=__ICD2RAM=1,--defsym=__MPLAB_DEBUG=1,--gdwarf-2,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1
+${OBJECTDIR}/vpcBASIC/vm.o: vpcBASIC/vm.S  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/vpcBASIC 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o.d 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o.ok ${OBJECTDIR}/vpcBASIC/vm.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/vpcBASIC/vm.o.d" "${OBJECTDIR}/vpcBASIC/vm.o.asm.d" -t $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC} $(MP_EXTRA_AS_PRE)  -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/vpcBASIC/vm.o.d"  -o ${OBJECTDIR}/vpcBASIC/vm.o vpcBASIC/vm.S  -Wa,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_AS_POST),-MD="${OBJECTDIR}/vpcBASIC/vm.o.asm.d",--defsym=__ICD2RAM=1,--defsym=__MPLAB_DEBUG=1,--gdwarf-2,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1
 	
 else
-${OBJECTDIR}/vpcForth/vm.o: vpcForth/vm.S  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/vpcForth 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o.d 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o 
-	@${RM} ${OBJECTDIR}/vpcForth/vm.o.ok ${OBJECTDIR}/vpcForth/vm.o.err 
-	@${FIXDEPS} "${OBJECTDIR}/vpcForth/vm.o.d" "${OBJECTDIR}/vpcForth/vm.o.asm.d" -t $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC} $(MP_EXTRA_AS_PRE)  -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/vpcForth/vm.o.d"  -o ${OBJECTDIR}/vpcForth/vm.o vpcForth/vm.S  -Wa,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_AS_POST),-MD="${OBJECTDIR}/vpcForth/vm.o.asm.d",--gdwarf-2
+${OBJECTDIR}/vpcBASIC/vm.o: vpcBASIC/vm.S  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/vpcBASIC 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o.d 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vm.o.ok ${OBJECTDIR}/vpcBASIC/vm.o.err 
+	@${FIXDEPS} "${OBJECTDIR}/vpcBASIC/vm.o.d" "${OBJECTDIR}/vpcBASIC/vm.o.asm.d" -t $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC} $(MP_EXTRA_AS_PRE)  -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/vpcBASIC/vm.o.d"  -o ${OBJECTDIR}/vpcBASIC/vm.o vpcBASIC/vm.S  -Wa,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_AS_POST),-MD="${OBJECTDIR}/vpcBASIC/vm.o.asm.d",--gdwarf-2
 	
 endif
 
@@ -168,6 +168,12 @@ ${OBJECTDIR}/hardware/HardwareProfile.o: hardware/HardwareProfile.c  nbproject/M
 	@${RM} ${OBJECTDIR}/hardware/HardwareProfile.o 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/HardwareProfile.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/hardware/HardwareProfile.o.d" -o ${OBJECTDIR}/hardware/HardwareProfile.o hardware/HardwareProfile.c    -D_SUPPRESS_PLIB_WARNING
 	
+${OBJECTDIR}/vpcBASIC/vpcBASIC.o: vpcBASIC/vpcBASIC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/vpcBASIC 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vpcBASIC.o 
+	@${FIXDEPS} "${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d" -o ${OBJECTDIR}/vpcBASIC/vpcBASIC.o vpcBASIC/vpcBASIC.c    -D_SUPPRESS_PLIB_WARNING
+	
 ${OBJECTDIR}/console.o: console.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/console.o.d 
@@ -215,12 +221,6 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/graphics.o.d 
 	@${RM} ${OBJECTDIR}/graphics.o 
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/graphics.o.d" -o ${OBJECTDIR}/graphics.o graphics.c    -D_SUPPRESS_PLIB_WARNING
-	
-${OBJECTDIR}/vpcForth/TinyForth.o: vpcForth/TinyForth.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/vpcForth 
-	@${RM} ${OBJECTDIR}/vpcForth/TinyForth.o.d 
-	@${RM} ${OBJECTDIR}/vpcForth/TinyForth.o 
-	@${FIXDEPS} "${OBJECTDIR}/vpcForth/TinyForth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/vpcForth/TinyForth.o.d" -o ${OBJECTDIR}/vpcForth/TinyForth.o vpcForth/TinyForth.c    -D_SUPPRESS_PLIB_WARNING
 	
 else
 ${OBJECTDIR}/hardware/ps2_kbd/QWERTY.o: hardware/ps2_kbd/QWERTY.c  nbproject/Makefile-${CND_CONF}.mk
@@ -283,6 +283,12 @@ ${OBJECTDIR}/hardware/HardwareProfile.o: hardware/HardwareProfile.c  nbproject/M
 	@${RM} ${OBJECTDIR}/hardware/HardwareProfile.o 
 	@${FIXDEPS} "${OBJECTDIR}/hardware/HardwareProfile.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/hardware/HardwareProfile.o.d" -o ${OBJECTDIR}/hardware/HardwareProfile.o hardware/HardwareProfile.c    -D_SUPPRESS_PLIB_WARNING
 	
+${OBJECTDIR}/vpcBASIC/vpcBASIC.o: vpcBASIC/vpcBASIC.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR}/vpcBASIC 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d 
+	@${RM} ${OBJECTDIR}/vpcBASIC/vpcBASIC.o 
+	@${FIXDEPS} "${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/vpcBASIC/vpcBASIC.o.d" -o ${OBJECTDIR}/vpcBASIC/vpcBASIC.o vpcBASIC/vpcBASIC.c    -D_SUPPRESS_PLIB_WARNING
+	
 ${OBJECTDIR}/console.o: console.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
 	@${RM} ${OBJECTDIR}/console.o.d 
@@ -330,12 +336,6 @@ ${OBJECTDIR}/graphics.o: graphics.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/graphics.o.d 
 	@${RM} ${OBJECTDIR}/graphics.o 
 	@${FIXDEPS} "${OBJECTDIR}/graphics.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/graphics.o.d" -o ${OBJECTDIR}/graphics.o graphics.c    -D_SUPPRESS_PLIB_WARNING
-	
-${OBJECTDIR}/vpcForth/TinyForth.o: vpcForth/TinyForth.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/vpcForth 
-	@${RM} ${OBJECTDIR}/vpcForth/TinyForth.o.d 
-	@${RM} ${OBJECTDIR}/vpcForth/TinyForth.o 
-	@${FIXDEPS} "${OBJECTDIR}/vpcForth/TinyForth.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_DEBUG_ -MMD -MF "${OBJECTDIR}/vpcForth/TinyForth.o.d" -o ${OBJECTDIR}/vpcForth/TinyForth.o vpcForth/TinyForth.c    -D_SUPPRESS_PLIB_WARNING
 	
 endif
 

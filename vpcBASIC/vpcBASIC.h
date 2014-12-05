@@ -20,5 +20,7 @@
 #define _PAD  4   // tampon pour convertir les nombres en chaîne de caractères.
 
 extern StackVM(const unsigned char*, unsigned int*);
+void vpcBasic();
+
 #endif	/* TINYFORTH_H */
 

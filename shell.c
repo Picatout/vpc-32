@@ -44,6 +44,7 @@
 #include "hardware/Pinguino/fileio.h"
 #include <plib.h>
 #include "shell.h"
+#include "vpcBASIC/vpcBASIC.h"
 
 #define MAX_LINE_LEN 80
 #define MAX_TOKEN 5
@@ -105,12 +106,12 @@ static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
 
-typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,CMD_FORTH,
+typedef enum CMDS {CMD_BASIC, CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,
                    CMD_FREE,CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,
                     CMD_SND,CMD_COUNT} cmds_t;
 
 #define CMD_LEN CMD_COUNT
-const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","format","forth",
+const char *commands[CMD_LEN]={"basic","cd","cls","copy","del","dir","edit","format",
                                "free","help","mkdir","more","reboot","receive","ren","send"};
 
 
@@ -513,8 +514,8 @@ void execute_cmd(int i){
             case CMD_ED: // editeur
                 editor(i);
                 break;
-            case CMD_FORTH: // lance DIOS forth
-               // cold();
+            case CMD_BASIC: // lance DIOS forth
+               vpcBasic();
                 break;
             case CMD_SND:  // envoie un fichier vers la sortie uart
                 send(i);

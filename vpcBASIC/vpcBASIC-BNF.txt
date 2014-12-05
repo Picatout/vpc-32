@@ -1,0 +1,59 @@
+#description de la syntaxe de vpcBASIC
+# [] signifit optionel
+# []*  signit optionel qui peut-être répété plusieurs fois
+# '' symbole terminal entre apostrophes
+# |  alternatives
+ 
+program := statatement_line* end_statement
+statement_line := dim_statement|let_statement|if_statement|goto_statement|gosub_statement|
+				  for_statement|read_statement|input_statement|print_statement|
+				  data_statement|restore_statement|on_statement|return_statement|def_statement
+				  rem_statement|change_statement|stop_statement|end_statement
+
+dim_statement := 'DIM' var_Name'('d1[','d2]')' [',' var_name'('d1[','d2]')']* '\n'
+let_statement := 'LET' var_name '=' expression '\n'
+if_statement := 'IF' compare_exp 'THEN'|'GOTO' label '\n'
+goto_statement := 'GOTO' label '\n'
+gosub_statement := 'GOSUB' label '\n'
+for_statement := 'FOR' varname '=' expression 'TO' expression ['STEP' expression] '\n' statemement_line* '\n' 'NEXT' var_name
+read_statement := 'READ' var_name [',' var_name]* '\n'
+input_statement := 'INPUT' var_name [','var_name]* '\n'
+print_statement := 'PRINT' var_name [[','|';'] var_name]* [','|';'] '\n'
+data_statement := 'DATA' constant|string [',' constant|string]*  '\n'
+restore_statement := 'RESTORE'['*'|'$'] '\n'
+on_statement := 'ON' expresssion 'GOTO'|'THEN' label [',' label]* '\n'
+return_statement := 'RETURN' '\n'
+def_statemement :=  'DEF' fn_name ['('var_Name[','var_name]*')'] '=' expression  '\n'|
+                    'DEF' fn_name ['('var_Name[','var_name]*')'] '\n' statement_line* '\n' 'FNEND'  '\n'
+rem_statement := 'REM'|'\'' comment '\n'
+change_statement := 'CHANGE' var_name'$' 'TO' var_name  '\n'|
+                    'CHANGE' var_name 'TO' var_name'$' '\n'
+stop_statement := 'STOP' '\n'
+end_statement := 'END' '\n'
+label := digit[digit]* | letter[letter|digit]*
+var_Name := letter[letter|digit|'_'][$]
+comparison := expression rel_op expression
+rel_op := '='|'>'|'<'|'>='|'<='|'<>'
+expression := term | expression '+|'-' term
+term := factor| term '*'|'/' factor
+factor := var_name|number| '(' expression ')' | power | fn
+fn := function_name'('arg_list')'
+power := '(' expresson ')'|var_name|number '^' expression
+number := ['+'|'-']digit[digit]*|['+'|'-']digit*'.'digit[digit]*|
+		  ['+'|'-']digit[digit]*'E'['+'|'-']digit[digit]|
+		  ['+'|'-']digit*'.'digit[digit]*'E''['+'|'-']digit[digit]
+letter := 'a'..'z'|'A'..'Z' # ASCII set
+digit := '0'..'9'  # ASCII set		  
+string := '"'any_ASCII_character*'"'
+
+operators priorities
+highest first
+--------------------
+fn              functions
+-,+   			unary minus and plus
+^   			power operator
+*,/  			multiplicative operators
++,-  			additive operators
+=,<,>,>=,<='<>, comparison operators
+=               assignment operator
+
