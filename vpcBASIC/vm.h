@@ -102,7 +102,7 @@
 
 
 #define TOK_COUNT (LASTOP+1)
-#define IBADOP -TOK_COUNT
+#define IBADOP (-TOK_COUNT)
 
 
 

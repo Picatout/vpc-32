@@ -2,6 +2,7 @@
  *    système vpcBASIC exécutant sur la VM.
  */
 #include <math.h>
+#include <stdint.h>
 #include "../hardware/serial_comm/serial_comm.h"
 #include "../hardware/HardwareProfile.h"
 #include "../hardware/spiram/spiram.h"
@@ -9,25 +10,18 @@
 #include "vpcBASIC.h"
 #include "vm.h"
 
-#define NAME_LEN 7  // longueur maximale des mots
-#define F_COMPILE 128 // mot compilant
-#define TIB_SIZE 80
-#define PAD_SIZE 80
-#define USER_NAMES_SIZE 100
-#define XT_NULL 0
+#define NAME_LEN 32  // longueur maximale des mots
 #define COMPILE 1
 #define IMMEDIATE 0
-#define RESERVED 0
-#define CELL_SIZE 4
-#define HASH_BASE 68
-
 
 // data types
 typedef unsigned char BYTE ;
 typedef unsigned short WORD;
-typedef char *code_ptr;
-typedef int(*compfct)();
 
+typedef enum eError {ERR_NONE,ERR_SYNTAX} error_t;
+
+typedef enum eToken_id {NONE,NUMBER,SYMBOL,ADDOP, MULOP,POW,LPAREN,RPARENT,
+        COMMA,SEMICOLUMN,STRING,APOSTROPH} token_t;
 
 typedef struct{
     uint16_t const_base; // début bloc de constantes
@@ -45,14 +39,9 @@ typedef struct{
 #define CONST_BASE (0x1C00)
 #define STR_BASE (0x1E000)
 
-// variable systèmes
-// indices dans user[]
-#define BASE 0
-#define HERE 1
-#define STATE 2
-
+// déclarations vpcBASIC
 #define STATEMENTS_COUNT (19)
-const char *statements[STATEMENTS_COUNT]={
+static const char *statements[STATEMENTS_COUNT]={
 "CHANGE",
 "DATA",
 "DEF",
@@ -76,38 +65,102 @@ const char *statements[STATEMENTS_COUNT]={
 typedef enum eStatement {CHANGE,DATA,DEF,DIM,END,FOR,GOSUB,GOTO,IF,INPUT,LET,ON,PRINT,
         READ,REM,RESTORE,RETURN,STOP} eStatement_t;
 
-
+// fonctions vpcBASIC internes
 #define FUNC_COUNT (13)
-const char *functions[FUNC_COUNT]={
-"ABS",  // absolute
-"ATN",  // arctagent
-"COS",  // cosine
-"COT",  // cotagent
+static const char *functions[FUNC_COUNT]={
+"ABS",  // absolut
+"ATN",  // arctangente
+"COS",  // cosinus
+"COT",  // cotangente
 "EXP",  // e^X
-"INT",  // integer part
-"LOG",  // natural logarigth
-"NUM",  // items count last input
-"RND",  // random number [0-1[
-"SGN",  // sign of number
-"SIN",  // sine
-"SQR",  // square root
-"TAN",  // tangent
+"INT",  // partie entière
+"LOG",  // logarigthe naturel
+"NUM",  // nombre d'items lus lors du dernier READ,INPUT
+"RND",  // nombre aléatoire entre [0-1[
+"SGN",  // signe du nombre
+"SIN",  // sinus
+"SQR",  // racine carrée
+"TAN",  // tangente
 };
 
-typedef enum eBasicFunc {ABS,ATN,COS,COT,EXP,INT,LOG,NUM,RND,SGN,SIN,SQR,TAN} eBasicFunc_t;
+typedef enum eBasicFunc {ABS,ATN,COS,COT,EXP,INTEG,LOG,NUM,RND,SGN,SIN,SQR,TAN} eBasicFunc_t;
 
-// pointeurs
+token_t tok_id;
+char tok_value[33];
+prog_header_t prog_header;
+error_t error;
+unsigned state;
+
+unsigned char *ram_code; // espace code
 char *here; // pointeur espace code
 
-// variables
-int user[16]; // variables utilisateurs et système
-unsigned char *ram_code;
-int cstack[6]; // pile utilisé par le compilateur (control flow stack)
-char cp=-1; //pointeur pour la pile cstack
-char error=0;
-code_ptr imm_code, mark;
-code_ptr cip; // pointeur vers tampon d'exécution immédiate
+char src_line[CHAR_PER_LINE+1];
+unsigned inp; //progression de next_token() dans src_line
 
+src_error(){
+    error=ERR_SYNTAX;
+}
+
+float hex_to_float(char *hex){
+    uint32_t h;
+    h=0;
+    while (*hex){
+        h= h*16 + *hex<='9'?(*hex)-'0':(*hex)-'A'+10;
+        hex++;
+    }
+    return (float)((int32_t)h);
+}
+
+float bin_to_float(char *bin){
+    uint32_t b;
+    b=0;
+    while (*bin){
+        b = b<<1 + *bin=='1'?1:0;
+        bin++;
+    }
+    return (float)((int32_t)b);
+}
+
+float dec_to_float(char *dec){
+    uint32_t d,x;
+    float f;
+    BOOL eneg=FALSE;
+
+    f=0.0;
+    d=1;
+    while (*dec && *dec!='.' && *dec!='E'){
+        f = f*10 + (*dec)-'0';
+        dec++;
+    }
+    if (*dec=='.'){
+        dec++;
+        while (*dec && *dec!='E'){
+            d *=10;
+            f = f + ((*dec)-'0')/d;
+        }
+    }
+    if (*dec=='E'){
+        dec++;
+        if (*dec=='+' || (eneg=(*dec=='-'))){
+            dec++;
+        }
+        x=0;
+        while (*dec){
+            x= x*10 + (*dec)-'0';
+            dec++;
+        }
+        f *= eneg?pow(10,-x):pow(10,x);
+    }
+    return f;
+}
+
+float number_to_float(char *number){
+    if (number[0]=='&' && number[1]=='H')
+        return hex_to_float(&number[2]);
+    if (number[0]=='&' && number[1]=='B')
+        return bin_to_float(&number[2]);
+    return dec_to_float(number);
+}
 
 // compile les expressions
 void expression(){
@@ -197,344 +250,239 @@ void semi_column(){
 }
 
 
-char free_slot=0;
-
-char tib[TIB_SIZE];
-char pad[PAD_SIZE];
-
-
-char ctib;
-char first, last,current;
-
-
-void upper(){
-    int i;
-    for (i=first;i<=last;i++) if (tib[i]>='a' && tib[i]<='z') tib[i] -= 32;
+void upper(char *str){
+    while (*str) if (*str>='a' && *str<='z') *str -= 32;
 }// upper()
 
-int next_token(int c){
-    int i;
-    i=current;
-    while  (i<ctib && tib[i]==c ) i++;
-    first=i;
-    while (i<ctib && tib[i]!=c) i++;
-    last = i-1;
-    if (tib[i]==c){tib[i]=0; i++;}
-    current=i;
+void skip_white(){
+    while(src_line[inp]==' ' || src_line[inp]=='\t') inp++;
+}
+
+unsigned parse_string(){
+    BOOL quote=FALSE;
+    BOOL escape=FALSE;
+    unsigned i=0;
+
+    while (src_line[inp] && !quote){
+        switch(src_line[inp]){
+        case '\\':
+            if (!escape) escape=TRUE;else{tok_value[i++]=src_line[inp];escape=FALSE;}
+            break;
+        case 'n':
+            if (!escape) tok_value[i++]=src_line[inp];else{tok_value[i++]='\n';escape=FALSE;}
+            break;
+        case '"':
+            if (!escape) quote=TRUE;else{tok_value[i++]=src_line[inp];escape=FALSE;}
+            break;
+        default:
+            if ((src_line[inp]<32)||src_line[inp]>127) src_error();else{tok_value[i++]=src_line[inp];}
+            break;
+        }//switch
+        inp++;
+    }//while
+    if (quote){tok_value[i]=0;inp--;} else src_error();
+    return i;
+}
+
+#define TOK_START (0)
+#define TOK_END (9)
+static int next_token(){
+    unsigned state=TOK_START;
+    unsigned i;
+
+    i=inp;
+    skip_white();
+    tok_id=NONE;
+    tok_value[0]=0;
+    while (!error && (state<TOK_END) && src_line[inp]){
+        switch(state){
+        case 0:
+            switch(src_line[inp]){
+            case '+':
+            case '-':
+                    tok_id=ADDOP;
+                    tok_value[i++]=src_line[inp];
+                    state=TOK_END;
+                    break;
+            case '*':
+            case '/':
+                    tok_id=MULOP;
+                    tok_value[i++]=src_line[inp];
+                    state=TOK_END;
+                    break;
+            case '^':
+                    tok_id=POW;
+                    tok_value[i++]=src_line[inp];
+                    state=TOK_END;
+                    break;
+            case ',':
+                    tok_id=COMMA;
+                    tok_value[i++]=src_line[inp];
+                    state=TOK_END;
+                    break;
+            case ';':
+                    tok_id=SEMICOLUMN;
+                    tok_value[i++]=src_line[inp];
+                    state=TOK_END;
+                    break;
+            case '"':
+                    inp++;
+                    i=parse_string();
+                    tok_id=STRING;
+                    state=TOK_END;
+                    break;
+            case '&':
+                    tok_value[i++]=src_line[inp];
+                    state=1; // nombre hexadécimal
+                    break;
+            default:
+                    if (isalpha(src_line[inp])||(src_line[inp]=='_')){
+                        tok_id=SYMBOL;
+                        tok_value[i++]=toupper(src_line[inp]);
+                        state=8; // symbole alphanumérique
+                    }else if (isdigit(src_line[inp])){
+                        tok_id=NUMBER;
+                        tok_value[i++]=src_line[inp];
+                        state=4; // nombre décimal
+                    }else{
+                        src_error();
+                    }
+            }//switch
+            break;
+        case 1: // nombre hexadécimal &H ou binaire &B
+            if (src_line[inp]=='H'){
+                tok_id=NUMBER;
+                state=2;
+            }else if (src_line[inp]=='B'){
+                tok_id=NUMBER;
+                state=3;
+            }else{
+                src_error();
+            }
+            break;
+        case 2:    // nombre hexadécimal
+            if (isxdigit(src_line[inp])){
+                 tok_value[i++]=toupper(src_line[inp]);
+            }else if (src_line[inp]==' '){
+                //ignore espace
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        case 3: // nombre binaire
+            if ((src_line[inp]=='1') || (src_line[inp]=='0')){
+                tok_value[i++]=src_line[inp];
+            }else if (src_line[inp]==' '){
+                //ignore espace
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        case 4: // nombre décimal
+            if (isdigit(src_line[inp])){
+                tok_value[i++]=src_line[inp];
+            }else if (src_line[inp]=='.'){
+                tok_value[i++]=src_line[inp];
+                state=5;
+            }else if (toupper(src_line[inp])=='E'){
+                tok_value[i++]='E';
+                state=6;
+            }else if (src_line[inp]==' '){
+                //ignore espace
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        case 5: //après le '.'
+            if (isdigit(src_line[inp])){
+                tok_value[i++]=src_line[inp];
+            }else if (toupper(src_line[inp])=='E'){
+                tok_value[i++]='E';
+                state=6;
+            }else if (src_line[inp]==' '){
+                //ignore espace
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        case 6: // après le 'E'
+            if (isdigit(src_line[inp])||src_line[inp]=='+'||src_line[inp]=='-'){
+                tok_value[i++]=src_line[inp];
+                state=7;
+            }else{
+                src_error();
+            }
+            break;
+        case 7://après signe ou 1ier décimal
+            if (isdigit(src_line[inp])){
+                tok_value[i++]=src_line[inp];
+            }else if (!isdigit(tok_value[i-1])){
+                src_error();
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        case 8: // symbole alphanumérique
+            if (isalnum(src_line[inp]) || src_line[inp]=='_'){
+                    tok_value[i++]=toupper(src_line[inp]);
+            }else{
+                inp--;
+                state=TOK_END;
+            }
+            break;
+        }//switch
+        inp++;
+    }//while
+    tok_value[i]=0;
+
 }// word()
 
-int cp_name(char dest[NAME_LEN]){
-    int i,j,len;
-    upper();
-    len=last-first+1;
-    j=first;
-    for(i=0;i<len;i++){
-        dest[i]=tib[j++];
-    }
-    return len;
-}//cp_name
-
-int is_name(dict_entry_t entry){
+// cherche un chaîne dans un liste.
+// paramètres:
+//  s chaine recherchée
+//  list liste de chaines
+//  size  nombre d'items dans la liste
+// renvoie:
+//   -1 si pas trouvé dans la liste
+//   l'index si trouvé.
+int search_list(char *s,const char *list[], int size){
     int i,j;
-    i=first;
-    j=0;
-    for (i=first;i<=last;i++){
-        if (tib[i]!=entry.name[j++])return 0;
-    }
-    return 1;
-}//is_name()
+    char *target;
+    const char *item;
+    BOOL match;
+     for (i=0;i<size;i++){
+         target=s;
+         match=FALSE;
+         item = list[i];
+#if defined _DEBUG_
+         UartPrint(STDOUT,item);
+         UartPutch(STDOUT,'\r');
+#endif
+         j=0;
+         while (*target && item[j]){
+             if (!(*target++==item[j++])) break;
+         }
+         if (!*target){
+             match=TRUE;
+             break;
+         }
+     }
+    return match?i:-1;
+}//f()
 
 
-typedef struct{
-    unsigned char len;
-    char mnemo[];
-} token_t;
-
-extern token_t vm_tokens[TOK_COUNT];
-
-int try_token(){ // recherche le mot dans vm_tokens
-    int i,j,len;
-    len=last-first+1;
-    for (i=TOK_COUNT-1;i>-1;i--){
-        if (vm_tokens[i].len==len){
-            for(j=0;j<len;j++)
-                if (vm_tokens[i].mnemo[j]!=tib[first+j]) break;
-            if (j=len) return 1;
-        }
-    }
-    return 0;
-}//try_token()
 
 
-int parse_int(int *n){
-    int i,base,sign;
-    upper();
-    *n=0;
-    base=10;
-    sign=1;
-    i=first;
-    if (tib[i]=='$'){base=16;i++;} else if (tib[i]=='-'){ sign=-1;i++;}
-    for (;i<=last;i++){
-        *n = *n*base;
-        if (tib[i]>='0' && tib[i]<='9') *n += tib[i]-'0';
-        else if (base==16 && tib[i]>='A' && tib[i]<='F') *n += tib[i]-'A'+10;
-        else{
-            error=1;
-            //UartPrint(STDOUT,"mot inconnu: ");
-            UartPrint(STDOUT,&tib[first]);
-            UartPrint(STDOUT," ?\n");
-            break;
-        }
-    }
-    *n = *n * sign;
-    return !error;
-}//parse_int()
+float parse_number(char *nstr){
+
+}//parse_number()
 
 
-int try_integer(){
-    int n;
-
-    code_ptr cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    if (parse_int(&n)){
-        if (n>-128 && n <128){
-            *cptr++=ICLIT;
-            *cptr++=n;
-        }else if (n>-32768 && n<32767){
-            *cptr++=IWLIT;
-            *cptr++=n;
-            *cptr++=n>>8;
-        }else{
-            *cptr++=ILIT;
-            *cptr++=n;
-            *cptr++=n>>8;
-            *cptr++=n>>16;
-            *cptr++=n>>24;
-        }
-       if (user[STATE])here=cptr;else cip=cptr;
-    }
-    return !error;
-}// try_integer()
-
-void column(){ 
-    if (user[STATE] ){error=1;return;}
-    word(SPC);
-    mark=here;
-    user_dict[free_slot].flags=cp_name(user_dict[free_slot].name);
-    user_dict[free_slot].cfa=here;
-    user[STATE]=COMPILE;
-}//column()
-
-void semi_column(){// ';' doit-être le dernier mot dans tib
-    if (!user[STATE]){error=1;return;}
-    *here++=IRET;
-    imm_code=here+256;
-    cip=imm_code;
-    user[STATE]=IMMEDIATE;
-    free_slot++;
-}//semi_column()
-
-void compile_var(){ // var, ne doit pas être utilisé à l'intérieur d'une définition
-    code_ptr cfa,var;
-    if (user[STATE]) {error=1;return;}
-    word(SPC);
-    if (last<first){error=1;return;}
-
-    cfa=here;
-    var = cfa+6;
-    *here++=ILIT;
-    *here++=(int)var;
-    *here++=(int)var>>8;
-    *here++=(int)var>>16;
-    *here++=(int)var>>24;
-    *here++=IRET;
-    here +=CELL_SIZE;
-    user_dict[free_slot].flags=cp_name(user_dict[free_slot].name);
-    user_dict[free_slot].cfa=cfa;
-    free_slot++;
-}// compile_var()
-
-void compile_const(){ // const, ne doit pas être utilisé à l'intérieur d'une définition
-    code_ptr cfa;
-    int n;
-    if (user[STATE]) {error=1;return;}
-    word(SPC);
-    if (last<first){
-        error=1;
-        return;
-    }
-    cfa=here;
-    cip=here+256;
-    *here++=*cip++;
-    *here++=*cip++;
-    if (*(cip-2)==IWLIT){
-        *here++=*cip++;
-    }else if (*cip-2==ILIT){
-        *here++=*cip++;
-        *here++=*cip++;
-        *here++=*cip++;
-    }
-    *here++=IRET;
-    user_dict[free_slot].flags=cp_name(user_dict[free_slot].name);
-    user_dict[free_slot].cfa=cfa;
-    free_slot++;
-}// compile_const()
-
-void compile_if(){ //if
-    code_ptr cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    *cptr++=IQBRAZ;
-    cstack[++cp]=(int)cptr;
-    cptr++; // saute  addresse de ?braz
-    if (user[STATE])here=cptr;else cip=cptr;
-}// compile_if()
-
-void compile_then(){ //then
-    char *there;
-    code_ptr cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(char *)cstack[cp--];
-    *there=cptr-there-1;
-    if (user[STATE])here=cptr;else cip=cptr;
-}// compile_then()
-
-void compile_else(){ //else
-    char *there;
-    code_ptr cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(char*)cstack[cp];
-    *there=cptr-there+1;
-    *cptr++=IBRA;
-    cstack[cp]=(int)cptr;
-    cptr++;
-    if (user[STATE])here=cptr;else cip=cptr;
-}//compile_else(){
-
-void compile_do(){ // 'do'
-    code_ptr cptr;
-    if (user[STATE])cptr=here;else cptr=cip;
-    *cptr++=ISUB;
-    *cptr++=IXSTORE;
-    cstack[++cp]=(int)cptr;
-    if (user[STATE]) here=cptr; else cip=cptr;
-}//compile_do()
-
-void compile_loop(){ //loop
-    code_ptr there, cptr;
-
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(code_ptr)cstack[cp--];
-    *cptr++=IXLOOP;
-    *cptr++=there-cptr-1;
-    if (user[STATE]) here=cptr;else cip=cptr;
-}//compile_loop()
-
-
-void compile_ploop(){//+loop
-    code_ptr there, cptr;
-
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(code_ptr)cstack[cp--];
-    *cptr++=IPXLOOP;
-    *cptr++=there-cptr-1;
-    if (user[STATE]) here=cptr;else cip=cptr;
-}//compile_ploop()
-
-void compile_begin(){//begin
-    if (user[STATE])
-      cstack[++cp]=(int)here;
-    else
-      cstack[++cp]=(int)cip;
-}//compile_begin()
-
-void compile_again(){//again
-    code_ptr there,cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(code_ptr)cstack[cp--];
-    *cptr++=IBRA;
-    *cptr++=there-cptr-1;
-    if (user[STATE]) here=cptr;else cip=cptr;
-}// compile_again()
-
-void compile_while(){ // while
-    code_ptr there,cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    *cptr++=IQBRAZ;
-    cstack[++cp]=(int)cptr;
-    cptr++;
-    if (user[STATE]) here=cptr;else cip=cptr;
-}// compile_while()
-
-void compile_repeat(){//rept
-    code_ptr there,therew,cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    therew=(code_ptr)cstack[cp--]; // while référence avant
-    there=(code_ptr)cstack[cp--]; // begin référence avant
-    *cptr++=IBRA;
-    *cptr++=there-cptr-1; // saut arrière vers BEGIN
-    *therew=cptr-there-1; // saut avant du while après rept
-    if (user[STATE]) here=cptr;else cip=cptr;
-}//compile_repeat()
-
-void compile_until(){// until
-    code_ptr there, cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    there=(code_ptr)cstack[cp--];
-    *cptr++=IQBRAZ;
-    *cptr++=there-cptr-1;
-    if (user[STATE]) here=cptr;else cip=cptr;
-}// compile_until()
-
-int compile_token(int code){
-    int i;
-    code_ptr cptr;
-    if (user[STATE]) cptr=here;else cptr=cip;
-    if (code==ILIT || code==ICLIT || code == IWLIT){
-        word(SPC);
-        upper();
-        try_integer();
-    } else if (code==IDOTQ){
-        for(i=current;i<ctib && tib[i]!='"';i++);
-        first=current;
-        last=i-1;
-        if (tib[i]=='"') i++;
-        current=i;
-        i=last-first+1;
-        if (i>0){
-            *cptr++=IDOTQ;
-            *cptr++=i;
-            for (i=first;i<=last;i++) *cptr++=tib[i];
-        }
-    } else if (code==IFCALL || code== IRCALL || code==IBRA|| code==IQBRA){
-        *cptr++=code;
-        word(SPC);
-        upper();
-        if (parse_int(&i)){
-            *cptr++=i;
-            if (code==IFCALL || code==IRCALL) *cptr++= (i>>8);
-        }
-    }else {
-        *cptr++=code;
-    }
-    if (user[STATE]) here=cptr;else cip=cptr;
-    return !error;
-}// compile_token()
-
-
-void print_integer(int n){
-    int i;
-    char sign;
-    if (n<0){sign='-';n=abs(n);}else sign=' ';
-    pad[11]=0;
-    i=10;
-    while (n){
-       pad[i--]= '0'+ n%10;
-       n /=10;
-    }
-    if (i==10) pad[i]='0'; else (sign=='-')?pad[i]=sign:i++;
-    UartPrint(STDOUT,&pad[i]);
-    UartPrint(STDOUT," ");
-}// print_integer()
 
 void statement(){
     next_token();
@@ -545,21 +493,52 @@ void print_result(){
 
 }
 
+void run(){
+
+}
+
 void compile_run(){ // analyse le contenu de TIB
-    imm_code=here+256;
-    cip=imm_code;
-    current=0;
-    error=0;
+    error=ERR_NONE;
+    if (src_line[0]==' ' || isdigit(src_line[0])) state=COMPILE; else state=IMMEDIATE;
     statement();
-    if (!(error || user[STATE])){
-        *cip=IEND;
-        print_result(StackVM((const unsigned char*)imm_code,user));
-    }else if (error && user[STATE]){
-        here=mark;
-        user[STATE]=IMMEDIATE;
-    }
-    user[HERE]=(unsigned int)here;
+    if (state=IMMEDIATE) run();
 }// compile_run()
+
+
+BOOL bRun;
+
+#define CMD_COUNT (4)
+
+static const char *cmd_list[CMD_COUNT]={
+    "RUN",
+    "LOAD",
+    "SAVE",
+    "BYE"
+};
+
+BOOL command(){
+    int i;
+    inp=0;
+    next_token();
+#if defined _DEBUG_
+    UartPrint(STDOUT, tok_value);
+    UartPutch(STDOUT,'\r');
+#endif
+    if ((i=search_list(tok_value,cmd_list,CMD_COUNT))==-1)
+        return FALSE;
+    switch(i){
+        case 0: //RUN
+            break;
+        case 1: // LOAD
+            break;
+        case 2: // SAVE
+            break;
+        case 3: // BYE
+            bRun=FALSE;
+            break;
+    }//switch
+    return TRUE;
+}
 
 //#define SIM
 
@@ -568,11 +547,7 @@ const char test[]="32 emit";
 #endif
 void vpcBasic(){ // démarrage système forth en mode interpréteur
     ram_code=malloc(free_heap());
-    user[BASE]=10;
-    here=(char*)ram_code;
-    user[HERE]=(unsigned int)here;
-    user[STATE]=IMMEDIATE;
-
+    bRun=TRUE;
 #ifdef SIM
 
         int i;
@@ -580,10 +555,12 @@ void vpcBasic(){ // démarrage système forth en mode interpréteur
         for (i=0;i<ctib;i++) tib[i]=test[i];
         tib[i]=0;
 #endif
-    while (1){
+    while (bRun){
 #ifndef SIM
         print(comm_channel,">");
-        if ((ctib=readline(comm_channel,tib,TIB_SIZE-1)))compile_run();
+        readline(comm_channel,src_line,CHAR_PER_LINE);
+        //src_line[strlen(src_line)-1]=0;
+        if (!command()) compile_run();
 #else
         compile_run();
 #endif

@@ -149,7 +149,7 @@ void cmd_format(int i){
     }
 }
 
-int next_token(void){
+static int next_token(void){
     unsigned char loop,quote,escape;
     cmd_line.first=cmd_line.next;
     while (cmd_line.first<cmd_line.len && (cmd_line.buff[cmd_line.first]==' ' ||

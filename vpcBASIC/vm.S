@@ -130,8 +130,8 @@ StackVM:  # initialisation
 
 next:
     lb    t0, 0(ip)
-    addiu t1,t0, IBADOP
-    bgtz  t1, badop
+#    addiu t1,t0, IBADOP
+#    bgtz  t1, badop
     sll   t0, t0, 2   
     addiu t0,t0,opcodes_table
     lui   t1, CODE_SEG
@@ -784,6 +784,35 @@ pick: # ( xu...,x1,x0,u -- xu...,x1,x0,xu ) empile une copie du Uième élément de
     b next
     lw T, 0(w)
 
+sine:
+
+    b next
+    nop
+
+acos:
+
+    b next
+    nop
+
+asin:
+
+    b next
+    nop
+
+random:
+
+    b next
+    nop
+
+trunc:
+
+    b next
+    nop
+
+num:
+
+    b next
+    nop
 
 badop:
     move v0,t0
