@@ -40,7 +40,7 @@ typedef struct{
 #define STR_BASE (0x1E000)
 
 // déclarations vpcBASIC
-#define STATEMENTS_COUNT (19)
+#define STATEMENTS_COUNT (18)
 static const char *statements[STATEMENTS_COUNT]={
 "CHANGE",
 "DATA",
@@ -91,6 +91,7 @@ prog_header_t prog_header;
 error_t error;
 unsigned state;
 
+unsigned src_end; // fin du code source dans la SRAM
 unsigned char *ram_code; // espace code
 char *here; // pointeur espace code
 
@@ -98,7 +99,11 @@ char src_line[CHAR_PER_LINE+1];
 unsigned inp; //progression de next_token() dans src_line
 
 src_error(){
+    char msg[56];
+
     error=ERR_SYNTAX;
+    sprintf(msg,"syntax error at %d\r",inp-strlen(tok_value));
+    print(comm_channel,msg);
 }
 
 float hex_to_float(char *hex){
@@ -287,63 +292,63 @@ unsigned parse_string(){
 #define TOK_START (0)
 #define TOK_END (9)
 static int next_token(){
-    unsigned state=TOK_START;
-    unsigned i;
+    unsigned pstate=TOK_START;
+    unsigned i=0;
 
-    i=inp;
+    
     skip_white();
     tok_id=NONE;
     tok_value[0]=0;
-    while (!error && (state<TOK_END) && src_line[inp]){
-        switch(state){
+    while (!error && (pstate<TOK_END) && src_line[inp]){
+        switch(pstate){
         case 0:
             switch(src_line[inp]){
             case '+':
             case '-':
                     tok_id=ADDOP;
                     tok_value[i++]=src_line[inp];
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case '*':
             case '/':
                     tok_id=MULOP;
                     tok_value[i++]=src_line[inp];
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case '^':
                     tok_id=POW;
                     tok_value[i++]=src_line[inp];
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case ',':
                     tok_id=COMMA;
                     tok_value[i++]=src_line[inp];
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case ';':
                     tok_id=SEMICOLUMN;
                     tok_value[i++]=src_line[inp];
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case '"':
                     inp++;
                     i=parse_string();
                     tok_id=STRING;
-                    state=TOK_END;
+                    pstate=TOK_END;
                     break;
             case '&':
                     tok_value[i++]=src_line[inp];
-                    state=1; // nombre hexadécimal
+                    pstate=1; // nombre hexadécimal
                     break;
             default:
                     if (isalpha(src_line[inp])||(src_line[inp]=='_')){
                         tok_id=SYMBOL;
                         tok_value[i++]=toupper(src_line[inp]);
-                        state=8; // symbole alphanumérique
+                        pstate=8; // symbole alphanumérique
                     }else if (isdigit(src_line[inp])){
                         tok_id=NUMBER;
                         tok_value[i++]=src_line[inp];
-                        state=4; // nombre décimal
+                        pstate=4; // nombre décimal
                     }else{
                         src_error();
                     }
@@ -352,10 +357,10 @@ static int next_token(){
         case 1: // nombre hexadécimal &H ou binaire &B
             if (src_line[inp]=='H'){
                 tok_id=NUMBER;
-                state=2;
+                pstate=2;
             }else if (src_line[inp]=='B'){
                 tok_id=NUMBER;
-                state=3;
+                pstate=3;
             }else{
                 src_error();
             }
@@ -367,7 +372,7 @@ static int next_token(){
                 //ignore espace
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         case 3: // nombre binaire
@@ -377,7 +382,7 @@ static int next_token(){
                 //ignore espace
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         case 4: // nombre décimal
@@ -385,15 +390,15 @@ static int next_token(){
                 tok_value[i++]=src_line[inp];
             }else if (src_line[inp]=='.'){
                 tok_value[i++]=src_line[inp];
-                state=5;
+                pstate=5;
             }else if (toupper(src_line[inp])=='E'){
                 tok_value[i++]='E';
-                state=6;
+                pstate=6;
             }else if (src_line[inp]==' '){
                 //ignore espace
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         case 5: //après le '.'
@@ -401,18 +406,18 @@ static int next_token(){
                 tok_value[i++]=src_line[inp];
             }else if (toupper(src_line[inp])=='E'){
                 tok_value[i++]='E';
-                state=6;
+                pstate=6;
             }else if (src_line[inp]==' '){
                 //ignore espace
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         case 6: // après le 'E'
             if (isdigit(src_line[inp])||src_line[inp]=='+'||src_line[inp]=='-'){
                 tok_value[i++]=src_line[inp];
-                state=7;
+                pstate=7;
             }else{
                 src_error();
             }
@@ -424,7 +429,7 @@ static int next_token(){
                 src_error();
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         case 8: // symbole alphanumérique
@@ -432,14 +437,17 @@ static int next_token(){
                     tok_value[i++]=toupper(src_line[inp]);
             }else{
                 inp--;
-                state=TOK_END;
+                pstate=TOK_END;
             }
             break;
         }//switch
         inp++;
     }//while
     tok_value[i]=0;
-
+#if defined _DEBUG_
+    UartPrint(STDOUT,tok_value);
+    UartPutch(STDOUT,'\r');
+#endif
 }// word()
 
 // cherche un chaîne dans un liste.
@@ -459,15 +467,13 @@ int search_list(char *s,const char *list[], int size){
          target=s;
          match=FALSE;
          item = list[i];
-#if defined _DEBUG_
-         UartPrint(STDOUT,item);
-         UartPutch(STDOUT,'\r');
-#endif
          j=0;
          while (*target && item[j]){
-             if (!(*target++==item[j++])) break;
+             if (!(*target==item[j])) break;
+             target++;
+             j++;
          }
-         if (!*target){
+         if (!*target && !item[j]){
              match=TRUE;
              break;
          }
@@ -482,16 +488,50 @@ float parse_number(char *nstr){
 
 }//parse_number()
 
-
+void add_label(){
+#if defined _DEBUG_
+    UartPrint(STDOUT,"adding label ");
+    UartPrint(STDOUT,tok_value);
+    UartPutch(STDOUT,'\r');
+#endif
+}
 
 void statement(){
+    int i=-1;
+
     next_token();
-
+    if (!(tok_id==NUMBER || tok_id==SYMBOL)){
+        src_error();
+        return;
+    }
+    if (tok_id==SYMBOL){
+        i=search_list(tok_value,statements,STATEMENTS_COUNT);
+    }
+    if (tok_id==NUMBER || i==-1){
+        add_label();
+        next_token();
+        if (!(tok_id==NONE || tok_id==SYMBOL)){
+            src_error();
+            return;
+        }
+        if (tok_id==NONE){ goto success;}
+        i=search_list(tok_value,statements,STATEMENTS_COUNT);
+    }
+    if (i>=0){
+        print(comm_channel,"statement: ");
+        print(comm_channel,tok_value);
+        put_char(comm_channel,' ');
+        print_int(comm_channel,i,0);
+        crlf();
+    }else{
+        src_error();
+        return;
+    }
+success: // si déclaration BASIC est correcte on la sauvegarde dans la SRAM
+    sram_write_block(SRC_BASE+src_end,src_line,strlen(src_line)+1);
+    src_end += strlen(src_line)+1;
 }
 
-void print_result(){
-
-}
 
 void run(){
 
@@ -500,6 +540,10 @@ void run(){
 void compile_run(){ // analyse le contenu de TIB
     error=ERR_NONE;
     if (src_line[0]==' ' || isdigit(src_line[0])) state=COMPILE; else state=IMMEDIATE;
+    if (src_end>=BIN_BASE){
+        print(comm_channel,"source memory filled.");
+        return;
+    }
     statement();
     if (state=IMMEDIATE) run();
 }// compile_run()
@@ -520,12 +564,10 @@ BOOL command(){
     int i;
     inp=0;
     next_token();
-#if defined _DEBUG_
-    UartPrint(STDOUT, tok_value);
-    UartPutch(STDOUT,'\r');
-#endif
-    if ((i=search_list(tok_value,cmd_list,CMD_COUNT))==-1)
+    if ((i=search_list(tok_value,cmd_list,CMD_COUNT))==-1){
+        inp=0;
         return FALSE;
+    }
     switch(i){
         case 0: //RUN
             break;
@@ -534,6 +576,7 @@ BOOL command(){
         case 2: // SAVE
             break;
         case 3: // BYE
+            free(ram_code);
             bRun=FALSE;
             break;
     }//switch
@@ -548,6 +591,7 @@ const char test[]="32 emit";
 void vpcBasic(){ // démarrage système forth en mode interpréteur
     ram_code=malloc(free_heap());
     bRun=TRUE;
+    src_end=0;
 #ifdef SIM
 
         int i;
@@ -559,7 +603,6 @@ void vpcBasic(){ // démarrage système forth en mode interpréteur
 #ifndef SIM
         print(comm_channel,">");
         readline(comm_channel,src_line,CHAR_PER_LINE);
-        //src_line[strlen(src_line)-1]=0;
         if (!command()) compile_run();
 #else
         compile_run();
