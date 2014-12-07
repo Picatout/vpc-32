@@ -82,6 +82,7 @@ extern unsigned char comm_channel;
     unsigned short wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
     unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char); // lit une ligne au clavier, retourne la longueur de texte.
     void invert_video(unsigned char invert); // inverse vidéo des caractèrs noir/blanc
+    void println(dev_t channel, const char *str);
 #ifdef	__cplusplus
 }
 #endif

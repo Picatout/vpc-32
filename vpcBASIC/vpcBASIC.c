@@ -21,7 +21,7 @@ typedef unsigned short WORD;
 typedef enum eError {ERR_NONE,ERR_SYNTAX} error_t;
 
 typedef enum eToken_id {NONE,NUMBER,SYMBOL,ADDOP, MULOP,POW,LPAREN,RPARENT,
-        COMMA,SEMICOLUMN,STRING,APOSTROPH} token_t;
+        COMMA,SEMICOLUMN,STRING,APOSTROPH,RELOP} token_t;
 
 typedef struct{
     uint16_t const_base; // début bloc de constantes
@@ -336,6 +336,26 @@ static int next_token(){
                     tok_id=STRING;
                     pstate=TOK_END;
                     break;
+            case '=':
+                    tok_value[i++]=src_line[inp];
+                    tok_id=RELOP;
+                    pstate=TOK_END;
+            case '>':
+                    tok_id=RELOP;
+                    tok_value[i++]=src_line[inp];
+                    if (src_line[inp+1]=='='){
+                        tok_value[i++]=src_line[++inp];
+                    }
+                    pstate=TOK_END;
+                    break;
+            case '<':
+                    tok_id=RELOP;
+                    tok_value[i++]=src_line[inp];
+                    if (src_line[inp+1]=='='||src_line[inp+1]=='>'){
+                        tok_value[i++]=src_line[++inp];
+                    }
+                    pstate=TOK_END;
+                    break;
             case '&':
                     tok_value[i++]=src_line[inp];
                     pstate=1; // nombre hexadécimal
@@ -517,18 +537,67 @@ void statement(){
         if (tok_id==NONE){ goto success;}
         i=search_list(tok_value,statements,STATEMENTS_COUNT);
     }
-    if (i>=0){
-        print(comm_channel,"statement: ");
-        print(comm_channel,tok_value);
-        put_char(comm_channel,' ');
-        print_int(comm_channel,i,0);
-        crlf();
-    }else{
-        src_error();
-        return;
+    switch (i){
+        case CHANGE:
+            compile_change();
+            break;
+        case DATA:
+            compile_data();
+            break;
+        case DEF:
+            compile_def();
+            break;
+        case DIM:
+            compile_dim();
+            break;
+        case END:
+            compile_end();
+            break;
+        case FOR:
+            compile_for();
+            break;
+        case GOSUB:
+            compile_gosub();
+            break;
+        case GOTO:
+            compile_goto();
+            break;
+        case IF:
+            compile_if();
+            break;
+        case INPUT:
+            compile_input();
+            break;
+        case LET:
+            compile_let();
+            break;
+        case ON:
+            compile_on();
+            break;
+        case PRINT:
+            compile_print();
+            break;
+        case READ:
+            compile_read();
+            break;
+        case REM:
+            break;
+        case RESTORE:
+            compile_restore();
+            break;
+        case RETURN:
+            compile_return();
+            break;
+        case STOP:
+            compile_stop();
+            break;
+        default:
+            src_error();
+            return;
     }
+    if (error) return();
 success: // si déclaration BASIC est correcte on la sauvegarde dans la SRAM
-    sram_write_block(SRC_BASE+src_end,src_line,strlen(src_line)+1);
+    sram_write_string(src_end,src_line);
     src_end += strlen(src_line)+1;
 }
 
@@ -549,15 +618,36 @@ void compile_run(){ // analyse le contenu de TIB
 }// compile_run()
 
 
+void list_source(){
+    unsigned addr=SRC_BASE;
+    char buffer[CHAR_PER_LINE+1];
+
+#if defined _DEBUG_
+        print_int(STDOUT,addr,0);
+        print_int(STDOUT,src_end,0);
+#endif
+
+    while (addr<src_end){
+        addr+=sram_read_string(addr,buffer,CHAR_PER_LINE+1)+1;
+        println(comm_channel,buffer);
+#if defined _DEBUG_
+        print_int(STDOUT,addr,0);
+#endif
+    }
+}
+
+
 BOOL bRun;
 
-#define CMD_COUNT (4)
+#define CMD_COUNT (6)
 
 static const char *cmd_list[CMD_COUNT]={
     "RUN",
+    "LIST",
     "LOAD",
     "SAVE",
-    "BYE"
+    "BYE",
+    "CLEAR"
 };
 
 BOOL command(){
@@ -571,13 +661,19 @@ BOOL command(){
     switch(i){
         case 0: //RUN
             break;
-        case 1: // LOAD
+        case 1: // LIST
+            list_source();
             break;
-        case 2: // SAVE
+        case 2: // LOAD
             break;
-        case 3: // BYE
-            free(ram_code);
+        case 3: // SAVE
+            break;
+        case 4: // BYE
+            //free(ram_code);
             bRun=FALSE;
+            break;
+        case 5: // CLEAR
+            src_end=SRC_BASE;
             break;
     }//switch
     return TRUE;
@@ -589,9 +685,9 @@ BOOL command(){
 const char test[]="32 emit";
 #endif
 void vpcBasic(){ // démarrage système forth en mode interpréteur
-    ram_code=malloc(free_heap());
+    //ram_code=malloc(free_heap());
     bRun=TRUE;
-    src_end=0;
+    src_end=SRC_BASE;
 #ifdef SIM
 
         int i;
@@ -603,7 +699,7 @@ void vpcBasic(){ // démarrage système forth en mode interpréteur
 #ifndef SIM
         print(comm_channel,">");
         readline(comm_channel,src_line,CHAR_PER_LINE);
-        if (!command()) compile_run();
+        if (strlen(src_line) && !command()) compile_run();
 #else
         compile_run();
 #endif

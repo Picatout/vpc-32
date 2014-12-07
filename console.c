@@ -192,6 +192,15 @@ void print(dev_t channel, const char *text){
     }
 }// print()
 
+void println(dev_t channel, const char *str){
+    print(channel, str);
+    if (channel==LOCAL_CON){
+        crlf();
+    }else{
+        UartPutch(channel,'\r');
+    }
+}
+
 void print_hex(dev_t channel, unsigned int hex, unsigned char width){
     char c[12], *d;
     int i;

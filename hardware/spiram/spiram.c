@@ -89,7 +89,7 @@ void sram_read_block(unsigned addr, unsigned char buffer[], unsigned count){
     _sram_disable();
 }
 
-void sram_write_block(unsigned addr, unsigned char buffer[],unsigned count){
+void sram_write_block(unsigned addr, const char buffer[],unsigned count){
     unsigned i;
     _sram_enable();
     sram_cmd(SRAM_WRITE,addr);
@@ -97,5 +97,23 @@ void sram_write_block(unsigned addr, unsigned char buffer[],unsigned count){
     _sram_disable();
 }
 
+void sram_write_string(unsigned addr, const char *str){
+    _sram_enable();
+    sram_cmd(SRAM_WRITE,addr);
+    while (*str) writeSPI(*str++);
+    writeSPI(0);
+    _sram_disable();
+}
+
+int sram_read_string(unsigned addr, char *buffer,unsigned size){
+    int i=0;
+
+    _sram_enable();
+    sram_cmd(SRAM_READ,addr);
+    while (i<size && (buffer[i]=writeSPI(0)))i++;
+    _sram_disable();
+    if (i==size)buffer[i-1]=0;
+    return i;
+}
 
 

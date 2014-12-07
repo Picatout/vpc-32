@@ -50,11 +50,12 @@ extern "C" {
     unsigned char sram_read_byte(unsigned addr);
     void sram_write_byte(unsigned addr, unsigned char byte);
     void sram_read_block(unsigned addr, unsigned char buffer[],unsigned count);
-    void sram_write_block(unsigned addr, unsigned char buffer[],unsigned count);
+    void sram_write_block(unsigned addr, const char buffer[],unsigned count);
     void sram_write_mode(unsigned char mode);
     unsigned char sram_read_mode();
     void sram_clear();
-
+    void sram_write_string(unsigned addr, const char *str);
+    int sram_read_string(unsigned addr,char *buffer,unsigned size);
 #ifdef	__cplusplus
 }
 #endif
