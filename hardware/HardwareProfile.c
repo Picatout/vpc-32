@@ -72,7 +72,11 @@ void HardwareInit(){
    PPSInput(1,SS1,RPB7); // entrée Fsync sur RPB7
    PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD
    PPSOutput(2,RPB8,SDO2); // sortie commande carte SD
-   PPSLock;                       // reverrouille pour éviter assignation accidentelle.
+   PPSOutput(2,RPB1,NULL); // sortie GPIO RB1, ~CS1  (SPIRAM)
+   TRISBCLR=1|(1<<14); // RB0 et RB14 sortie GPIO
+   PPSOutput(4,RPB0,NULL); // sortie GPIO RB0, snes_clock
+   PPSOutput(4,RPB14,NULL); // sortie GPIO RB14, snes_latch
+   PPSLock;                // reverrouille pour éviter assignation accidentelle.
 }
 
 inline unsigned int ticks(void){

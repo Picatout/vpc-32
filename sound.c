@@ -51,7 +51,7 @@ void tone(unsigned int freq, // fréquence en hertz
 } //tone();
 
 // joue une mélodie en arrière plan
-void tune(const unsigned int *buffer){
+void tune(unsigned int *buffer){
     tones_list=buffer;
     if (*tones_list && *(tones_list+1)){
         fSound |= PLAY_TUNE;

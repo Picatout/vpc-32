@@ -150,7 +150,7 @@ void main(void) {
         SDCardReady=TRUE;
     }
     UartPrint(STDOUT,"sound initialization.\r");
-    tune(&e3k[0]);
+    tune((unsigned int*)&e3k[0]);
     UartPrint(STDOUT,"initialization completed.\r");
     set_cursor(CR_BLOCK);
     clear_screen();

@@ -1677,7 +1677,7 @@ void beep(void){
 
 // joue une mélodie
 void play_tune(void){
-    tune((const unsigned int *)POP);
+    tune((unsigned int *)POP);
 }//play_tune
 
 

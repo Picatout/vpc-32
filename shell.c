@@ -34,6 +34,8 @@
  *      snd    envoie un fichier vers le port sériel
  *      rcv    reçois un fichier par le port sériel
  *      forth  lance l'environnement vpForth
+ *      puts mot  imprime à l'écran le mot qui suis
+ *      expr {expression}  évalue une expression et retourne le résultat
  */
 
 #include <string.h>
@@ -104,12 +106,14 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
-typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,CMD_FORTH,
-                   CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND} cmds_t;
+typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
+                   CMD_FORMAT,CMD_FORTH,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
+                   CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND,
+                   } cmds_t;
 
-#define CMD_LEN 15
-const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","format","forth",
-                               "help","mkdir","more","reboot","receive","ren","send"};
+#define CMD_LEN 17
+const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","expr","format","forth",
+                               "help","mkdir","more","puts","reboot","receive","ren","send"};
 
 int cmd_search(char *target){
     int i;
@@ -346,7 +350,7 @@ void receive(int i){ // reçois un fichier via uart
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
     char *fmt, *buff, *rbuff, c, prev,key;
-    int n,lcnt;
+    int n,lcnt,colcnt=0;
     text_coord_t cpos;
     if (!SDCardReady){
         if (!mount(0)){
@@ -396,6 +400,19 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                                     }else{
                                         lcnt=0;
                                     }
+                                }
+                            }
+                        }else{
+                            colcnt++;
+                            if ((colcnt>79)||(c=='\r')){
+                                colcnt=0;
+                                lcnt++;
+                                if (lcnt==22){
+                                    lcnt=0;
+                                   // print(comm_channel,"\r-- next --\r");
+                                    put_char(comm_channel,'\r');
+                                    key=wait_key(comm_channel);
+                                    if (key=='q' || key==ESC){key=ESC;break;}
                                 }
                             }
                         }
@@ -468,6 +485,14 @@ void list_directory(int i){
     }
 }//list_directory()
 
+void cmd_puts(){
+    print(comm_channel, "commande puts, to be done.\r");
+}//puts()
+
+void expr(){
+    print(comm_channel, "commande expr, to be done.\r");
+}//expr()
+
 void execute_cmd(int i){
         switch (cmd_search(cmd_tokens[0])){
             case CMD_HELP:
@@ -506,6 +531,9 @@ void execute_cmd(int i){
             case CMD_CPY:   // copie un fichier
                 copy(i);
                 break;
+            case CMD_EXPR: // évalue une expression
+                expr();
+                break;
             case CMD_CLEAR: // efface l'écran
                 if (comm_channel==LOCAL_CON){
                     clear_screen();
@@ -515,6 +543,9 @@ void execute_cmd(int i){
                 break;
             case CMD_MORE:
                 more(i);
+                break;
+            case CMD_PUTS: // affiche un texte à l'écran
+                cmd_puts();
                 break;
             case CMD_REBOOT: // redémarrage à froid.
                 asm("lui $t0, 0xbfc0"); // _on_reset
@@ -553,7 +584,11 @@ int tokenize(){ // découpe la ligne d'entrée en mots
 
 void shell(void){
     int i;
-    print(comm_channel,"VPC-32 shell\r16384 bytes free RAM.\r");
+    char *text;
+    text=malloc(80);
+    sprintf(text,"VPC-32 shell\r%d bytes free RAM.\r",FREE_RAM);
+    print(comm_channel,text);
+    free(text);
     free_tokens();
     while (1){
         print(comm_channel,prompt);

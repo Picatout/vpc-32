@@ -35,7 +35,7 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define FREE_RAM 16384
+#define FREE_RAM (49152)
 
 #define LOCAL_CON 0  // console vidéo locale
 #define SERIAL_CON STDIO // console rs-232
@@ -58,6 +58,7 @@
 #define RAM_BEG				 	0xA0000000
 #define RAM_END				 	0xA0000000+BMXDRMSZ-1
 
+#define CS_RAM
 #define STATUS_LED  BIT_3
 #define _status_on()  (PORTB |=STATUS_LED)
 #define _status_off() (PORTB &=~STATUS_LED)
