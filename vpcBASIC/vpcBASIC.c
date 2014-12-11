@@ -18,10 +18,18 @@
 typedef unsigned char BYTE ;
 typedef unsigned short WORD;
 
-typedef enum eError {ERR_NONE,ERR_SYNTAX} error_t;
+typedef enum eError {ERR_NONE,ERR_SYNTAX,ERR_DUP_ID} error_t;
 
 typedef enum eToken_id {NONE,NUMBER,SYMBOL,ADDOP, MULOP,POW,LPAREN,RPARENT,
         COMMA,SEMICOLUMN,STRING,APOSTROPH,RELOP} token_t;
+
+typedef enum sSymbol_class {LABEL,VARIABLE,FUNCTION} eSymbol_t;
+
+typedef struct symbol_struct{
+    char name[NAME_LEN];
+    eSymbol_t class;
+    unsigned addr;
+}symb_t;
 
 typedef struct{
     uint16_t const_base; // début bloc de constantes
@@ -33,11 +41,10 @@ typedef struct{
 } prog_header_t;
 
 // blocs SPIRAM utilisés pour le code source et la compilation
-#define SRC_BASE (0x10000)
-#define BIN_BASE (0x18000)
-#define VAR_BASE (0x1A000)
-#define CONST_BASE (0x1C00)
-#define STR_BASE (0x1E000)
+#define SRC_BASE (0x10000)    // texte source
+#define SYMB_BASE (0x1A000)   // table des symboles
+#define CONST_BASE (0x1C00)   // liste des constantes numériques DATA
+#define STR_BASE (0x1E000)    // liste des chaînes DATA
 
 // déclarations vpcBASIC
 #define STATEMENTS_COUNT (18)
@@ -91,19 +98,33 @@ prog_header_t prog_header;
 error_t error;
 unsigned state;
 
-unsigned src_end; // fin du code source dans la SRAM
+unsigned src_end; // fin du code source dans la SPIRAM
+unsigned symb_free; // position libre table des symboles dans la SPIRAM
+unsigned const_free; // position libre table des constantes DATA
+unsigned str_free;   // position libre table des chaînes DATA
+unsigned ram_free; // RAM libre
 unsigned char *ram_code; // espace code
 char *here; // pointeur espace code
+char *vars; // pointeur des variables
+
 
 char src_line[CHAR_PER_LINE+1];
 unsigned inp; //progression de next_token() dans src_line
 
-src_error(){
+src_error(error_t e){
     char msg[56];
 
-    error=ERR_SYNTAX;
-    sprintf(msg,"syntax error at %d\r",inp-strlen(tok_value));
-    print(comm_channel,msg);
+    error=e;
+    switch(e){
+    case ERR_SYNTAX:
+        sprintf(msg,"syntax error at %d\r",inp-strlen(tok_value));
+        print(comm_channel,msg);
+        break;
+    case ERR_DUP_ID:
+        sprintf(msg,"duplicate identifier at %d\r",inp-strlen(tok_value));
+        print(comm_channel,msg);
+        break;
+    }
 }
 
 float hex_to_float(char *hex){
@@ -280,12 +301,12 @@ unsigned parse_string(){
             if (!escape) quote=TRUE;else{tok_value[i++]=src_line[inp];escape=FALSE;}
             break;
         default:
-            if ((src_line[inp]<32)||src_line[inp]>127) src_error();else{tok_value[i++]=src_line[inp];}
+            if ((src_line[inp]<32)||src_line[inp]>127) src_error(ERR_SYNTAX);else{tok_value[i++]=src_line[inp];}
             break;
         }//switch
         inp++;
     }//while
-    if (quote){tok_value[i]=0;inp--;} else src_error();
+    if (quote){tok_value[i]=0;inp--;} else src_error(ERR_SYNTAX);
     return i;
 }
 
@@ -370,7 +391,7 @@ static int next_token(){
                         tok_value[i++]=src_line[inp];
                         pstate=4; // nombre décimal
                     }else{
-                        src_error();
+                        src_error(ERR_SYNTAX);
                     }
             }//switch
             break;
@@ -382,7 +403,7 @@ static int next_token(){
                 tok_id=NUMBER;
                 pstate=3;
             }else{
-                src_error();
+                src_error(ERR_SYNTAX);
             }
             break;
         case 2:    // nombre hexadécimal
@@ -439,14 +460,14 @@ static int next_token(){
                 tok_value[i++]=src_line[inp];
                 pstate=7;
             }else{
-                src_error();
+                src_error(ERR_SYNTAX);
             }
             break;
         case 7://après signe ou 1ier décimal
             if (isdigit(src_line[inp])){
                 tok_value[i++]=src_line[inp];
             }else if (!isdigit(tok_value[i-1])){
-                src_error();
+                src_error(ERR_SYNTAX);
             }else{
                 inp--;
                 pstate=TOK_END;
@@ -508,34 +529,60 @@ float parse_number(char *nstr){
 
 }//parse_number()
 
-void add_label(){
-#if defined _DEBUG_
-    UartPrint(STDOUT,"adding label ");
-    UartPrint(STDOUT,tok_value);
-    UartPutch(STDOUT,'\r');
-#endif
+
+unsigned search_symbol(char *name, symb_t *s){
+    unsigned i=SYMB_BASE;
+
+    while (i<symb_free){
+        sram_read_block(i,(char*)s,sizeof(symb_t));
+        if (!strcmp(s->name,name)) return i;
+        i += sizeof(symb_t);
+    }
+    return -1;
+}
+
+BOOL add_symbol(char *name, eSymbol_t class, unsigned addr){
+    unsigned i;
+    symb_t s;
+    
+    i=search_symbol(name, &s);
+    if (i==-1){
+        s.class=class;
+        strcpy(s.name,name);
+        s.addr=addr;
+        sram_write_block(symb_free,(char*)&s,sizeof(symb_t));
+        symb_free  +=sizeof(symb_t);
+        return TRUE;
+    }
+    print(comm_channel,"Duplicate symbol\r");
+    return FALSE;
 }
 
 void statement(){
     int i=-1;
+    char name[NAME_LEN];
+    unsigned addr;
+    eSymbol_t class;
 
+    name[0]=0;
     next_token();
     if (!(tok_id==NUMBER || tok_id==SYMBOL)){
-        src_error();
+        src_error(ERR_SYNTAX);
         return;
     }
     if (tok_id==SYMBOL){
         i=search_list(tok_value,statements,STATEMENTS_COUNT);
     }
     if (tok_id==NUMBER || i==-1){
-        add_label();
+        strcpy(name,tok_value);
+        addr=(unsigned)here;
+        class=LABEL;
         next_token();
-        if (!(tok_id==NONE || tok_id==SYMBOL)){
-            src_error();
+        if (tok_id!=SYMBOL || (i=search_list(tok_value,statements,STATEMENTS_COUNT))==-1){
+            src_error(ERR_SYNTAX);
             return;
         }
-        if (tok_id==NONE){ goto success;}
-        i=search_list(tok_value,statements,STATEMENTS_COUNT);
+        //add_symbol(name,LABEL,(unsigned)here);
     }
     switch (i){
         case CHANGE:
@@ -592,11 +639,12 @@ void statement(){
             compile_stop();
             break;
         default:
-            src_error();
+            src_error(ERR_SYNTAX);
             return;
     }
-    if (error) return();
-success: // si déclaration BASIC est correcte on la sauvegarde dans la SRAM
+    if (error) return;
+success: // si déclaration BASIC est correcte on la sauvegarde dans la SPIRAM
+    if (name[0])add_symbol(name,class,addr);
     sram_write_string(src_end,src_line);
     src_end += strlen(src_line)+1;
 }
@@ -609,7 +657,7 @@ void run(){
 void compile_run(){ // analyse le contenu de TIB
     error=ERR_NONE;
     if (src_line[0]==' ' || isdigit(src_line[0])) state=COMPILE; else state=IMMEDIATE;
-    if (src_end>=BIN_BASE){
+    if (src_end>=SYMB_BASE){
         print(comm_channel,"source memory filled.");
         return;
     }
@@ -619,21 +667,21 @@ void compile_run(){ // analyse le contenu de TIB
 
 
 void list_source(){
+    char *in,*out;
     unsigned addr=SRC_BASE;
-    char buffer[CHAR_PER_LINE+1];
+    unsigned line_no=0;
 
-#if defined _DEBUG_
-        print_int(STDOUT,addr,0);
-        print_int(STDOUT,src_end,0);
-#endif
-
+    in = malloc(80);
+    out = malloc(80);
     while (addr<src_end){
-        addr+=sram_read_string(addr,buffer,CHAR_PER_LINE+1)+1;
-        println(comm_channel,buffer);
-#if defined _DEBUG_
-        print_int(STDOUT,addr,0);
-#endif
+        addr+=sram_read_string(addr,in,CHAR_PER_LINE+1)+1;
+        line_no++;
+        sprintf(out,"%4d %s",line_no,in);
+//        print_int(comm_channel, line_no,0);
+        println(comm_channel,out);
     }
+    free(in);
+    free(out);
 }
 
 
@@ -669,7 +717,6 @@ BOOL command(){
         case 3: // SAVE
             break;
         case 4: // BYE
-            //free(ram_code);
             bRun=FALSE;
             break;
         case 5: // CLEAR
@@ -679,29 +726,21 @@ BOOL command(){
     return TRUE;
 }
 
-//#define SIM
 
-#ifdef SIM
-const char test[]="32 emit";
-#endif
-void vpcBasic(){ // démarrage système forth en mode interpréteur
-    //ram_code=malloc(free_heap());
+void vpcBasic(){ 
+    ram_free=free_heap()-1024;
+    print(comm_channel,"code space: ");
+    print_int(comm_channel,ram_free,0);
+    crlf();
+    ram_code=malloc(ram_free);
+    here=ram_code;
+    vars=ram_code+ram_free;
     bRun=TRUE;
     src_end=SRC_BASE;
-#ifdef SIM
-
-        int i;
-        ctib=7;
-        for (i=0;i<ctib;i++) tib[i]=test[i];
-        tib[i]=0;
-#endif
     while (bRun){
-#ifndef SIM
         print(comm_channel,">");
         readline(comm_channel,src_line,CHAR_PER_LINE);
         if (strlen(src_line) && !command()) compile_run();
-#else
-        compile_run();
-#endif
     }// while(1)
-}//tForth()
+    free(ram_code);
+}//vpcBasic()
