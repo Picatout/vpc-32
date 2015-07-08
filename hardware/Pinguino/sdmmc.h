@@ -25,8 +25,9 @@
 #ifndef __SDMMC_H__
 #define __SDMMC_H__
 
-#include "../HardwareProfile.h"
 #include <peripheral/ports.h>
+#include "../HardwareProfile.h"
+#include "../store/store_spi.h"
 
 #define FAIL    FALSE
 
@@ -72,9 +73,8 @@ Note: When using PIC32MX4xx (PIC32-Pinguino/OTG/Micro), as the SPI2 port is
 #endif
 
 #ifdef VPC_32
-#define SDCSEL      BIT_2
-#define READ_LED    STATUS_LED
-#define WRITE_LED   STATUS_LED
+//#define READ_LED    STATUS_LED
+//#define WRITE_LED   STATUS_LED
 #define SDWP
 #define SDCD
 #endif
@@ -113,8 +113,9 @@ unsigned char writeSPI(unsigned char);
 
 void initSD(void);		// initializes I/O pins and SPI
 
+
 void disableSD(void);	// deselect SD card
-void enableSD(void);		// select SD card
+void enableSD(void);	// select SD card
 
 int sendSDCmd(unsigned char, unsigned);
                         // send command to SD card

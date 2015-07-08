@@ -1,5 +1,5 @@
 /*
-* Copyright 2013, Jacques Deschênes
+* Copyright 2013,2014 Jacques Deschênes
 * This file is part of VPC-32.
 *
 *     VPC-32 is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 #include "HardwareProfile.h"
 #include <plib.h>
-#include "../sound.h"
+#include "sound/sound.h"
 
 volatile unsigned int  sys_tick; // compteur pour les milli-secondes
 
@@ -35,11 +35,6 @@ volatile unsigned int  sys_tick; // compteur pour les milli-secondes
 void HardwareInit(){
    SYSTEMConfig(mGetSystemClock(), SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
    INTEnableSystemMultiVectoredInt();
-   // activation du PROXIMITY TIMER pour les interruption inférieures à IPL=7
-//   INTCONbits.TPC=0;
-//   IPTMRCLR=0xFFFFFFFF;
-//   INTCONbits.TPC=7;
-//   IPTMR=CORE_TICK_RATE/2;
     // configure coretimer pour le sys_tick
 #ifdef USE_CORE_TIMER
    OpenCoreTimer(CORE_TICK_RATE);
@@ -59,6 +54,8 @@ void HardwareInit(){
    I2C1CONbits.DISSLW=1; // voir pic32mx1xxx/2xxx-errata.pdf rev. E, point 9
    RPA0R=0;  // pas de périphérique sur RA0 (keyboard clock)
    RPA1R=0;  // pas de périphérique sur RA1 (keyboard data)
+   RPB1R=0;  // pas de périphérique sur RPB1 ~CS1 SRAM
+   RPB2R=0;  // pas de périphérique sur RPB2 ~CS2 SDCARD
    RPB3R=0; //  pas de périphérique sur RB3 (status LED)
    RPB15R=0; // pad de périphérique sur RB15
    TRISBCLR=STATUS_LED; // broche status LED en sortie
@@ -70,6 +67,7 @@ void HardwareInit(){
    PPSOutput(3,RPB6,SDO1); // 3=SDO1 sortie SPI1 (vidéo)
    PPSOutput(4,RPB9,OC3); // OC3 sortie audio.
    PPSInput(1,SS1,RPB7); // entrée Fsync sur RPB7
+<<<<<<< HEAD
    PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD
    PPSOutput(2,RPB8,SDO2); // sortie commande carte SD
    PPSOutput(2,RPB1,NULL); // sortie GPIO RB1, ~CS1  (SPIRAM)
@@ -77,6 +75,11 @@ void HardwareInit(){
    PPSOutput(4,RPB0,NULL); // sortie GPIO RB0, snes_clock
    PPSOutput(4,RPB14,NULL); // sortie GPIO RB14, snes_latch
    PPSLock;                // reverrouille pour éviter assignation accidentelle.
+=======
+   PPSInput(3,SDI2,RPA4); // entrée SDI pour carte SD et SPIRAM
+   PPSOutput(2,RPB8,SDO2); // sortie commande carte SD et SPIRAM
+   PPSLock;                       // reverrouille pour éviter assignation accidentelle.
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 }
 
 inline unsigned int ticks(void){
@@ -97,6 +100,36 @@ void delay_ms(unsigned int msec){
         delay_us(1000);
 #endif
 } // delay_ms()
+
+// détermine la mémoire disponible
+// sur le heap
+// essais successifs par division binaire
+unsigned free_heap(){
+    unsigned toobig,size,tmp;
+    void *ptr=NULL;
+
+    size=RAM_SIZE;
+    while (!ptr){
+        ptr=malloc(size);
+        if (!ptr){
+            toobig=size;
+            size >>=1;
+        }
+    }
+
+    while (toobig-size>16){
+        if (ptr) free(ptr);
+        tmp=size;
+        size+=(toobig-size)>>1;
+        ptr=malloc(size);
+        if (!ptr){
+            toobig=size;
+            size=tmp;
+        }
+    }
+    if (ptr) free(ptr);
+    return size;
+}
 
 #ifdef USE_CORE_TIMER
   //déclaration du gestionnaire d'interruption

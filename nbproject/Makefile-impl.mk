@@ -24,7 +24,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
+<<<<<<< HEAD
 PROJECTNAME=VPC-32
+=======
+PROJECTNAME=vpc-32
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 
 # Active Configuration
 DEFAULTCONF=default

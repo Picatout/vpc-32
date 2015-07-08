@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 #include "hardware/HardwareProfile.h"
-#include "hardware/keyboard.h"
+#include "hardware/ps2_kbd/keyboard.h"
 #include "console.h"
 #include "shell.h"
 #include "hardware/Pinguino/ff.h"

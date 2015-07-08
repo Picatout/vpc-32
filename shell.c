@@ -40,12 +40,13 @@
 
 #include <string.h>
 #include "hardware/HardwareProfile.h"
-#include "hardware/keyboard.h"
+#include "hardware/ps2_kbd/keyboard.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
 #include "hardware/Pinguino/fileio.h"
 #include <plib.h>
 #include "shell.h"
+#include "vpcBASIC/vpcBASIC.h"
 
 #define MAX_LINE_LEN 80
 #define MAX_TOKEN 5
@@ -106,6 +107,7 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
+<<<<<<< HEAD
 typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
                    CMD_FORMAT,CMD_FORTH,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
                    CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND,
@@ -114,6 +116,17 @@ typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
 #define CMD_LEN 17
 const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","expr","format","forth",
                                "help","mkdir","more","puts","reboot","receive","ren","send"};
+=======
+
+typedef enum CMDS {CMD_BASIC, CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,
+                   CMD_FREE,CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,
+                    CMD_SND,CMD_COUNT} cmds_t;
+
+#define CMD_LEN CMD_COUNT
+const char *commands[CMD_LEN]={"basic","cd","cls","copy","del","dir","edit","format",
+                               "free","help","mkdir","more","reboot","receive","ren","send"};
+
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 
 int cmd_search(char *target){
     int i;
@@ -149,7 +162,7 @@ void cmd_format(int i){
     }
 }
 
-int next_token(void){
+static int next_token(void){
     unsigned char loop,quote,escape;
     cmd_line.first=cmd_line.next;
     while (cmd_line.first<cmd_line.len && (cmd_line.buff[cmd_line.first]==' ' ||
@@ -349,8 +362,13 @@ void receive(int i){ // reçois un fichier via uart
 
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
+<<<<<<< HEAD
     char *fmt, *buff, *rbuff, c, prev,key;
     int n,lcnt,colcnt=0;
+=======
+    char *fmt, *buff, *rbuff, c,key;
+    int n;
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
     text_coord_t cpos;
     if (!SDCardReady){
         if (!mount(0)){
@@ -369,36 +387,29 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
             if (fmt && buff){
                 sprintf(fmt,"File: %s, size %d bytes\r",cmd_tokens[1],fh->fsize);
                 print(comm_channel,fmt);
-                lcnt=0;
-                prev=0;
                 key=0;
                 while (key!=ESC && f_read(fh,buff,512,&n)==FR_OK){
                     if (!n) break;
                     rbuff=buff;
                     for(;n;n--){
                         c=*rbuff++;
-                        if (c=='\n'){
-                            if (prev=='\r'){c=32;}else{c='\r';}
-                        }
-                        if ((c!=9 && c!='\r') && (c<32 || c>126)) {c=32;}
+                        if ((c!=TAB && c!=CR) && (c<32 || c>126)) {c=32;}
                         put_char(comm_channel,c);
-                        prev=c;
                         if (comm_channel==LOCAL_CON){
                             cpos=get_curpos();
                             if (cpos.x==0){
-                                lcnt++;
-                                if (lcnt==(LINE_PER_SCREEN-1)){
+                                if (cpos.y>=(LINE_PER_SCREEN-1)){
+                                    cpos.y=LINE_PER_SCREEN-1;
                                     invert_video(TRUE);
                                     print(comm_channel,"-- next --");
                                     invert_video(FALSE);
                                     key=wait_key(comm_channel);
                                     if (key=='q' || key==ESC){key=ESC; break;}
-                                    set_curpos(cpos.x,cpos.y);
-                                    clear_eol();
                                     if (key==CR){
-                                        lcnt--;
+                                        set_curpos(cpos.x,cpos.y);
+                                        clear_eol();
                                     }else{
-                                        lcnt=0;
+                                        clear_screen();
                                     }
                                 }
                             }
@@ -470,6 +481,9 @@ void mkdir(int i){
 }// mkdir()
 
 void list_directory(int i){
+    FRESULT error;
+    FIL *fh;
+    char fmt[55];
     if (!SDCardReady){
         if (!mount(0)){
             print_error_msg(ERR_NO_SDCARD,NULL,0);
@@ -479,12 +493,23 @@ void list_directory(int i){
         }
     }
     if (i>1){
-        listDir(cmd_tokens[1]);
+        error=listDir(cmd_tokens[1]);
+        if (error==FR_NO_PATH){// not a directory, try file
+            fh=malloc(sizeof(FIL));
+            if (fh && ((error=f_open(fh,cmd_tokens[1],FA_READ))==FR_OK)){
+                sprintf(fmt,"File: %s, size %d bytes\r",cmd_tokens[1],fh->fsize);
+                print(comm_channel,fmt);
+                f_close(fh);
+                free(fh);
+            }
+        }
     }else{
-        listDir(".");
+        error=listDir(".");
     }
+    if (error) print_error_msg(ERR_FIO,"",error);
 }//list_directory()
 
+<<<<<<< HEAD
 void cmd_puts(){
     print(comm_channel, "commande puts, to be done.\r");
 }//puts()
@@ -492,6 +517,14 @@ void cmd_puts(){
 void expr(){
     print(comm_channel, "commande expr, to be done.\r");
 }//expr()
+=======
+//display heap status
+void cmd_free(){
+    char fmt[55];
+    sprintf(fmt,"free RAM %d/%d BYTES\r",free_heap(),heap_size);
+    print(comm_channel,fmt);
+}
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 
 void execute_cmd(int i){
         switch (cmd_search(cmd_tokens[0])){
@@ -507,6 +540,9 @@ void execute_cmd(int i){
             case CMD_FORMAT:
                 cmd_format(i);
                 break;
+            case CMD_FREE:
+                cmd_free();
+                break;
             case CMD_MKDIR:
                 mkdir(i);
                 break;
@@ -519,8 +555,8 @@ void execute_cmd(int i){
             case CMD_ED: // editeur
                 editor(i);
                 break;
-            case CMD_FORTH: // lance DIOS forth
-                cold();
+            case CMD_BASIC: // lance DIOS forth
+               vpcBasic();
                 break;
             case CMD_SND:  // envoie un fichier vers la sortie uart
                 send(i);
@@ -584,11 +620,18 @@ int tokenize(){ // découpe la ligne d'entrée en mots
 
 void shell(void){
     int i;
+<<<<<<< HEAD
     char *text;
     text=malloc(80);
     sprintf(text,"VPC-32 shell\r%d bytes free RAM.\r",FREE_RAM);
     print(comm_channel,text);
     free(text);
+=======
+    
+    print(comm_channel,"VPC-32 shell\rfree RAM (bytes): ");
+    print_int(comm_channel,free_heap(),0);
+    crlf();
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
     free_tokens();
     while (1){
         print(comm_channel,prompt);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 update=2014-06-01 13:59:13
+=======
+update=2015-07-07 20:53:13
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 last_client=eeschema
 [eeschema]
 version=1

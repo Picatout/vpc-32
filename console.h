@@ -33,7 +33,7 @@ extern "C" {
 
 #include <GenericTypeDefs.h>
 #include "font.h"
-#include "hardware/ntsc.h"
+#include "hardware/tvout/ntsc.h"
 #include "hardware/HardwareProfile.h"
     
 #define LINE_PER_SCREEN ((int)VRES/CHAR_HEIGHT)
@@ -82,6 +82,7 @@ extern unsigned char comm_channel;
     unsigned short wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
     unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char); // lit une ligne au clavier, retourne la longueur de texte.
     void invert_video(unsigned char invert); // inverse vidéo des caractèrs noir/blanc
+    void println(dev_t channel, const char *str);
 #ifdef	__cplusplus
 }
 #endif

@@ -98,6 +98,10 @@
 #include "ff.h"			/* FatFs configurations and declarations */
 #include "diskio.h"		/* Declarations of low level disk I/O functions */
 
+#if defined _DEBUG_
+#include "../serial_comm/serial_comm.h"
+#include"../../console.h"
+#endif
 /*--------------------------------------------------------------------------
 
  Module Private Definitions
@@ -2911,10 +2915,10 @@ const TCHAR *path /* Pointer to the directory path */
 				res = dir_sdi(dj, 0); /* Rewind dir */
 			}
 		}
-		if (res == FR_NO_FILE)
+		if (res == FR_NO_FILE){
 			res = FR_NO_PATH;
+                }
 	}
-
 	LEAVE_FF(dj->fs, res);
 }
 

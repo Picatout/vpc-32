@@ -23,22 +23,23 @@
  * Created on 26 août 2013, 07:38
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <plib.h>
 #include "graphics.h"
 
 #include "hardware/HardwareProfile.h"
-#include "hardware/ntsc.h"
-#include "hardware/serial_comm.h"
-#include "hardware/keyboard.h"
+#include "hardware/tvout/ntsc.h"
+#include "hardware/serial_comm/serial_comm.h"
+#include "hardware/ps2_kbd/keyboard.h"
 #include "hardware/Pinguino/diskio.h"
 #include "hardware/Pinguino/fileio.h"
 #include "console.h"
 #include "hardware/Pinguino/ff.h"
-#include "vpForth/opcodes.h"
-#include "vpForth/vpForth.h"
-#include "sound.h"
+#include "vpcBASIC/vm.h"
+#include "vpcBASIC/vpcBASIC.h"
+#include "hardware/sound/sound.h"
 
 // PIC32MX150F128B Configuration Bit Settings
 #include <xc.h>
@@ -69,15 +70,16 @@
 
 // DEVCFG0
 #pragma config JTAGEN = OFF             // JTAG Enable (JTAG Disabled)
-#pragma config ICESEL = ICS_PGx1        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config ICESEL = RESERVED        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 
 
 
+#if defined _DEBUG_
 const char *msg1=" ntsc video target\r";
-const char *msg2="0123456789012345678901234567890123456789012345678901"; // 52 caractères par ligne
+const char *msg2="012345678901234567890123456789012345678901234567890123567"; // 58 caractères par ligne
 
 
 
@@ -112,7 +114,10 @@ void graphics_test(){ // test des fonctions graphiques
 //        ellipse(HRES/3+i,VRES/3+i,50,30);
 //    }
     besiez(20,200,20,40,300,40);
+    delay_ms(500);
 }//graphics_test
+
+#endif
 
 const unsigned int e3k[]={ // rencontre du 3ième type
 784,500, // sol4
@@ -124,11 +129,14 @@ const unsigned int e3k[]={ // rencontre du 3ième type
 };
 
 void main(void) {
+    heap_size=free_heap();
     HardwareInit();
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     ln_cnt=0;
     video=0;
+#if defined DEBUG
     test_pattern();
+#endif
     UartPrint(STDOUT,"video initialization\r");
     VideoInit();
     delay_ms(500);
@@ -147,14 +155,29 @@ void main(void) {
         UartPrint(STDOUT,"Failed\r");
         SDCardReady=FALSE;
     }else{
+        UartPrint(STDOUT,"succeeded\r");
         SDCardReady=TRUE;
     }
+    UartPrint(STDOUT,"SRAM initialization\r");
+    sram_init();
     UartPrint(STDOUT,"sound initialization.\r");
     tune((unsigned int*)&e3k[0]);
     UartPrint(STDOUT,"initialization completed.\r");
-    set_cursor(CR_BLOCK);
+    set_cursor(CR_BLOCK); // sauvegare video_buffer dans SRAM
     clear_screen();
+#if defined _DEBUG_
     graphics_test();
+    sram_write_block(100000,video_bmp,BMP_SIZE);
+    delay_ms(1000);
+    clear_screen();
+    delay_ms(1000);
+    sram_read_block(100000,video_bmp,BMP_SIZE);
+    delay_ms(1000);
+    clear_screen();
+    print(comm_channel,"heap_size: ");
+    print_int(comm_channel,heap_size,0);
+    crlf();
+#endif
     shell();
 } // main()
 

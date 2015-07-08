@@ -4,27 +4,42 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="f2" displayName="DIOS FORTH" projectFiles="true">
-        <itemPath>DiosForth.X/source/VM/VMcore.h</itemPath>
-        <itemPath>DiosForth.X/source/VM/VMword.h</itemPath>
-        <itemPath>DiosForth.X/source/NVMem/NVMem.h</itemPath>
-      </logicalFolder>
       <logicalFolder name="f1" displayName="hardware" projectFiles="true">
-        <itemPath>hardware/ntsc.h</itemPath>
+        <logicalFolder name="f1" displayName="ps2_kbd" projectFiles="true">
+          <itemPath>hardware/ps2_kbd/QWERTY.h</itemPath>
+          <itemPath>hardware/ps2_kbd/keyboard.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f4" displayName="SDcard" projectFiles="true">
+          <itemPath>hardware/Pinguino/diskio.h</itemPath>
+          <itemPath>hardware/Pinguino/sdmmc.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f6" displayName="serial_comm" projectFiles="true">
+          <itemPath>hardware/serial_comm/serial_comm.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f3" displayName="sound" projectFiles="true">
+          <itemPath>hardware/sound/sound.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f5" displayName="SPIRAM" projectFiles="true">
+          <itemPath>hardware/spiram/spiram.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f7" displayName="store" projectFiles="true">
+          <itemPath>hardware/store/store_spi.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="tvout" projectFiles="true">
+          <itemPath>hardware/tvout/ntsc.h</itemPath>
+        </logicalFolder>
         <itemPath>hardware/HardwareProfile.h</itemPath>
-        <itemPath>hardware/serial_comm.h</itemPath>
-        <itemPath>hardware/QWERTY.h</itemPath>
-        <itemPath>hardware/keyboard.h</itemPath>
-        <itemPath>hardware/Pinguino/sdmmc.h</itemPath>
-        <itemPath>hardware/Pinguino/diskio.h</itemPath>
         <itemPath>hardware/Pinguino/typedef.h</itemPath>
         <itemPath>hardware/spiram.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2" displayName="VM" projectFiles="true">
+        <itemPath>vpcBASIC/vm.h</itemPath>
+        <itemPath>vpcBASIC/vpcBASIC.h</itemPath>
       </logicalFolder>
       <itemPath>font.h</itemPath>
       <itemPath>console.h</itemPath>
       <itemPath>hardware/Pinguino/ff.h</itemPath>
       <itemPath>hardware/Pinguino/ffconf.h</itemPath>
-      <itemPath>sound.h</itemPath>
       <itemPath>editor.h</itemPath>
       <itemPath>shell.h</itemPath>
       <itemPath>graphics.h</itemPath>
@@ -37,26 +52,49 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f2" displayName="DIOS FORTH" projectFiles="true">
-        <itemPath>DiosForth.X/source/VM/VMcore.c</itemPath>
-        <itemPath>DiosForth.X/source/VM/VMword.c</itemPath>
-        <itemPath>DiosForth.X/source/NVMem/NVMem.c</itemPath>
-      </logicalFolder>
       <logicalFolder name="f1" displayName="hardware" projectFiles="true">
-        <itemPath>hardware/ntsc.c</itemPath>
+        <logicalFolder name="f3" displayName="ps2_kbd" projectFiles="true">
+          <itemPath>hardware/ps2_kbd/QWERTY.c</itemPath>
+          <itemPath>hardware/ps2_kbd/keyboard.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f4" displayName="SDcard" projectFiles="true">
+          <itemPath>hardware/Pinguino/sdmmc.c</itemPath>
+          <itemPath>hardware/Pinguino/diskio.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f6" displayName="serial_comm" projectFiles="true">
+          <itemPath>hardware/serial_comm/serial_comm.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="sound" projectFiles="true">
+          <itemPath>hardware/sound/sound.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f5" displayName="SPIRAM" projectFiles="true">
+          <itemPath>hardware/spiram/spiram.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f7" displayName="store" projectFiles="true">
+          <itemPath>hardware/store/store_spi.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f1" displayName="tvout" projectFiles="true">
+          <itemPath>hardware/tvout/ntsc.c</itemPath>
+        </logicalFolder>
         <itemPath>hardware/HardwareProfile.c</itemPath>
+<<<<<<< HEAD
         <itemPath>hardware/serial_comm.c</itemPath>
         <itemPath>hardware/keyboard.c</itemPath>
         <itemPath>hardware/Pinguino/sdmmc.c</itemPath>
         <itemPath>hardware/Pinguino/diskio.c</itemPath>
         <itemPath>hardware/QWERTY.c</itemPath>
         <itemPath>hardware/spiram.c</itemPath>
+=======
+      </logicalFolder>
+      <logicalFolder name="f2" displayName="VM" projectFiles="true">
+        <itemPath>vpcBASIC/vm.S</itemPath>
+        <itemPath>vpcBASIC/vpcBASIC.c</itemPath>
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
       </logicalFolder>
       <itemPath>console.c</itemPath>
       <itemPath>font.c</itemPath>
       <itemPath>hardware/Pinguino/fileio.c</itemPath>
       <itemPath>hardware/Pinguino/ff.c</itemPath>
-      <itemPath>sound.c</itemPath>
       <itemPath>editor.c</itemPath>
       <itemPath>shell.c</itemPath>
       <itemPath>vpc-32.c</itemPath>
@@ -74,6 +112,8 @@
     <Elem>DiosForth.X/source/VM</Elem>
     <Elem>DiosForth.X/source/NVMem</Elem>
     <Elem>DiosForth.X/source/UART</Elem>
+    <Elem>vpcForth</Elem>
+    <Elem>vpcBASIC</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -85,8 +125,13 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
+<<<<<<< HEAD
         <languageToolchainVersion>1.32</languageToolchainVersion>
         <platform>3</platform>
+=======
+        <languageToolchainVersion>1.33</languageToolchainVersion>
+        <platform>2</platform>
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
       </toolsSet>
       <compileType>
         <linkerTool>
@@ -126,18 +171,38 @@
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
-        <property key="preprocessor-macros" value="SD_DEBUG"/>
+        <property key="preprocessor-macros" value="_DEBUG_"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
+<<<<<<< HEAD
         <appendMe value="-D _SUPPRESS_PLIB_WARNING"/>
+=======
+        <appendMe value="-D_SUPPRESS_PLIB_WARNING"/>
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
       </C32>
       <C32-AR>
         <property key="additional-options-chop-files" value="false"/>
       </C32-AR>
       <C32-AS>
+        <property key="assembler-symbols" value=""/>
+        <property key="enable-symbols" value="true"/>
+        <property key="exclude-floating-point-library" value="false"/>
+        <property key="expand-macros" value="false"/>
+        <property key="extra-include-directories-for-assembler" value=""/>
+        <property key="extra-include-directories-for-preprocessor" value=""/>
+        <property key="false-conditionals" value="false"/>
+        <property key="keep-locals" value="false"/>
+        <property key="list-assembly" value="false"/>
+        <property key="list-source" value="false"/>
+        <property key="list-symbols" value="false"/>
+        <property key="oXC32asm-list-to-file" value="false"/>
+        <property key="omit-debug-dirs" value="false"/>
+        <property key="omit-forms" value="false"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="warning-level" value=""/>
       </C32-AS>
       <C32-LD>
         <property key="additional-options-use-response-files" value="false"/>
@@ -155,7 +220,11 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
+<<<<<<< HEAD
         <property key="heap-size" value="49152"/>
+=======
+        <property key="heap-size" value="48000"/>
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
         <property key="input-libraries" value=""/>
         <property key="linker-symbols" value=""/>
         <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
@@ -165,7 +234,7 @@
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="false"/>
         <property key="report-memory-usage" value="true"/>
-        <property key="stack-size" value=""/>
+        <property key="stack-size" value="4096"/>
         <property key="symbol-stripping" value=""/>
         <property key="trace-symbols" value=""/>
         <property key="warn-section-align" value="false"/>
@@ -200,6 +269,7 @@
         <property key="common-include-directories" value=""/>
         <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
+        <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
@@ -243,23 +313,35 @@
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
+<<<<<<< HEAD
+=======
+        <property key="memories.configurationmemory2" value="true"/>
+>>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
         <property key="memories.dataflash" value="true"/>
         <property key="memories.eeprom" value="true"/>
         <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="true"/>
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.end" value="0x1d01ffff"/>
+        <property key="memories.programmemory.partition2" value="true"/>
+        <property key="memories.programmemory.partition2.end"
+                  value="${memories.programmemory.partition2.end.value}"/>
+        <property key="memories.programmemory.partition2.start"
+                  value="${memories.programmemory.partition2.start.value}"/>
         <property key="memories.programmemory.start" value="0x1d000000"/>
-        <property key="poweroptions.powerenable" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
         <property key="programmertogo.imagename" value=""/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.pgmspeed" value="2"/>
+        <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0x1d01ffff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x1d000000"/>
         <property key="programoptions.preserveuserid" value="false"/>
+        <property key="programoptions.programcalmem" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
         <property key="programoptions.testmodeentrymethod" value="VPPFirst"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>

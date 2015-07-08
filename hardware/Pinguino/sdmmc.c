@@ -10,6 +10,9 @@
 **					SD card presence nor WP switch detection switches.
 **					see functions getCD() and getWP() below.
 */
+/*
+ *  adapted to VPC-32 project by Jacques Deschênes 2013,2014
+ */
 
 #ifndef __SDMMC_C__
 #define __SDMMC_C__
@@ -22,36 +25,21 @@
 //#include "diskio.h"
 //#include "ff.h"
 
-// send one byte of data and receive one back at the same time
-unsigned char writeSPI(unsigned char b)
-{
-
-	SPI2BUF = b;						
-	while(!SPI2STATbits.SPIRBF);	// wait transfer complete
-	return SPI2BUF;					// read the received value
-
-/*
-	BUFFER = b;			            // write to buffer for TX
-	while (!STATRX);		        // wait until cycle complete
-	return BUFFER;			        // return with byte read
- */
-}	// writeSPI
 
 void initSD(void)
 {
-	PORTB |=SDCSEL; //digitalwrite(SDCSEL, HIGH);	// initially keep the SD card disabled
-	TRISB &=~SDCSEL; //pinmode(SDCSEL, OUTPUT);		// make Card select an output pin
+    if (!store_initialized) store_spi_init();
 
-	// init the spi module for a slow (safe) clock speed first
+//    PORTB |=SDCSEL; //digitalwrite(SDCSEL, HIGH);	// initially keep the SD card disabled
+//	TRISB &=~SDCSEL; //pinmode(SDCSEL, OUTPUT);		// make Card select an output pin
+//
+//	// init the spi module for a slow (safe) clock speed first
+//
+//	SPI2CON = 0x8120;   // ON (0x8000), CKE=1 (0x100), CKP=0, Master mode (0x20)
+//	SPI2BRG = (mGetPeripheralClock() / (2 * 10000000)) - 1; // 10Mbits/sec
 
-	SPI2CON = 0x8120;   // ON (0x8000), CKE=1 (0x100), CKP=0, Master mode (0x20)
-	SPI2BRG = (mGetPeripheralClock() / (2 * 250000)) - 1;
-
-/*
-	SPICONF = 0x8120;   // ON (0x8000), CKE=1 (0x100), CKP=0, Master mode (0x20)
-	CLKSPD  = (GetPeripheralClock() / (2 * 250000)) - 1;
-*/
 }   // initSD
+
 
 #define readSPI()   writeSPI(0xFF)
 #define clockSPI()  writeSPI(0xFF)
@@ -59,13 +47,16 @@ void initSD(void)
 void disableSD(void)
 {
 
-       PORTB |= SDCSEL; //digitalwrite(SDCSEL, HIGH);	// Deselected = SDCSEL high
-       clockSPI();
+   _sdc_disable(); 
+   clockSPI();
+   _status_off();
 }
 
 void enableSD(void)
 {
-	PORTB &= ~ SDCSEL; //digitalwrite(SDCSEL, LOW);	// Selected = SDCSEL low
+    _status_on();
+    _sdc_enable();
+
 }
 
 // c    command code

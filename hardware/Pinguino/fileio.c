@@ -30,7 +30,7 @@
 #include "sdmmc.h"
 #include "ff.h"					// Fat Filesystem
 #include "diskio.h"				// card access functions
-#include "../serial_comm.h"
+#include "../serial_comm/serial_comm.h"
 #include "../../console.h"
 
 //#define SD_DEBUG
@@ -190,8 +190,10 @@ unsigned listDir(const char *path) {
                 sprintf(fmt,"\rreading dirctory: ('%s')\r", path);
                 print(comm_channel,fmt);
             }
+        }else{
+            return res;
         }
-	while (!res) {
+        while (!res) {
 		res = f_readdir(&dir, &Finfo);
 #ifdef SD_DEBUG
 //		put_rc(res);
@@ -240,7 +242,7 @@ unsigned listDir(const char *path) {
             }
         }
         free(fmt);
-	return s1;
+	return res;
 } // listDir
 
 char isDirectory(FILINFO file) {

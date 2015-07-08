@@ -24,6 +24,7 @@
 //#include <digitalw.c>
 #include "../HardwareProfile.h"
 #include "sdmmc.h"
+#include "../store/store_spi.h"
 #include "../../shell.h"
 
 // For boards known to support the RTCC library ***Added 07 May 2012
@@ -83,11 +84,11 @@ static UINT16 CardType;
 
 #define xmit_spi(dat) 	writeSPI(dat)
 #define rcvr_spi()	writeSPI(0xFF)
-#define rcvr_spi_m(p)	SPI2BUF = 0xFF; while (!SPI2STATbits.SPIRBF); *(p) = (PF_BYTE)SPI2BUF;
+#define rcvr_spi_m(p)	SDC_SPIBUF = 0xFF; while (!SDC_SPISTATbits.SPIRBF); *(p) = (PF_BYTE)SDC_SPIBUF;
 #define xchg_spi (dat)  writeSPI(dat)
 #define DLY_US(i)	delay_us(i)
-#define CS_H()		(PORTB|=SDCSEL)//digitalwrite(SDCS, HIGH)
-#define CS_L()		(PORTB&=~SDCSEL)//digitalwrite(SDCS, LOW)
+#define CS_H()		_sdc_disable()//digitalwrite(SDCS, HIGH)
+#define CS_L()		_sdc_enable()//digitalwrite(SDCS, LOW)
 
 /*-----------------------------------------------------------------------*/
 /* Wait for card ready                                                   */
