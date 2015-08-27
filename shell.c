@@ -107,7 +107,6 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
-<<<<<<< HEAD
 typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
                    CMD_FORMAT,CMD_FORTH,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
                    CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND,
@@ -116,17 +115,6 @@ typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
 #define CMD_LEN 17
 const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","expr","format","forth",
                                "help","mkdir","more","puts","reboot","receive","ren","send"};
-=======
-
-typedef enum CMDS {CMD_BASIC, CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_FORMAT,
-                   CMD_FREE,CMD_HELP,CMD_MKDIR,CMD_MORE,CMD_REBOOT,CMD_RCV,CMD_REN,
-                    CMD_SND,CMD_COUNT} cmds_t;
-
-#define CMD_LEN CMD_COUNT
-const char *commands[CMD_LEN]={"basic","cd","cls","copy","del","dir","edit","format",
-                               "free","help","mkdir","more","reboot","receive","ren","send"};
-
->>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 
 int cmd_search(char *target){
     int i;
@@ -362,13 +350,8 @@ void receive(int i){ // reçois un fichier via uart
 
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
-<<<<<<< HEAD
     char *fmt, *buff, *rbuff, c, prev,key;
     int n,lcnt,colcnt=0;
-=======
-    char *fmt, *buff, *rbuff, c,key;
-    int n;
->>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
     text_coord_t cpos;
     if (!SDCardReady){
         if (!mount(0)){
@@ -509,7 +492,6 @@ void list_directory(int i){
     if (error) print_error_msg(ERR_FIO,"",error);
 }//list_directory()
 
-<<<<<<< HEAD
 void cmd_puts(){
     print(comm_channel, "commande puts, to be done.\r");
 }//puts()
@@ -517,14 +499,13 @@ void cmd_puts(){
 void expr(){
     print(comm_channel, "commande expr, to be done.\r");
 }//expr()
-=======
+
 //display heap status
 void cmd_free(){
     char fmt[55];
     sprintf(fmt,"free RAM %d/%d BYTES\r",free_heap(),heap_size);
     print(comm_channel,fmt);
 }
->>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
 
 void execute_cmd(int i){
         switch (cmd_search(cmd_tokens[0])){
@@ -540,9 +521,9 @@ void execute_cmd(int i){
             case CMD_FORMAT:
                 cmd_format(i);
                 break;
-            case CMD_FREE:
-                cmd_free();
-                break;
+//            case CMD_FREE:
+//                cmd_free();
+//                break;
             case CMD_MKDIR:
                 mkdir(i);
                 break;
@@ -555,9 +536,9 @@ void execute_cmd(int i){
             case CMD_ED: // editeur
                 editor(i);
                 break;
-            case CMD_BASIC: // lance DIOS forth
-               vpcBasic();
-                break;
+//            case CMD_BASIC: // lance DIOS forth
+//               vpcBasic();
+//                break;
             case CMD_SND:  // envoie un fichier vers la sortie uart
                 send(i);
                 break;
@@ -620,18 +601,16 @@ int tokenize(){ // découpe la ligne d'entrée en mots
 
 void shell(void){
     int i;
-<<<<<<< HEAD
     char *text;
+
     text=malloc(80);
     sprintf(text,"VPC-32 shell\r%d bytes free RAM.\r",FREE_RAM);
     print(comm_channel,text);
     free(text);
-=======
-    
     print(comm_channel,"VPC-32 shell\rfree RAM (bytes): ");
     print_int(comm_channel,free_heap(),0);
     crlf();
->>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce
+
     free_tokens();
     while (1){
         print(comm_channel,prompt);

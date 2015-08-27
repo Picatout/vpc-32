@@ -7,5 +7,10 @@
         <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/vpc-32.c</file>
         <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/shell.c</file>
         <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/shell.h</file>
+        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/Pinguino/sdmmc.c</file>
+        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/serial_comm/serial_comm.c</file>
+        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/ps2_kbd/keyboard.c</file>
+        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/sound/sound.c</file>
+        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/sound/sound.h</file>
     </open-files>
 </project-private>

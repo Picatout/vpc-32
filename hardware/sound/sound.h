@@ -41,7 +41,7 @@ extern volatile unsigned int duration;
 
 
 void tone(unsigned int freq, unsigned int duration);
-void tune(unsigned int *buffer);
+void tune(const unsigned int *buffer);
 
 
 

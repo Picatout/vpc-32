@@ -51,13 +51,8 @@ void tone(unsigned int freq, // fréquence en hertz
 } //tone();
 
 // joue une mélodie en arrière plan
-<<<<<<< HEAD:sound.c
-void tune(unsigned int *buffer){
-    tones_list=buffer;
-=======
 void tune(const unsigned int *buffer){
     tones_list=(unsigned *)buffer;
->>>>>>> 1abd89f007cb013a29040570370025f6a1d9c7ce:hardware/sound/sound.c
     if (*tones_list && *(tones_list+1)){
         fSound |= PLAY_TUNE;
         IPC3bits.T3IP=2;
