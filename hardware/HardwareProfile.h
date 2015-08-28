@@ -36,8 +36,8 @@
 #define STDIN   STDIO
 #define STDERR  STDIO
 
-#define RAM_SIZE (65535)
-#define FREE_RAM (49152)
+#define RAM_SIZE (65536)
+//#define FREE_RAM (49152)
 
 #define LOCAL_CON 0  // console vidéo locale
 #define SERIAL_CON STDIO // console rs-232
@@ -46,7 +46,8 @@
 #define TX BIT_10 // UART2 TX sur PB10
 #define RX BIT_11 // UART2 RX sur PB11
 
-#define SYSCLK  37500000L  // 37,5Mhz pour obtenir des pixels plus larges donne 51,2µSec pour 320pixels
+//#define SYSCLK  37500000L  // 37,5Mhz pour obtenir des pixels plus larges donne 51,2µSec pour 320pixels
+#define SYSCLK 40000000L
 #define PBCLK   SYSCLK
 
 #define mGetSystemClock() (SYSCLK)

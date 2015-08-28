@@ -1,16 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/editor.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/HardwareProfile.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/HardwareProfile.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/vpc-32.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/shell.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/shell.h</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/Pinguino/sdmmc.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/serial_comm/serial_comm.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/ps2_kbd/keyboard.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/sound/sound.c</file>
-        <file>file:/C:/Users/Jacques/Documents/GitHub/VPC-32/hardware/sound/sound.h</file>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/opt/microchip/xc32/v1.33/pic32mx/include/peripheral/spi_1xx_2xx.h</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/hardware/HardwareProfile.h</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/console.h</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/vpcBASIC/vm.S</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/disassembly/listing.disasm</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/hardware/spiram/spiram.c</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/vpc-32.c</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/hardware/tvout/ntsc.c</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/shell.c</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/hardware/HardwareProfile.c</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/hardware/tvout/ntsc.h</file>
+            <file>file:/home/jacques/MPLABXProjects/vpc-32/console.c</file>
+        </group>
     </open-files>
 </project-private>

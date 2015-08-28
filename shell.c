@@ -601,16 +601,10 @@ int tokenize(){ // découpe la ligne d'entrée en mots
 
 void shell(void){
     int i;
-    char *text;
 
-    text=malloc(80);
-    sprintf(text,"VPC-32 shell\r%d bytes free RAM.\r",FREE_RAM);
-    print(comm_channel,text);
-    free(text);
     print(comm_channel,"VPC-32 shell\rfree RAM (bytes): ");
     print_int(comm_channel,free_heap(),0);
     crlf();
-
     free_tokens();
     while (1){
         print(comm_channel,prompt);

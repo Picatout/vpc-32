@@ -99,26 +99,19 @@ void delay_ms(unsigned int msec){
 // sur le heap
 // essais successifs par division binaire
 unsigned free_heap(){
-    unsigned toobig,size,tmp;
+    unsigned top=RAM_SIZE,size,bottom=0;
     void *ptr=NULL;
 
-    size=RAM_SIZE;
-    while (!ptr){
+    size=RAM_SIZE/2;
+    while ((top-bottom)>16){
         ptr=malloc(size);
         if (!ptr){
-            toobig=size;
-            size >>=1;
-        }
-    }
-
-    while (toobig-size>16){
-        if (ptr) free(ptr);
-        tmp=size;
-        size+=(toobig-size)>>1;
-        ptr=malloc(size);
-        if (!ptr){
-            toobig=size;
-            size=tmp;
+            top=size;
+            size>>=1;
+        }else{
+            free(ptr);
+            bottom=size;
+            size+=(top-bottom)>>1;
         }
     }
     if (ptr) free(ptr);

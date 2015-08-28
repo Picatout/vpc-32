@@ -29,13 +29,12 @@
 extern "C" {
 #endif
 
-#define VRES 224  // résolution verticale
+#define VRES 208  // résolution verticale
 #define HRES 320  // résolution horizontale
-#define BMP_SIZE (224*320/8) // grosseur de video_bmp en octets
+#define PPB 8     // pixels par octet
+#define BMP_SIZE (VRES*HRES/PPB) // grosseur de video_bmp en octets
 
 extern unsigned int video_bmp[VRES][HRES/32];
-extern volatile unsigned int ln_cnt;
-extern volatile unsigned int video;
 
 // protoypes fonction interface
     void VideoInit(void);

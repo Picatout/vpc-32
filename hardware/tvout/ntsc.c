@@ -44,24 +44,30 @@
  *  la constante SPI_DLY doit-être ajustée en fonction de PBCLK pour que les
  *  320 pixels horizontals soient visibles.
  */
+/* UTILISATION DMA canal 0 et SPI1
+ *  les pixels sont sérialisés par SPI1.  Le canal DMA 0 qui prend les pixels
+ *  dans le buffer vidéo est les transfert dans le TX buffer du SPI.
+ *  le SPI en configuré en mode FRAME. Pour fonctionner il attend donc
+ *  que la ligne 
+ */
 
 #define PWM_PERIOD (SYSCLK/15748)-1
+#define HALFLINE (PWM_PERIOD-1)
 #define HSYNC  (SYSCLK/212766)  // 4,7µSec
-#define FIRST_LINE 27   //première ligne de scan visible
-#define LAST_LINE  (FIRST_LINE+VRES)  // dernière ligne de scan visible
-#define BITCLK HRES * 1000000L/52 // 52µSec c'est le temps que dure 1 ligne vidéo.
+#define SERATION (HSYNC/2)
+#define FIRST_LINE (34)   //première ligne de scan visible
+#define LAST_LINE (FIRST_LINE+VRES+1)  // dernière ligne de scan visible
+#define BITCLK ((int)(HRES * 1000000L/52)) // 52µSec c'est le temps que dure 1 ligne vidéo.
 #if SYSCLK==40000000L
 #define SPI_DLY HSYNC+90 // délais en début de ligne avant l'envoie du signal vidéo.
 #else
-#define SPI_DLY HSYNC+32 // délais en début de ligne avant l'envoie du signal vidéo.
+#define SPI_DLY (HSYNC+38) // délais en début de ligne avant l'envoie du signal vidéo.
 #endif
 #define _enable_video_out()  SPI1CONSET =(1<<15)
 #define _disable_video_out() SPI1CONCLR =(1<<15)
 
 unsigned int video_bmp[VRES][HRES/32]; // video bitmap 7168 octets
-volatile unsigned int ln_cnt;
-volatile unsigned int video;
-volatile int *DmaSrc;
+volatile static int *DmaSrc;
 
 
 
@@ -107,27 +113,58 @@ void VideoInit(void){
 
 void __ISR(_TIMER_2_VECTOR,IPL7AUTO) tmr2_isr(void){
     _disable_video_out();
+    static int ln_cnt=-1;
+    static char video=0;
+    static char even=1;
+    
     ln_cnt++;
     switch (ln_cnt){
-        case 1:  // début vsync
-            OC2R=PWM_PERIOD-HSYNC;
+        case 0:
+            PR2=HALFLINE;
+            OC2R=SERATION;
             break;
-        case 4: // fin vsync
+        case 6:
+            OC2R=HALFLINE-SERATION;
+            break;
+        case 12:
+            OC2R=SERATION;
+            break;
+        case 18:
+            PR2=PWM_PERIOD;
             OC2R=HSYNC;
             break;
-        case 262:  //fin du frame
-            ln_cnt=0;
+        case 271:
+            if (even){
+                even=0;
+                ln_cnt=-1;
+            }
             break;
-  
-        case FIRST_LINE-1:
+        case 272:
+            even=1;
+            ln_cnt=-1;
+            break;
+        case FIRST_LINE:
             video=1;
             DmaSrc=(void*)&video_bmp[0];
             break;
         case LAST_LINE:
             video=0;
+            //_disable_video_out();
             break;
         default:
             if (video){
+                asm volatile(
+                "la $v0,%0\n"
+                "lhu $a0, 0($v0)\n"
+                "andi $a0,$a0,7\n"
+                "sll $a0,$a0,2\n"
+                "la $v0, jit\n"
+                "addu $a0,$v0\n"
+                "jr $a0\n"
+                "jit:\n"
+                "nop\n nop\n nop\n nop\n nop\n nop\n nop\n nop\n"
+                ::"i"(&TMR2)
+                );
                 _enable_video_out();
                 IFS1bits.SPI1TXIF=1;
                 DCH0SSA=KVA_TO_PA((void *)DmaSrc);

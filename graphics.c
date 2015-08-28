@@ -133,7 +133,7 @@ void polygon(const int points[], int vertices){
 }//polygon()
 
 //  REF: http://members.chello.at/~easyfilter/bresenham.html
-void besiez(int x0, int y0, int x1, int y1, int x2, int y2){
+void bezier(int x0, int y0, int x1, int y1, int x2, int y2){
   int sx = x2-x1, sy = y2-y1;
   long xx = x0-x1, yy = y0-y1, xy;         /* relative values for checks */
   double dx, dy, err, cur = xx*sy-yy*sx;                    /* curvature */

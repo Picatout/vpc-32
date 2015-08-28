@@ -107,13 +107,14 @@ const int pts[6]={HRES/2,VRES/2,HRES/2+HRES/3,VRES/2+VRES/3,HRES/2-HRES/3,VRES/2
 
 void graphics_test(){ // test des fonctions graphiques
     int i;
-    rectangle(20,40,300,200);
+
+    rectangle(0,0,HRES-1,VRES-1);
     polygon(pts,3);
     circle(HRES/2,VRES/2,100);
 //    for (i=0;i<100;i++){
 //        ellipse(HRES/3+i,VRES/3+i,50,30);
 //    }
-    besiez(20,200,20,40,300,40);
+    bezier(20,200,20,40,300,40);
     delay_ms(500);
 }//graphics_test
 
@@ -129,11 +130,9 @@ const unsigned int e3k[]={ // rencontre du 3ième type
 };
 
 void main(void) {
-    heap_size=free_heap();
     HardwareInit();
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
-    ln_cnt=0;
-    video=0;
+    heap_size=free_heap();
 #if defined DEBUG
     test_pattern();
 #endif
@@ -167,6 +166,8 @@ void main(void) {
     clear_screen();
 #if defined _DEBUG_
     graphics_test();
+    set_curpos(0,LINE_PER_SCREEN-1);
+    print(comm_channel,"test");
     sram_write_block(100000,video_bmp,BMP_SIZE);
     delay_ms(1000);
     clear_screen();
@@ -174,9 +175,9 @@ void main(void) {
     sram_read_block(100000,video_bmp,BMP_SIZE);
     delay_ms(1000);
     clear_screen();
-    print(comm_channel,"heap_size: ");
-    print_int(comm_channel,heap_size,0);
-    crlf();
+//    print(comm_channel,"heap_size: ");
+//    print_int(comm_channel,heap_size,0);
+//    crlf();
 #endif
     shell();
 } // main()
