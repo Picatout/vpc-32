@@ -95,7 +95,7 @@ SFR_INV=12
 
 .bss
 
-# piles
+// piles
 dstack: .space DSTACK_SIZE
 rstack: .space RSTACK_SIZE
 
@@ -110,7 +110,7 @@ rstack: .space RSTACK_SIZE
 .ent StackVM
 
 
-StackVM:  # initialisation
+StackVM:  // initialisation
     addiu sp, sp, -40 // save registers
     sw  ra, 36(sp)
     sw  s0, 0(sp)
@@ -130,8 +130,8 @@ StackVM:  # initialisation
 
 next:
     lb    t0, 0(ip)
-#    addiu t1,t0, IBADOP
-#    bgtz  t1, badop
+//    addiu t1,t0, IBADOP
+//    bgtz  t1, badop
     sll   t0, t0, 2   
     addiu t0,t0,opcodes_table
     lui   t1, CODE_SEG
@@ -140,11 +140,11 @@ next:
     jr    t1
     _next
 
-bye:   # 'bye' ( -- ) sortie de la machine virtuelle
+bye:   // 'bye' ( -- ) sortie de la machine virtuelle
     b exit
-    xor v0, zero,zero  # return 0
+    xor v0, zero,zero  // return 0
 
-qrx: # '?key' ( -- ch -1 | 0 )
+qrx: // '?key' ( -- ch -1 | 0 )
     ori a0,zero,STDIO
     jal _getch
     nop
@@ -158,7 +158,7 @@ qrx_exit:
     b next
     move T, t0
 
-emit:   # 'emit' ( ch -- ) transmet charactère au terminal
+emit:   // 'emit' ( ch -- ) transmet charactère au terminal
     ori a0,zero,STDIO
     move  a1, T
     _tpop
@@ -167,20 +167,20 @@ emit:   # 'emit' ( ch -- ) transmet charactère au terminal
     b next
     nop
 
-lit:    # 'lit' ( -- n) empile un entier
+lit:    // 'lit' ( -- n) empile un entier
     jal fetch_int
     addiu dp,dp,CELL_SIZE
     sw T, 0(dp)
     b next
     move T,v0
 
-clit:       # 'clit' ( -- byte ) empile un octet signe étendu sur 32 bits
+clit:   // 'clit' ( -- byte ) empile un octet signe étendu sur 32 bits
     _tpush
     lb T, 0(ip)
     b next
     _next
 
-wlit:       # 'wlit' ( -- w16  ) empile un mot de 16 bits
+wlit:  // 'wlit' ( -- w16  ) empile un mot de 16 bits
     _tpush
     lbu t0,0(ip)
     lb t1, 1(ip)
@@ -189,7 +189,7 @@ wlit:       # 'wlit' ( -- w16  ) empile un mot de 16 bits
     b next
     or  T,t0,t1
 
-call:   # 'call' (R: -- addr_ret ) appelle sous-routine VM
+call:   // 'call' (R: -- addr_ret ) appelle sous-routine VM
     jal fetch_int
 //    lui t2, CODE_SEG
 //    lbu t0, 0(ip)
@@ -209,19 +209,19 @@ call:   # 'call' (R: -- addr_ret ) appelle sous-routine VM
 //    b fcall_1
 //    lbu t0, 0(ip)
 
-ret:        # ';' (R: addr_ret -- ) sortie de sous-routine
+ret:  // ';' (R: addr_ret -- ) sortie de sous-routine
     move ip, R
     lw R, 0(rp)
     b next
     addiu rp,rp, -CELL_SIZE
 
-bra:        # 'branch' ( -- ) branchement incondionnnel (adresse relative +127,-128)
+bra:   // 'branch' ( -- ) branchement incondionnnel (adresse relative +127,-128)
     lb t0, 0(ip)
     _next
     b next
-    addu ip, ip, t0   # branchement relatif à ip, intervale -128 à +127
+    addu ip, ip, t0  // branchement relatif à ip, intervale -128 à +127
 
-qbra:       # '?bra' ( t|f -- ) branche si sommet pile est vrai (tos!=0)
+qbra: // '?bra' ( t|f -- ) branche si sommet pile est vrai (tos!=0)
     move t0, T
     _tpop
     beqz t0, next
@@ -230,7 +230,7 @@ qbra:       # '?bra' ( t|f -- ) branche si sommet pile est vrai (tos!=0)
     b next
     addu ip,ip,t0
 
-qbraz:      # '?braz' ( t|f -- ) branche si somme pile est faux (tos==0)
+qbraz:  // '?braz' ( t|f -- ) branche si somme pile est faux (tos==0)
     move t0, T
     _tpop
     bne t0, zero, next
@@ -239,7 +239,7 @@ qbraz:      # '?braz' ( t|f -- ) branche si somme pile est faux (tos==0)
     b next
     addu ip,ip,t0
 
-exec:       # 'exec' ( addr -- ) appelle sous-routine à partir de la pile
+exec:  // 'exec' ( addr -- ) appelle sous-routine à partir de la pile
     _rpush
     move R, ip
     move  ip, T
@@ -247,7 +247,7 @@ exec:       # 'exec' ( addr -- ) appelle sous-routine à partir de la pile
     b next
     lw T, 0(dp)
 
-store:      # '!' ( n addr -- )  variable = n
+store:  // '!' ( n addr -- )  variable = n
     move t0, T
     lw t1, 0(dp)
     sb t1, 0(t0)   # l'adresse n'est pas forcément alignée donc on y va octet par octet
@@ -261,9 +261,9 @@ store:      # '!' ( n addr -- )  variable = n
     b next
     addiu dp,dp,-2*CELL_SIZE
 
-fetch:      # '@' ( addr -- n ) T= *addr
+fetch:  // '@' ( addr -- n ) T= *addr
     move t0, T
-    lbu t1, 0(t0)   # l'adresse n'est pas forcément alignée donc on y va octet par octet
+    lbu t1, 0(t0)   // l'adresse n'est pas forcément alignée donc on y va octet par octet
     lbu t2, 1(t0)
     sll t2,t2,8
     or t1,t1,t2
@@ -275,49 +275,49 @@ fetch:      # '@' ( addr -- n ) T= *addr
     b next
     or T,t1,t2
 
-cstore:     # 'c!' ( char addr --  ) *addr = char
+cstore:  // 'c!' ( char addr --  ) *addr = char
     lw t0, 0(dp)
     sb t0, 0(T)
     lw T, -CELL_SIZE(dp)
     b next
     addiu dp,dp,-2*CELL_SIZE
 
-cfetch:     # 'c@' ( addr -- char )  T = (char)*addr
+cfetch:  // 'c@' ( addr -- char )  T = (char)*addr
     lb t0, 0(T)
     b next
     move T, t0
 
-rfetch:    # 'r@'  ( -- n R: n -- n )  empile le sommet de la pile des retours
+rfetch:   // 'r@'  ( -- n R: n -- n )  empile le sommet de la pile des retours
     _tpush
     b next
     move T, R
 
-ufetch:  # 'u@'  ( -- a-addr ) empile U
+ufetch: // 'u@'  ( -- a-addr ) empile U
     _tpush
     b next
     move T, U
 
-ustore:  # 'u!'  ( a-addr -- ) transfert T dans U
+ustore: // 'u!'  ( a-addr -- ) transfert T dans U
     move U, T
     lw T, 0(dp)
     b next
     addiu dp,dp,-CELL_SIZE
 
-user: # 'user'  ( n -- a-addr) empile le pointeur de la variable
-                             # utilisateur d'indice n.
+user: // 'user'  ( n -- a-addr) empile le pointeur de la variable
+      // utilisateur d'indice n.
       sll  T,T,2
       b next
       addu T, U, T
 
 
-tor:        # '>r' ( n -- ) (R: -- n ) envoie T sur pile retour
+tor:  // '>r' ( n -- ) (R: -- n ) envoie T sur pile retour
     _rpush
     move R, T
     lw T, 0(dp)
     b next
     addiu dp, dp, -CELL_SIZE
 
-rfrom:      # 'r>' ( -- n ) (R: n -- )  envoie R dans T
+rfrom:  // 'r>' ( -- n ) (R: n -- )  envoie R dans T
     _tpush
     move T, R
     lw  R, 0(rp)
@@ -325,7 +325,7 @@ rfrom:      # 'r>' ( -- n ) (R: n -- )  envoie R dans T
     addiu rp,rp, -CELL_SIZE
 
 
-dcnt:     # 'dcnt' ( -- n) nombre d'éléments sur la pile de données
+dcnt:  // 'dcnt' ( -- n) nombre d'éléments sur la pile de données
     lui t0, RAM_SEG
     ori t0, t0,dstack
     subu t0,dp,t0
@@ -334,7 +334,7 @@ dcnt:     # 'dcnt' ( -- n) nombre d'éléments sur la pile de données
     b next
     move T, t0
 
-rcnt:     # 'rcnt' ( -- n ) nombre d'éléments sur la pile des retours
+rcnt:  // 'rcnt' ( -- n ) nombre d'éléments sur la pile des retours
     _tpush
     lui t0, RAM_SEG
     ori t0,t0,rstack
@@ -343,58 +343,58 @@ rcnt:     # 'rcnt' ( -- n ) nombre d'éléments sur la pile des retours
     b next
     move T, t0
 
-ipfetch:        # 'ip@' ( -- ip ) empile la valeur courante du pointeur d''instructions
+ipfetch: // 'ip@' ( -- ip ) empile la valeur courante du pointeur d''instructions
     _tpush
     b next
     move T, ip
 
-ipstore:        # 'ip!' ( ip -- ) initialise le pointeur d''insturctions
+ipstore: // 'ip!' ( ip -- ) initialise le pointeur d''insturctions
     move ip, T
     lw T, 0(dp)
     b next
     addiu dp,dp, -CELL_SIZE
 
-drop:       # 'drop' ( n -- )
+drop:  // 'drop' ( n -- )
     lw T, 0(dp)
     b next
     addiu dp,dp,-CELL_SIZE
 
-twodrop:      # '2drop' ( n1 n2 -- )
+twodrop: // '2drop' ( n1 n2 -- )
     lw T, -CELL_SIZE(dp)
     b next
     addiu dp,dp,-2*CELL_SIZE
 
-dup:        # 'dup' ( n -- n n )
+dup:  // 'dup' ( n -- n n )
     addiu dp,dp,CELL_SIZE
     b next
     sw T, 0(dp)
 
-twodup:
+twodup: // (n2 n1 -- n2 n1 n2 n1)
     lw t0, 0(dp)
     addiu dp,dp,2*CELL_SIZE
     sw T, -CELL_SIZE(dp)
     b next
     sw t0, 0(dp)
 
-qdup:       # ?dup ( n -- n n | n ) duplique n si n!=0
+qdup:   // ?dup ( n -- n n | n ) duplique n si n!=0
     beq T,zero, next
     nop
     addiu dp,dp,CELL_SIZE
     b next
     sw T, 0(dp)
 
-swap:       # 'swap' (n2 n1 -- n1 n2 )
+swap: // 'swap' (n2 n1 -- n1 n2 )
     move t0, T
     lw T, 0(dp)
     b next
     sw t0, 0(dp)
 
-over:       # 'over' ( n2 n1 -- n2 n1 n2 )
+over:   // 'over' ( n2 n1 -- n2 n1 n2 )
     _tpush
     b next
     lw T, -CELL_SIZE(dp)
 
-rot:
+rot: // ( n3 n2 n1 -- n2 n1 n3)
     move t0, T
     lw t1, 0(dp)
     lw T, -CELL_SIZE(dp)
@@ -402,17 +402,17 @@ rot:
     b next
     sw t1, -CELL_SIZE(dp)
 
-plus:       # '+'   ( n1 n2 -- n1+n2 )
+plus:  // '+'   ( n1 n2 -- n1+n2 )
     move t0, T
     _tpop
     b next
     addu T,T,t0
 
-oneplus:      # '1+'  (n -- n+1 )
+oneplus:  // '1+'  (n -- n+1 )
     b next
     addiu T, T, 1
 
-plusstore:  # '+!'  ( n addr -- ) *addr  = *addr+n
+plusstore:  // '+!'  ( n addr -- ) *addr  = *addr+n
     move w, T
     _tpop
     lw t0, 0(w)
@@ -422,30 +422,30 @@ plusstore:  # '+!'  ( n addr -- ) *addr  = *addr+n
     b next
     addiu dp,dp,-CELL_SIZE
 
-minus:      # '-' ( n1 n2 -- n1-n2 )
+minus:   //  '-' ( n1 n2 -- n1-n2 )
     move t0,T
     _tpop
     b next
     subu T,T,t0
 
-oneminus:     # '1-' ( n -- n-1 )
+oneminus:   // '1-' ( n -- n-1 )
     b next
     addiu T, T, -1
 
-star:      # '*' ( n1 n2 -- n1*n2 ) multiplication signé, résultat simple précision.
+star:   // '*' ( n1 n2 -- n1*n2 ) multiplication signé, résultat simple précision.
     move t0, T
     _tpop
     b next
     mul T,t0,T
 
-ustar:    # 'U*' ( u1 u2 -- u3 ) multiplication non signe, résultat simple précision
+ustar:   // 'U*' ( u1 u2 -- u3 ) multiplication non signe, résultat simple précision
     move t0, T
     _tpop
     multu  t0, T
     b next
     mflo T
 
-mstar:  # 'M*' ( n1 n2 -- d) multiplication signée avec résultat double précision.
+mstar:  // 'M*' ( n1 n2 -- d) multiplication signée avec résultat double précision.
     lw t0, 0(dp)
     mult t0,T
     mflo t0
@@ -453,7 +453,7 @@ mstar:  # 'M*' ( n1 n2 -- d) multiplication signée avec résultat double précisio
     b next
     sw t0, 0(dp)
 
-umstar: # 'UM*' ( u1 u2 -- ud ) multiplication non signé avec résultat double précision.
+umstar: // 'UM*' ( u1 u2 -- ud ) multiplication non signé avec résultat double précision.
     lw t0, 0(dp)
     multu t0,T
     mflo t0
@@ -461,14 +461,14 @@ umstar: # 'UM*' ( u1 u2 -- ud ) multiplication non signé avec résultat double pr
     b next
     sw t0, 0(dp)
 
-slash:      # '/' ( n1 n2 -- n1/n2 )  division signée
+slash:  // '/' ( n1 n2 -- n1/n2 )  division signée
     move t0, T
     _tpop
     div T,t0
     b next
     mflo T
 
-uslash:     # 'U/'  (u1 u2 -- u3)  division non signée
+uslash:  // 'U/'  (u1 u2 -- u3)  division non signée
     move t0, T
     _tpop
     divu T,t0
@@ -479,11 +479,11 @@ twostar:  # '2*'  ( n  -- 2*n ) multiply by 2 (shift left 1 bit)
     b next
     sll T,T,1
 
-twoslash:  # '2/'  ( n -- n/2 )  divide by 2 ( arithmetic shift right 1 bit)
+twoslash: // '2/'  ( n -- n/2 )  divide by 2 ( arithmetic shift right 1 bit)
     b next
     sra T,T,1
 
-divmod:     # '/mod'  ( n1 n2 -- n1%n2 n1/n2 )
+divmod:  // '/mod'  ( n1 n2 -- n1%n2 n1/n2 )
     lw t0, 0(dp)
     div t0, T  # n1/n2
     mfhi t0    #  remainder
@@ -491,19 +491,19 @@ divmod:     # '/mod'  ( n1 n2 -- n1%n2 n1/n2 )
     b next
     mflo T     # quotient
 
-lshift:     # '<<' ( n1 u -- n1<<u )
+lshift:  // '<<' ( n1 u -- n1<<u )
     move t0, T
     _tpop
     b next
     sllv T, T, t0
 
-rshift:     # '>>'  ( n1 u -- n1>>u )
+rshift:  // '>>'  ( n1 u -- n1>>u )
     move t0, T
     _tpop
     b next
     srlv T, T, t0
 
-modulo:     # 'mod' ( n1 n2 -- n1%n2 )
+modulo:  // 'mod' ( n1 n2 -- n1%n2 )
     move t0, T
     _tpop
     div T,t0
@@ -524,9 +524,9 @@ umsmod:  # 'UM/MOD' ( ud1 u1 -- u2 u3 ) u2=reste, u3= quotient
         addiu   dp, dp, -CELL_SIZE
 */
 
-# division non signée d'un double précision par un simple, retourne quotient et reste
-# si le quotient > 32 bits retourne -1 -1.
-umsmod: # 'UM/MOD (ud1 u1 -- u2 u3|-1 -1) u2=reste, u3=quotient
+// division non signée d'un double précision par un simple, retourne quotient et reste
+// si le quotient > 32 bits retourne -1 -1.
+umsmod: // 'UM/MOD (ud1 u1 -- u2 u3|-1 -1) u2=reste, u3=quotient
         lw      t0, -CELL_SIZE(dp)  # 32 bits poids faible
         lw      t1, 0(dp)           # 32 bits poids fort
         bgtz    t1, long_div
@@ -569,9 +569,9 @@ long_div:
         addiu   dp,dp,-CELL_SIZE
 
 
-  # division signée d'un double par un simple, retourne quotient et reste
-  # les 32 bits les plus significatifs du double sont ignorés.
-  #  Il s'agit dans les fait d'une division simple/simple.
+  // division signée d'un double par un simple, retourne quotient et reste
+  // les 32 bits les plus significatifs du double sont ignorés.
+  //  Il s'agit dans les fait d'une division simple/simple.
 msmod:   # 'M/MOD'  (d1 n1 - n2 n3 )  n2=reste, n3=quotient
         lw      t0, -CELL_SIZE(dp)
         div     t0, T
@@ -582,7 +582,7 @@ msmod:   # 'M/MOD'  (d1 n1 - n2 n3 )  n2=reste, n3=quotient
         addiu   dp,dp,-CELL_SIZE
 
 
-min:        # 'min' (n1 n2 -- min )  conserve le plus petit
+min:  // 'min' (n1 n2 -- min )  conserve le plus petit
     move t0, T
     _tpop
     subu t1,T, t0
@@ -591,7 +591,7 @@ min:        # 'min' (n1 n2 -- min )  conserve le plus petit
     b next
     move T, t0
 
-max:        # 'max' (n1 n2 -- max ) conserve le plus grand
+max:  // 'max' (n1 n2 -- max ) conserve le plus grand
     move t0, T
     _tpop
     subu t1,t0,T
@@ -600,47 +600,47 @@ max:        # 'max' (n1 n2 -- max ) conserve le plus grand
     b next
     move T, t0
 
-abs:        # 'abs' ( n -- abs(n) )
+abs:  // 'abs' ( n -- abs(n) )
     bgez T, next
     nop
     b next
     negu T
 
-ltz:   # '0<'  ( n -- t|f )
+ltz:  // '0<'  ( n -- t|f )
     bltz T, next
     li T, -1
     b next
     li T,0
 
-zequal: # '0=' ( n -- t|f ) vrai si n == 0 sinon faut
+zequal: // '0=' ( n -- t|f ) vrai si n == 0 sinon faut
     beqz T, next
     li T, -1
     b next
     li T, 0
 
-bitand:     # 'and' ( n1 n2 -- n1&n2)
+bitand: // 'and' ( n1 n2 -- n1&n2)
     move t0, T
     _tpop
     b next
     and T,T,t0
 
-bitor:     # 'or' ( n1 n2 -- n1|n2)
+bitor:  // 'or' ( n1 n2 -- n1|n2)
     move t0, T
     _tpop
     b next
     or T,T,t0
 
-bitxor:     # 'xor' ( n1 n2 -- n1^n2)
+bitxor: // 'xor' ( n1 n2 -- n1^n2)
     move t0, T
     _tpop
     b next
     xor T,T,t0
 
-bitnot:     # 'not' ( n1 -- ~n1 )
+bitnot: // 'not' ( n1 -- ~n1 )
     b next
     not T,T
 
-equal:      # '='  ( n1 n2 -- t|f ) n1==n2?
+equal:  // '='  ( n1 n2 -- t|f ) n1==n2?
     move t0, T
     _tpop
     beq t0,T, next
@@ -648,7 +648,7 @@ equal:      # '='  ( n1 n2 -- t|f ) n1==n2?
     b next
     li T, 0
 
-nequal:     # '<>' ( n1 n2 -- t|f ) n1<>n2?
+nequal: // '<>' ( n1 n2 -- t|f ) n1<>n2?
     move t0, T
     _tpop
     bne t0,T, next
@@ -656,7 +656,7 @@ nequal:     # '<>' ( n1 n2 -- t|f ) n1<>n2?
     b next
     li T, 0
 
-less:       # '<'  ( n1 n2 -- t|f ) n1<n2?
+less:  //  '<'  ( n1 n2 -- t|f ) n1<n2?
     move t0, T
     _tpop
     subu t0,T,t0
@@ -665,7 +665,7 @@ less:       # '<'  ( n1 n2 -- t|f ) n1<n2?
     b next
     li T, 0
 
-greater:    # '>'  ( n1 n2 -- t|f ) n1>n2?
+greater:  // '>'  ( n1 n2 -- t|f ) n1>n2?
     move t0, T
     _tpop
     subu t0,T,t0
@@ -674,7 +674,7 @@ greater:    # '>'  ( n1 n2 -- t|f ) n1>n2?
     b next
     li T, 0
 
-ltez:        # '<=' ( n1 n2 -- t|f ) n1<=n2?
+ltez:  // '<=' ( n1 n2 -- t|f ) n1<=n2?
     move t0, T
     _tpop
     subu t0,T,t0
@@ -683,7 +683,7 @@ ltez:        # '<=' ( n1 n2 -- t|f ) n1<=n2?
     b next
     li T, 0
 
-gtez:        # '>=' ( n1 n2 -- t|f ) n1>=n2?
+gtez:  // '>=' ( n1 n2 -- t|f ) n1>=n2?
     move t0, T
     _tpop
     subu t0,T,t0
@@ -692,21 +692,21 @@ gtez:        # '>=' ( n1 n2 -- t|f ) n1>=n2?
     b next
     li T, 0
 
-input:
+input: //
 
     b next
     nop
 
-key:        #  ( -- char ) attend réception caractère par terminal
+key:  // ( -- char ) attend réception caractère par terminal
     addiu a0, zero, STDIO
     xor a1, zero, zero
     jal _key
     _tpush
     b next
-    move T, v0  # T=v0
+    move T, v0  // T=v0
 
 
-dotq:      # '."' ( -- ) ip pointe vers le texte, le premier octet est le compte.
+dotq: // '."' ( -- ) ip pointe vers le texte, le premier octet est le compte.
     _tpush
     lb T, 0(ip)
     _next
@@ -723,7 +723,7 @@ dotq:      # '."' ( -- ) ip pointe vers le texte, le premier octet est le compte
     b next
     addiu dp, dp, -CELL_SIZE
 
-delay:  # 'delay' ( msec -- ) delais en millisecondes
+delay: // 'delay' ( msec -- ) delais en millisecondes
     lui w, RAM_SEG
     ori w, w, sys_tick
     lw t0, 0(w)
@@ -735,14 +735,14 @@ delay:  # 'delay' ( msec -- ) delais en millisecondes
     b next
     addiu dp, dp, -CELL_SIZE
 
-ticks:  # 'ticks'  ( -- n ) empile le compteur sys_tick
+ticks:  // 'ticks'  ( -- n ) empile le compteur sys_tick
     _tpush
     lui w, RAM_SEG
     ori w, w, sys_tick
     b next
     lw T, 0(w)
 
-xstore:  # 'x!' ( n --  R: -- X )  X = n  initialise le compteur de boucle
+xstore: // 'x!' ( n --  R: -- X )  X = n  initialise le compteur de boucle
     _rpush
     move R, X
     move X, T
@@ -750,12 +750,12 @@ xstore:  # 'x!' ( n --  R: -- X )  X = n  initialise le compteur de boucle
     b next
     addiu dp,dp,-CELL_SIZE
 
-xfetch:  # 'X@' ( -- X ) empile le compteur de boucle X
+xfetch: // 'X@' ( -- X ) empile le compteur de boucle X
     _tpush
     b next
     move T, X
 
-loop: #  'loop'  décrément X et boucle a l'adresse qui suit
+loop: //  'loop'  décrément X et boucle a l'adresse qui suit
     addiu X,X,-1   # si X > 0 sinon quitte la boucle en restaurant X à partir de R
     bne  X, zero, bra
     nop
@@ -765,7 +765,7 @@ loop: #  'loop'  décrément X et boucle a l'adresse qui suit
     b next
     addiu  rp,rp,-CELL_SIZE
 
-ploop: # '+loop' ( n -- ) soustrait n à X, si X>0 boucle sinon quitte la boucle
+ploop: // '+loop' ( n -- ) soustrait n à X, si X>0 boucle sinon quitte la boucle
     subu X, X,T
     _tpop
     bgez X, bra
@@ -777,44 +777,49 @@ ploop: # '+loop' ( n -- ) soustrait n à X, si X>0 boucle sinon quitte la boucle
     addiu  rp,rp,-CELL_SIZE
 
 
-pick: # ( xu...,x1,x0,u -- xu...,x1,x0,xu ) empile une copie du Uième élément de la pile
+pick: // ( xu...,x1,x0,u -- xu...,x1,x0,xu ) empile une copie du Uième élément de la pile
     move w, dp
     sll  T, T, 2
     subu w, dp,T
     b next
     lw T, 0(w)
 
-sine:
+sine: // (angle -- sine)
+    move a0, T
+    jal sinf
+    b next
+    move T, v0
+
+acos: // (angle -- cos)
+    move a0, T
+    jal cosf
+    b next
+    move T, v0
+
+asin: // (sine -- angle)
+    move a0, T
+    jal asinf
+    b next
+    move T, v0
+
+random: //
+    jal rand
+    _tpush
+    b next
+    move T, v0
+
+trunc: // ( f -- i)
+    move a0, T
+    jal rintf
+    b next
+    move T, v0
+
+num: //
 
     b next
     nop
 
-acos:
-
-    b next
-    nop
-
-asin:
-
-    b next
-    nop
-
-random:
-
-    b next
-    nop
-
-trunc:
-
-    b next
-    nop
-
-num:
-
-    b next
-    nop
-
-badop:
+badop: //
     move v0,t0
 exit:
     lw  s0,0(sp)
@@ -834,7 +839,7 @@ exit:
 .end StackVM
 
 .ent fetch_int
-fetch_int:  # lit un entier little indian dans espace code VM, retourne dans v0
+fetch_int:  // empile un entier little indian dans espace code VM, retourne dans v0
     lbu t0, 0(ip)
     lbu t1, 1(ip)
     sll  t1,t1, 8

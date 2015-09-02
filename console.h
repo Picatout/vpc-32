@@ -37,7 +37,7 @@ extern "C" {
 #include "hardware/HardwareProfile.h"
     
 #define LINE_PER_SCREEN ((int)VRES/CHAR_HEIGHT)
-#define CHAR_PER_LINE ((int)(HRES/CHAR_WIDTH)-1)
+#define CHAR_PER_LINE ((int)(HRES/CHAR_WIDTH))
 #define TAB_WIDTH 4
 
 #define ESC 27

@@ -107,7 +107,7 @@ unsigned free_heap(){
         ptr=malloc(size);
         if (!ptr){
             top=size;
-            size>>=1;
+            size-=(top-bottom)>>1;
         }else{
             free(ptr);
             bottom=size;
