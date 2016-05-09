@@ -111,9 +111,9 @@ void graphics_test(){ // test des fonctions graphiques
     rectangle(0,0,HRES-1,VRES-1);
     polygon(pts,3);
     circle(HRES/2,VRES/2,100);
-//    for (i=0;i<100;i++){
-//        ellipse(HRES/3+i,VRES/3+i,50,30);
-//    }
+    for (i=0;i<100;i++){
+        ellipse(HRES/3+i,VRES/3+i,50,30);
+    }
     bezier(20,200,20,40,300,40);
     delay_ms(500);
 }//graphics_test
@@ -133,7 +133,7 @@ void main(void) {
     HardwareInit();
     UartInit(STDIO,115200,DEFAULT_LINE_CTRL);
     heap_size=free_heap();
-#if defined DEBUG
+#if defined _DEBUG_
     test_pattern();
 #endif
     UartPrint(STDOUT,"video initialization\r");

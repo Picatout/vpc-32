@@ -107,14 +107,15 @@ typedef struct{
 static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
-typedef enum CMDS {CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
-                   CMD_FORMAT,CMD_FORTH,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
-                   CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND,
+typedef enum CMDS {CMD_BASIC,CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
+                   CMD_FREE,CMD_FORMAT,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
+                   CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND
                    } cmds_t;
 
-#define CMD_LEN 17
-const char *commands[CMD_LEN]={"cd","cls","copy","del","dir","edit","expr","format","forth",
-                               "help","mkdir","more","puts","reboot","receive","ren","send"};
+#define CMD_LEN 18
+const char *commands[CMD_LEN]={"basic","cd","cls","copy","del","dir","edit",
+    "expr","free","format","help","mkdir","more","puts","reboot","receive",
+    "ren","send"};
 
 int cmd_search(char *target){
     int i;
@@ -521,9 +522,9 @@ void execute_cmd(int i){
             case CMD_FORMAT:
                 cmd_format(i);
                 break;
-//            case CMD_FREE:
-//                cmd_free();
-//                break;
+            case CMD_FREE:
+                cmd_free();
+                break;
             case CMD_MKDIR:
                 mkdir(i);
                 break;
@@ -536,9 +537,9 @@ void execute_cmd(int i){
             case CMD_ED: // editeur
                 editor(i);
                 break;
-//            case CMD_BASIC: // lance DIOS forth
-//               vpcBasic();
-//                break;
+            case CMD_BASIC: // lance interpréteur BASIC
+               vpcBasic();
+                break;
             case CMD_SND:  // envoie un fichier vers la sortie uart
                 send(i);
                 break;
