@@ -63,6 +63,13 @@ void sram_clear(){
     _sram_disable();
 }
 
+void sram_clear_block(unsigned addr, unsigned size){
+    int i;
+    _sram_enable();
+    sram_cmd(SRAM_WRITE,addr);
+    for(i=0;i<size;i++)writeSPI(0);
+    _sram_disable();
+}
 
 unsigned char sram_read_byte(unsigned addr){
     unsigned char b;

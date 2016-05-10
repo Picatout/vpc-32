@@ -41,20 +41,20 @@ typedef struct scan2key{
 
 #define XT_BIT	(1<<8)  // indicateur code étendu
 #define REL_BIT (1<<15) // indicateur touche relâchée
-#define FN_BIT (1<<9) // indicateur touche non ASCII (F* PRN, PAUSE, SCROLL, flèches, etc)
+//#define FN_BIT (1<<9) // indicateur touche non ASCII (F* PRN, PAUSE, SCROLL, flèches, etc)
 
 // touches spéciales
-#define ENTER                   0x5A
+#define ENTER           0x5A
 #define CAPS_LOCK		0x58
 #define NUM_LOCK		0x77
 #define SCROLL_LOCK		0x7E
 #define LSHIFT			0x12
-#define RSHIFT                  0x59
+#define RSHIFT          0x59
 #define LCTRL			0x14
-#define RCTRL                   (XT_BIT|0x14)
+#define RCTRL           (XT_BIT|0x14)
 #define LALT			0x11
-#define RALT                    (XT_BIT|0x11)
-#define BKSP                    0x66
+#define RALT            (XT_BIT|0x11)
+#define BKSP            0x66
 #define KEY_ESC			0x76
 #define F1			0x05
 #define F2			0x06
@@ -78,8 +78,8 @@ typedef struct scan2key{
 #define HOME			(XT_BIT|0x6c)
 #define	PGUP			(XT_BIT|0x7d)
 #define PGDN			(XT_BIT|0x7a)
-#define	DEL			(XT_BIT|0x71)
-#define END			(XT_BIT|0x69)
+#define	DEL			    (XT_BIT|0x71)
+#define END			    (XT_BIT|0x69)
 #define KPDIV			(XT_BIT|0x4a)
 #define KPMUL			0x7c
 #define KPMINUS			0x7b

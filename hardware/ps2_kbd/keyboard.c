@@ -39,11 +39,6 @@ volatile  static unsigned char  in_byte=0, bit_cnt=0, parity=0;
 volatile unsigned char rx_flags=0, kbd_leds=0;
 volatile unsigned short key_state; // état des touches d'alteration: shift, ctrl, alt,etc.
 
-#define FN_COUNT 32
-const short fn_keys[FN_COUNT]={CAPS_LOCK,SCROLL_LOCK,NUM_LOCK,LSHIFT,RSHIFT,LCTRL,
-RCTRL,LALT,RALT,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,PRN,PAUSE,UP_ARROW,DOWN_ARROW,
-LEFT_ARROW,RIGHT_ARROW,INSERT,HOME,PGUP,PGDN,END
-};
 
 static int KbdReset(void);
 
@@ -97,181 +92,161 @@ static int KbdReset(void){
         return 1;
 }//KbdReset()
 
-typedef enum  _STATE {ST0, ST_EXT0, ST_RELEASE, ST_COMPLETED} state_t;
-
-short KbdScancode(){  // obtient le code clavier en tête de la file
-	unsigned int i, flags;
-        state_t state;
-	short code;
-        if (head==tail){
-            if (rx_flags & F_ERROR){
-                _status_on();
-                delay_ms(400);
-                _status_off();
-                delay_ms(400);
-                rx_flags &= ~F_ERROR;
-                IEC0bits.INT4IE=1;
+static void key_release(short code){
+    int i;
+    
+    switch (code){
+        case 0x7c: //PrtSc
+            for (i=3;i;i--){ // élimine les 3 codes suivants.
+                _wait_key();
+                head++;
+                head &= 31;
             }
-            return 0; // tampon vide
+            break;
+        case LSHIFT:
+            key_state &=~F_LSHIFT;
+            break;
+        case RSHIFT:
+            key_state &=~F_RSHIFT;
+            break;
+        case LCTRL:
+            key_state &=~F_LCTRL;
+            break;
+        case RCTRL:
+            key_state &=~F_RCTRL;
+            break;
+        case RALT:
+            key_state &=~F_ALTCHAR;
+            break;
+        case LALT:
+            key_state &=~F_LALT;
+            break;
+        case NUM_LOCK:
+            kbd_leds ^= F_NUM;
+            key_state ^= F_NUM;
+            SetKbdLeds(kbd_leds);
+            break;
+        case CAPS_LOCK:
+            kbd_leds ^= F_CAPS;
+            key_state ^= F_CAPS;
+            SetKbdLeds(kbd_leds);
+            break;
+        case SCROLL_LOCK:
+            kbd_leds ^= F_SCROLL;
+            key_state ^= F_SCROLL;
+            SetKbdLeds(kbd_leds);
+            break;
+        default:;            
+    }//switch
+}//f
+
+static short update_key_state(short code){
+    int i;
+    switch (code){ // les touches d'alteration sont traitées ici.
+        case LSHIFT:
+            key_state |= F_LSHIFT;
+            code=0;
+            break;
+        case RSHIFT:
+            key_state |= F_RSHIFT;
+            code=0;
+            break;
+        case LCTRL:
+            key_state |= F_LCTRL;
+            code=0;
+            break;
+        case RCTRL:
+            key_state |= F_RCTRL;
+            code=0;
+            break;
+        case RALT:
+            key_state |= F_ALTCHAR;
+            code=0;
+            break;
+        case LALT:
+            key_state |= F_LALT;
+            code=0;
+            break;
+        case NUM_LOCK:
+        case CAPS_LOCK:
+        case SCROLL_LOCK:
+            code=0;
+            break;
+        case 0xE1: // PAUSE jette les 7 codes suivants
+            for (i=0;i<7;i++){
+                _wait_key();
+                head++;
+                head&=0x31;
+            }
+            code|=XT_BIT;
+            break;
+        default:;
+    }//switch(code)
+    return code;
+}//f
+
+enum STATE {ST0, ST_XTDKEY, ST_RELKEY, ST_COMPLETED};
+//retourne le scancode avec les bits REL_BIT et XT_BIT
+short KbdScancode(){  // obtient le code clavier en tête de la file
+	unsigned int i;
+	short code,flag;
+    int state;
+    
+
+
+    if (head==tail){
+        if (rx_flags & F_ERROR){
+            _status_on();
+            delay_ms(400);
+            _status_off();
+            delay_ms(400);
+            rx_flags &= ~F_ERROR;
+            IEC0bits.INT4IE=1;
         }
-	code = 0;
-	flags=0;
-        state=ST0;
-	while (state!=ST_COMPLETED){
-            _wait_key();
-            code=kbd_queue[head];
-            head++;
-            head &= 31;
-            switch (state){
-                case ST0:
-                    switch (code){
-                        case KEY_REL:
-                            flags |= REL_BIT;
-                            state = ST_RELEASE;
-                            break;
-                        case XTD_KEY:
-                            flags |= XT_BIT;
-                            state = ST_EXT0;
-                            break;
-                        case 0xE1:
-                            for (i=7;i;i--){     // touche PAUSE élimine les 7 prochains caractères
-                                    _wait_key();
-                                    head++;
-                                    head &= 31;
-                            }
-                            code = PAUSE;
-                        default:
-                            state=ST_COMPLETED;
-                    }//switch(code)
-                    break;
-                case ST_EXT0:
-                    if (code==KEY_REL){
-                        flags |= REL_BIT;
-                        state = ST_RELEASE;
-                    }else{
-                        if ((flags & XT_BIT) && (code==0x12)){ // touche PrtSc enfoncée.
-                            for (i=2;i;i--){ // élimine les 2 codes suivants
-                                _wait_key();
-                                head++;
-                                head &=31;
-                            }
-                            code = PRN;
-                        }
-                        state = ST_COMPLETED;
-                    }
-                    break;
-                case ST_RELEASE:
-                    if ((flags & XT_BIT) && (code==0x7c)){ //touche PrtSc relâchée.
-                        for (i=3;i;i--){ // élimine les 3 codes suivants.
-                            _wait_key();
-                            head++;
-                            head &= 31;
-                        }
-                        code = PRN;
-                    }
+        return 0; // tampon vide
+    }//if
+    state=ST0;
+    while (state!=ST_COMPLETED){
+        _wait_key();
+        code=kbd_queue[head++];
+        head &= 31;
+        switch(state){
+            case ST0:
+                if (code==XTD_KEY){
+                    flag=XT_BIT;
+                    state=ST_XTDKEY;
+                }else if (code==KEY_REL){
+                    state=ST_RELKEY;
+                }else{
                     state=ST_COMPLETED;
-                    break;
-                default:;
-            }//switch(state)
-        }//while(state...)
-        IEC0bits.INT4IE=0; // section critique désactive interruption
+                }
+                break;
+            case ST_XTDKEY:
+                if (code==KEY_REL){
+                    state=ST_RELKEY;
+                }else{
+                    code|=flag;
+                    state=ST_COMPLETED;
+                }
+                break;
+            case ST_RELKEY:
+                key_release(code|flag);
+                code=0;
+                state=ST_COMPLETED;
+                break;
+        }//switch
+    }//while
+    IEC0bits.INT4IE=0; // section critique désactive interruption
 	if (head==tail){
 		rx_flags &= ~F_RCVD;
 	}
-        IEC0bits.INT4IE=1; // fin section critique réactive interruption
-        if ((code==KBD_ACK)||(code==KBD_RSND)||(code==BAT_OK)||(code==BAT_ERROR)){
-            return code;
-        }
-        code |= flags;
-        for (i=0;i<FN_COUNT;i++){
-            if ((code&0x1ff)==fn_keys[i]){
-                code |= FN_BIT;
-                switch (code&0x1ff){ // les touches d'alteration sont traitées ici.
-                    case LSHIFT:
-                        if (flags & REL_BIT){
-                            key_state &=~F_LSHIFT;
-                        }else{
-                            key_state |= F_LSHIFT;
-                        }
-                        code=0;
-                        break;
-                    case RSHIFT:
-                        if (flags & REL_BIT){
-                            key_state &=~F_RSHIFT;
-                        }else{
-                            key_state |= F_RSHIFT;
-                        }
-                        code=0;
-                        break;
-                    case LCTRL:
-                        if (flags & REL_BIT){
-                            key_state &=~F_LCTRL;
-                        }else{
-                            key_state |= F_LCTRL;
-                        }
-                        code=0;
-                        break;
-                    case RCTRL:
-                        if (flags & REL_BIT){
-                            key_state &=~F_RCTRL;
-                        }else{
-                            key_state |= F_RCTRL;
-                        }
-                        code=0;
-                        break;
-                    case RALT:
-                        if (flags & REL_BIT){
-                            key_state &=~F_ALTCHAR;
-                        }else{
-                            key_state |= F_ALTCHAR;
-                        }
-                        code=0;
-                        break;
-                    case LALT:
-                        if (flags & REL_BIT){
-                            key_state &=~F_LALT;
-                        }else{
-                            key_state |= F_LALT;
-                        }
-                        code=0;
-                        break;
-                    case NUM_LOCK:
-                        if (flags & REL_BIT){
-                            kbd_leds ^= F_NUM;
-                            key_state ^= F_NUM;
-                            SetKbdLeds(kbd_leds);
-                        }
-                        code=0;
-                        break;
-                    case CAPS_LOCK:
-                        if (flags & REL_BIT){
-                            kbd_leds ^= F_CAPS;
-                            key_state ^= F_CAPS;
-                            SetKbdLeds(kbd_leds);
-                        }
-                        code=0;
-                        break;
-                    case SCROLL_LOCK:
-                        if (flags & REL_BIT){
-                            kbd_leds ^= F_SCROLL;
-                            key_state ^= F_SCROLL;
-                            SetKbdLeds(kbd_leds);
-                        }
-                        code=0;
-                        break;
-                    default:;
-                }//switch(code)
-                break;
-            }// if
-        }//for
-        if ((code < 0) && !(code & FN_BIT)) // ne retourne pas les relâchement de touche pour les touches caractères.
-            return 0;
-        else
-            return code;
+    IEC0bits.INT4IE=1; // fin section critique réactive interruption
+    code=update_key_state(code);
+    return code;
 }// GetScancode()
 
-
-short KbdKey(short scancode){  // obtient la transcription du code en ASCII
+// retourne la transcription du scancode en ASCII
+short KbdKey(short scancode){
 	int a,i;
 	a=0;
 	if (scancode & XT_BIT){
@@ -318,10 +293,11 @@ short KbdKey(short scancode){  // obtient la transcription du code en ASCII
 			a -=32;
 		}
 	}
-	return a|(scancode&0xff00);
+	return a|(scancode&0xff00); // on conserve les indicateurs REL_BIT et XT_BIT
 } // GetKey()
 
-void KbdSend(char cmd){  // envoie une commande au clavier
+// envoie une commande au clavier
+void KbdSend(char cmd){
     register unsigned int dly;
     unsigned int t0;
         bit_cnt=0;
@@ -362,7 +338,7 @@ void KbdSend(char cmd){  // envoie une commande au clavier
 	while (PORTA & (KBD_DAT+KBD_CLK)); 	// attend que le clavier mette data et clock à 0
 	while (!((PORTA & (KBD_DAT+KBD_CLK))==(KBD_DAT+KBD_CLK))); // attend que les 2 lignes reviennent à 1.
 	bit_cnt=0;
-        IFS0CLR=_IFS0_INT4IF_MASK;
+    IFS0CLR=_IFS0_INT4IF_MASK;
 	IEC0SET = _IEC0_INT4IE_MASK; // réactivation interruption
 } // KbdSend()
 
@@ -421,7 +397,7 @@ void __ISR(_EXTERNAL_4_VECTOR,IPL6SOFT) kbd_clk_isr(void){
 		}
 		bit_cnt++;
 	}
-        mINT4ClearIntFlag();
+    mINT4ClearIntFlag();
 } // kbd_clk_isr()
 
 

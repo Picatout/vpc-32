@@ -231,7 +231,7 @@ unsigned listDir(const char *path) {
                 print(comm_channel,fmt);
 	}
         if (!res){
-            sprintf(fmt, "\rfile count %d, directory count %d,  total size %d\r",s1,s2,p1);
+            sprintf(fmt, "\rfile count %d\rdirectory count %d\rtotal size %d\r",s1,s2,p1);
             print(comm_channel, fmt);
         }else{
             if (fmt){

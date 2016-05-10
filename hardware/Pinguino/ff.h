@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 #include <GenericTypeDefs.h>
-#include "typedef.h"
+#include <stddef.h>
 #include "integer.h"	/* Basic integer types */
 #include "ffconf.h"	/* FatFs configuration options */
 

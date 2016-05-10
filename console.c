@@ -353,9 +353,7 @@ unsigned short get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'i
     unsigned short code;
     if (channel==LOCAL_CON){
         code=  KbdScancode();
-        if (!(code & FN_BIT)){
-            code = KbdKey(code);
-        }
+        code = KbdKey(code);
     }else{
         code=UartGetch(STDIN);
         if (code==-1){
@@ -401,7 +399,7 @@ unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_cha
                     count--;
                     print(channel,"\b \b");
                 }
-            }else if ((c & FN_BIT)==0){
+            }else if (c >=32 && c<=127){
                 *ibuff++=c;
                 count++;
                 put_char(channel, c);
@@ -421,3 +419,11 @@ void invert_video(unsigned char invert){
         flags &= ~INV_VID;
     }
 }//invert_video()
+
+
+void uppercase(char *str){// in situ uppercase
+    while (*str){
+        if (*str>='a' && *str<='z') *str-=32;
+        str++;
+    }
+}

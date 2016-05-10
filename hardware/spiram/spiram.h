@@ -54,6 +54,7 @@ extern "C" {
     void sram_write_mode(unsigned char mode);
     unsigned char sram_read_mode();
     void sram_clear();
+    void sram_clear_block(unsigned addr, unsigned size);
     void sram_write_string(unsigned addr, const char *str);
     int sram_read_string(unsigned addr,char *buffer,unsigned size);
 #ifdef	__cplusplus

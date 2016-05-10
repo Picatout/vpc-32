@@ -66,17 +66,16 @@ const t_scan2key qwerty[]={  // table de correspondance codes clavier -> ASCII (
 		{0x4e,'-'},
 		{0x55,'='},
 		{0x0e,'`'},
-		{0x0d,'\t'},
+		{0x0d,VK_TAB},
 		{0x54,'['},
 		{0x5b,']'},
 		{0x4c,';'},
 		{0x41,','},
 		{0x49,'.'},
 		{0x4a,'/'},
-		{0x66,8}, // BACKSPACE
-		{0x0d,9}, // TAB
-		{0x5a,'\r'}, // CR
-		{0x76,27}, // ESC
+		{0x66,VK_BACK}, // BACKSPACE
+		{0x5a,VK_ENTER}, // CR
+		{0x76,VK_ESC}, // ESC
 		{KP0,'0'},
 		{KP1,'1'},
 		{KP2,'2'},
@@ -91,8 +90,19 @@ const t_scan2key qwerty[]={  // table de correspondance codes clavier -> ASCII (
 		{KPMUL,'*'},
 		{KPMINUS,'-'},
 		{KPPLUS,'+'},
-		{KPENTER,'\r'},
 		{KPDOT,'.'},
+        {F1,VK_F1},
+        {F2,VK_F2},
+        {F3,VK_F3},
+        {F4,VK_F4},
+        {F5,VK_F5},
+        {F6,VK_F6},
+        {F7,VK_F7},
+        {F8,VK_F8},
+        {F9,VK_F9},
+        {F10,VK_F10},
+        {F11,VK_F11},
+        {F12,VK_F12},
 		{0,0}
 };
 
@@ -125,7 +135,17 @@ const t_scan2key qwerty_alt_char[]={
 
 const t_scan2key qwerty_xt_char[]={
 		{0x4a,'/'}, // keypad '/'
-		{0x5a,'\r'},// keypad ENTER
-		{0,0}
+		{KPENTER,VK_ENTER},// keypad ENTER
+		{UP_ARROW,VK_UP},
+        {DOWN_ARROW,VK_DOWN},
+        {LEFT_ARROW,VK_LEFT},
+        {RIGHT_ARROW,VK_RIGHT},
+        {PGUP, VK_PGUP},
+        {PGDN, VK_PGDN},
+        {INSERT,VK_INSERT},
+        {HOME,VK_HOME},
+        {END,VK_END},
+        {DEL,VK_DELETE},
+        {0,0}
 };
 

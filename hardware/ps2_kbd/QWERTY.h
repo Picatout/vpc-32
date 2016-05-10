@@ -36,6 +36,36 @@
 
 #include "keyboard.h"
 
+//touches virtuelles
+#define VK_BACK 8
+#define VK_TAB 9
+#define VK_ESC 27
+#define VK_ENTER '\r'
+#define VK_F1 128
+#define VK_F2 129
+#define VK_F3 130
+#define VK_F4 131
+#define VK_F5 132
+#define VK_F6 133
+#define VK_F7 134
+#define VK_F8 135
+#define VK_F9 136
+#define VK_F10 138
+#define VK_F11 139
+#define VK_F12 140
+#define VK_UP  141
+#define VK_DOWN 142
+#define VK_LEFT 143
+#define VK_RIGHT 144
+#define VK_HOME 145
+#define VK_END  146
+#define VK_PGUP 147
+#define VK_PGDN 148
+#define VK_INSERT 149
+#define VK_DELETE 150
+#define VK_PAUSE 151
+
+
 extern const t_scan2key qwerty[];
 extern const t_scan2key qwerty_shifted_key[];
 extern const t_scan2key qwerty_alt_char[];

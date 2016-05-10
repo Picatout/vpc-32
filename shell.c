@@ -428,13 +428,13 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
    }
 }//more
 
-void editor(int i){ // lance l'éditeur de texte
+void cmd_edit(int i){ // lance l'éditeur de texte
     if (i>1){
-        ed(cmd_tokens[1]);
+        editor(cmd_tokens[1]);
     }else{
-        ed(NULL);
+        editor(NULL);
     }
-}//editor()
+}//f
 
 void mkdir(int i){
     FRESULT error=FR_OK;
@@ -494,11 +494,11 @@ void list_directory(int i){
 }//list_directory()
 
 void cmd_puts(){
-    print(comm_channel, "commande puts, to be done.\r");
+    print(comm_channel, "puts, to be done.\r");
 }//puts()
 
 void expr(){
-    print(comm_channel, "commande expr, to be done.\r");
+    print(comm_channel, "expr, to be done.\r");
 }//expr()
 
 //display heap status
@@ -535,7 +535,7 @@ void execute_cmd(int i){
                 ren(i);
                 break;
             case CMD_ED: // editeur
-                editor(i);
+                cmd_edit(i);
                 break;
             case CMD_BASIC: // lance interpréteur BASIC
                vpcBasic();

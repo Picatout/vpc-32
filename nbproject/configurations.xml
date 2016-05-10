@@ -29,7 +29,6 @@
           <itemPath>hardware/tvout/ntsc.h</itemPath>
         </logicalFolder>
         <itemPath>hardware/HardwareProfile.h</itemPath>
-        <itemPath>hardware/Pinguino/typedef.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="VM" projectFiles="true">
         <itemPath>vpcBASIC/vm.h</itemPath>
@@ -43,6 +42,7 @@
       <itemPath>shell.h</itemPath>
       <itemPath>graphics.h</itemPath>
       <itemPath>hardware/Pinguino/fileio.h</itemPath>
+      <itemPath>reader.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -89,6 +89,7 @@
       <itemPath>shell.c</itemPath>
       <itemPath>vpc-32.c</itemPath>
       <itemPath>graphics.c</itemPath>
+      <itemPath>reader.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -276,6 +277,7 @@
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
         <property key="UART1" value="true"/>
         <property key="UART2" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

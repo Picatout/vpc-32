@@ -1,5 +1,5 @@
 /*
-* Copyright 2013, Jacques Deschênes
+* Copyright 2013,2016 Jacques Deschênes
 * This file is part of VPC-32.
 *
 *     VPC-32 is free software: you can redistribute it and/or modify
