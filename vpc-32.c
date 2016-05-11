@@ -140,14 +140,7 @@ void main(void) {
     VideoInit();
     delay_ms(500);
     UartPrint(STDOUT,"keyboard initialization: ");
-    if (KeyboardInit()){
-        UartPrint(STDOUT,"OK\r");
-        comm_channel=LOCAL_CON;
-    }else{
-        UartPrint(STDOUT,"keyboard error\r");
-        UartPrint(STDOUT,"Using uart2 channel.\r");
-        comm_channel=SERIAL_CON;
-    }
+    KeyboardInit();
     text_coord_t cpos;
     UartPrint(STDOUT,"SD initialization: ");
     if (!mount(0)){

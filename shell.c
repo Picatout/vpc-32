@@ -195,7 +195,6 @@ static int next_token(void){
                 if (quote && escape){
                     escape=FALSE;
                 }
-
         }//switch
         cmd_line.next++;
     } // while

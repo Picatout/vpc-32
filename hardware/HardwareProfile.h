@@ -93,6 +93,13 @@
 #define _status_on() PORTBSET = STATUS_LED
 #define _status_off() PORTBCLR = STATUS_LED
 
+//keyboard queue processing TIMER
+#define KBD_TMR_CON T1CON
+#define KBD_PR  PR1
+#define KBD_IFSbits  IFS0bits
+#define KBD_IECbits  IEC0bits
+#define KBD_IPCbits   IPC1bits
+
 unsigned int heap_size;
 
 void HardwareInit();

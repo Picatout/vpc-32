@@ -350,17 +350,16 @@ void set_cursor(cursor_t shape){
 }// set_cursor()
 
 unsigned short get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
-    unsigned short code;
+    char key;
     if (channel==LOCAL_CON){
-        code=  KbdScancode();
-        code = KbdKey(code);
+        key=KbdKey();
     }else{
-        code=UartGetch(STDIN);
-        if (code==-1){
-            code=0;
+        key=UartGetch(STDIN);
+        if (key==-1){
+            key=0;
         }
     }
-    return code;
+    return key;
 }//get_key()
 
 unsigned short wait_key(dev_t channel){ // attend qu'une touche soit enfoncée et retourne sa valeur.

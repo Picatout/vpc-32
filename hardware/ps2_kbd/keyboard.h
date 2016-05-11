@@ -31,7 +31,7 @@ extern "C" {
 // structure pour la table de transcription des codes clavier
 typedef struct scan2key{
 	 short code;
-	 short ascii;
+	 unsigned char ascii;
 }t_scan2key;
 
 
@@ -107,9 +107,11 @@ typedef struct scan2key{
 #define KEY_REL 0xF0 // code touche relâchée
 #define XTD_KEY 0xE0 // code étendu
 
+// code réception clavier ps2
 #define F_ERROR 1 // erreur paritée dans rx_flags
 #define F_RCVD 2 // signal réception d'un octet du clavier dans rx_flags
-
+#define F_BATOK 4 // succès BAT
+#define F_ACK   8 // le clavier à reconnu la commande
 
 #define F_SCROLL 1 // bit indicateur scroll_lock dans kbd_leds
 #define F_NUM  2 // bit indicateur numlock dans kbd_leds
@@ -124,16 +126,13 @@ typedef struct scan2key{
 #define F_ALTCHAR  256
 #define F_ALT (F_LALT|F_ALTCHAR)
 
-extern volatile unsigned char rx_flags, kbd_leds;
 extern volatile unsigned short key_state; // état des touches d'alteration: shift, ctrl ,alt
 
 
 // keyboard API
-int KeyboardInit();  // initialisation E/S et RAZ clavier
-short KbdScancode();  // obtient le code clavier en tête de la file
-short KbdKey(short scancode);  // obtient la transcription du code en ASCII
-void KbdSend(char cmd);  // envoie une commande au clavier
-int SetKbdLeds(unsigned char leds_state); // contrôle l'état des LEDS du clavier
+void KeyboardInit();  // initialisation E/S et RAZ clavier
+unsigned char KbdKey();  // obtient la transcription du code en ASCII
+int KbdSend(char cmd);  // envoie une commande au clavier
 
 #ifdef	__cplusplus
 }
