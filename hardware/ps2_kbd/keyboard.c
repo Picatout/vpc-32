@@ -43,49 +43,8 @@ volatile static unsigned char kbd_head=0, kbd_tail=0; // tête et queue file kbd_
 volatile static unsigned char rx_flags=0, kbd_leds=0;
 volatile unsigned short key_state=0; // état des touches d'alteration: shift, ctrl, alt,etc.
 
-
-static void KbdReset(void){
-    unsigned int t0;
-    short c;
-    rx_flags = 0;
-    KbdSend(KBD_RESET);
-    t0=ticks()+750;
-    c=0;
-    while (ticks()<t0);
-}//KbdReset()
-
-void KeyboardInit(){ // initialisation E/S et RAZ clavier
-    TRISASET=KBD_CLK|KBD_DAT;
-    INTCONbits.INT4EP=0; // interruption sur transition descendante
-    IPC4bits.INT4IP=6; // priorité 6
-    IPC4bits.INT4IS=3;  // sous-priorité 3.
-    while (!PORTAbits.RA0);
-    IFS0bits.INT4IF=0; // RAZ indicateur interruption
-    IEC0SET = _IEC0_INT4IE_MASK; // activation interruption externe 4 (KBD_CLK)
-    // timer pour processing ps2_queue
-    KBD_TMR_CON=(1<<15)|(3<<4);
-    KBD_PR=(SYSCLK/200000L-1);
-    KBD_IPCbits.T1IP=2;
-    KBD_IPCbits.T1IS=0;
-    KBD_IFSbits.T1IF=0;
-    KBD_IECbits.T1IE=1;
-    KbdReset();
-} //KeyboardInit()
-
-
-
-// retourne la transcription du scancode en ASCII
-unsigned char KbdKey(){
-    unsigned char key;
-    
-    if (kbd_head==kbd_tail) return 0;
-    key=kbd_queue[kbd_head++];
-    kbd_head&=KBD_QUEUE_SIZE-1;
-    return key;
-} // GetKey()
-
 // envoie une commande au clavier
-int KbdSend(char cmd){
+static int KbdSend(char cmd){
     register unsigned int dly;
     unsigned char bit_cnt,parity;
     unsigned int t0;
@@ -134,9 +93,49 @@ int KbdSend(char cmd){
     return rx_flags&F_ACK;
 } // KbdSend()
 
+
+static void KbdReset(void){
+    unsigned int t0;
+    rx_flags = 0;
+    KbdSend(KBD_RESET);
+    t0=ticks()+750;
+    while (ticks()<t0 && !(rx_flags&F_BATOK));
+}//KbdReset()
+
 int SetKbdLeds(){ // contrôle l'état des LEDS du clavier
     return (KbdSend(KBD_LED) && KbdSend(kbd_leds));
 } // SetKbdLeds()
+
+void KeyboardInit(){ // initialisation E/S et RAZ clavier
+    TRISASET=KBD_CLK|KBD_DAT;
+    INTCONbits.INT4EP=0; // interruption sur transition descendante
+    IPC4bits.INT4IP=6; // priorité 6
+    IPC4bits.INT4IS=3;  // sous-priorité 3.
+    while (!PORTAbits.RA0);
+    //INT4 utilisée comme interruuption externe clavier ps2
+    IFS0bits.INT4IF=0; // RAZ indicateur interruption
+    IEC0SET = _IEC0_INT4IE_MASK; // activation interruption externe 4 (KBD_CLK)
+    // timer pour processing ps2_queue
+    KBD_TMR_CON=(1<<15)|(1<<4); //diviseur 1:8
+    KBD_PR=(SYSCLK/800); // 40Mhz/800 période 10msec
+    KBD_IPCbits.T1IP=2;
+    KBD_IPCbits.T1IS=0;
+    KBD_IFSbits.T1IF=0;
+    KBD_IECbits.T1IE=1;
+    KbdReset();
+} //KeyboardInit()
+
+
+
+// retourne la transcription du scancode en ASCII
+unsigned char KbdKey(){
+    unsigned char key;
+    
+    if (kbd_head==kbd_tail) return 0;
+    key=kbd_queue[kbd_head++];
+    kbd_head&=KBD_QUEUE_SIZE-1;
+    return key;
+} // GetKey()
 
 static void key_release(short code){
     int i;
@@ -149,35 +148,35 @@ static void key_release(short code){
                 ps2_head &= PS2_QUEUE_SIZE-1;
             }
             break;
-        case LSHIFT:
+        case SC_LSHIFT:
             key_state &=~F_LSHIFT;
             break;
-        case RSHIFT:
+        case SC_RSHIFT:
             key_state &=~F_RSHIFT;
             break;
-        case LCTRL:
+        case SC_LCTRL:
             key_state &=~F_LCTRL;
             break;
-        case RCTRL:
+        case SC_RCTRL:
             key_state &=~F_RCTRL;
             break;
-        case RALT:
+        case SC_RALT:
             key_state &=~F_ALTCHAR;
             break;
-        case LALT:
+        case SC_LALT:
             key_state &=~F_LALT;
             break;
-        case NUM_LOCK:
+        case SC_NUMLOCK:
             kbd_leds ^= F_NUM;
             key_state ^= F_NUM;
             SetKbdLeds();
             break;
-        case CAPS_LOCK:
+        case SC_CAPS:
             kbd_leds ^= F_CAPS;
             key_state ^= F_CAPS;
             SetKbdLeds();
             break;
-        case SCROLL_LOCK:
+        case SC_SCROLLOCK:
             kbd_leds ^= F_SCROLL;
             key_state ^= F_SCROLL;
             SetKbdLeds();
@@ -189,33 +188,33 @@ static void key_release(short code){
 static short update_key_state(short code){
     int i;
     switch (code){ // les touches d'alteration sont traitées ici.
-        case LSHIFT:
+        case SC_LSHIFT:
             key_state |= F_LSHIFT;
             code=0;
             break;
-        case RSHIFT:
+        case SC_RSHIFT:
             key_state |= F_RSHIFT;
             code=0;
             break;
-        case LCTRL:
+        case SC_LCTRL:
             key_state |= F_LCTRL;
             code=0;
             break;
-        case RCTRL:
+        case SC_RCTRL:
             key_state |= F_RCTRL;
             code=0;
             break;
-        case RALT:
+        case SC_RALT:
             key_state |= F_ALTCHAR;
             code=0;
             break;
-        case LALT:
+        case SC_LALT:
             key_state |= F_LALT;
             code=0;
             break;
-        case NUM_LOCK:
-        case CAPS_LOCK:
-        case SCROLL_LOCK:
+        case SC_NUMLOCK:
+        case SC_CAPS:
+        case SC_SCROLLOCK:
             code=0;
             break;
         case 0xE1: // PAUSE jette les 7 codes suivants
@@ -244,9 +243,11 @@ short search_code(const t_scan2key table[], short code){
 void translate_code(uint16_t code){
     short ascii;
     short shift=key_state&F_SHIFT;
-    bool lower;
+
+#define letter(a) ((a>='a') && (a<='z'))
+#define xor(a,b) ((a)&& !(b) || !(a) && (b))
     
-    if (code==DEL && (key_state&(F_LCTRL|F_LALT))==(F_LCTRL|F_LALT)){
+    if (code==SC_DEL && (key_state&(F_LCTRL|F_LALT))==(F_LCTRL|F_LALT)){
         __asm__("xor $0,$0,$2\nlui $2,0x9DC0\nj $2\n");
     }
 	if (code & XT_BIT){
@@ -259,9 +260,7 @@ void translate_code(uint16_t code){
 	}else{
         ascii=search_code(qwerty,code);
 	}
-    lower=ascii>='a' && ascii<='z';
-    if ((lower && shift && !(key_state&F_CAPS))  ||
-        (lower && !shift && (key_state&F_CAPS))){
+    if (letter(ascii) && xor((key_state&F_CAPS),(key_state&F_SHIFT))){
         ascii-=32;
     }else if (!ascii){
         ascii=code&255;

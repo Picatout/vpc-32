@@ -41,61 +41,111 @@ typedef struct scan2key{
 
 #define XT_BIT	(1<<8)  // indicateur code étendu
 #define REL_BIT (1<<15) // indicateur touche relâchée
-//#define FN_BIT (1<<9) // indicateur touche non ASCII (F* PRN, PAUSE, SCROLL, flèches, etc)
 
-// touches spéciales
-#define ENTER           0x5A
-#define CAPS_LOCK		0x58
-#define NUM_LOCK		0x77
-#define SCROLL_LOCK		0x7E
-#define LSHIFT			0x12
-#define RSHIFT          0x59
-#define LCTRL			0x14
-#define RCTRL           (XT_BIT|0x14)
-#define LALT			0x11
-#define RALT            (XT_BIT|0x11)
-#define BKSP            0x66
-#define KEY_ESC			0x76
-#define F1			0x05
-#define F2			0x06
-#define F3			0x04
-#define F4			0x0c
-#define F5			0x03
-#define F6			0x0b
-#define F7			0x83
-#define F8			0x0a
-#define F9			0x01
-#define F10			0x09
-#define F11			0x78
-#define F12			0x07
-#define PRN			(XT_BIT|0x12)   // touche PrtSc enfoncée 4 codes: 0xe012e07c, relâchée 6 codes: 0xe0f07ce0f012
-#define PAUSE			(XT_BIT|0xe1)   // touche Pause séquence de 8 codes 0xe11477e1f014f077
-#define UP_ARROW		(XT_BIT|0x75)
-#define DOWN_ARROW		(XT_BIT|0x72)
-#define LEFT_ARROW		(XT_BIT|0x6B)
-#define RIGHT_ARROW		(XT_BIT|0x74)
-#define INSERT			(XT_BIT|0x70)
-#define HOME			(XT_BIT|0x6c)
-#define	PGUP			(XT_BIT|0x7d)
-#define PGDN			(XT_BIT|0x7a)
-#define	DEL			    (XT_BIT|0x71)
-#define END			    (XT_BIT|0x69)
-#define KPDIV			(XT_BIT|0x4a)
-#define KPMUL			0x7c
-#define KPMINUS			0x7b
-#define KPPLUS			0x79
-#define KPENTER			(XT_BIT|0x5a)
-#define KPDOT			0x71
-#define KP0			0x70
-#define KP1			0x69
-#define KP2			0x72
-#define KP3			0x7a
-#define KP4			0x6b
-#define KP5			0x73
-#define KP6			0x74
-#define KP7			0x6c
-#define KP8			0x75
-#define KP9			0x7d
+// scancodes clavier QWERTY 
+//REF: http://www.computer-engineering.org/ps2keyboard/scancodes2.html
+#define SC_DIG_0        0x45
+#define SC_DIG_1        0x16
+#define SC_DIG_2        0x1E
+#define SC_DIG_3        0x26
+#define SC_DIG_4        0x25
+#define SC_DIG_5        0x2E
+#define SC_DIG_6        0x36
+#define SC_DIG_7        0x3D
+#define SC_DIG_8        0x3E
+#define SC_DIG_9        0x46
+#define SC_LTR_A        0x1C
+#define SC_LTR_B        0x32
+#define SC_LTR_C        0x21
+#define SC_LTR_D        0x23
+#define SC_LTR_E        0x24
+#define SC_LTR_F        0x2B
+#define SC_LTR_G        0x34
+#define SC_LTR_H        0x33
+#define SC_LTR_I        0x43
+#define SC_LTR_J        0x3B
+#define SC_LTR_K        0x42
+#define SC_LTR_L        0x4B
+#define SC_LTR_M        0x3A
+#define SC_LTR_N        0x31
+#define SC_LTR_O        0x44
+#define SC_LTR_P        0x4D
+#define SC_LTR_Q        0x15
+#define SC_LTR_R        0x2D
+#define SC_LTR_S        0x1B
+#define SC_LTR_T        0x2C
+#define SC_LTR_U        0x3C
+#define SC_LTR_V        0x2A
+#define SC_LTR_W        0x1D
+#define SC_LTR_X        0x22
+#define SC_LTR_Y        0x35
+#define SC_LTR_Z        0x1A
+#define SC_A_ACUTE      0x0E
+#define SC_SEMICOL      0x4C
+#define SC_PERIOD       0x49
+#define SC_COMMA        0x41
+#define SC_SQUOTE       0x52
+#define SC_DASH         0x4E
+#define SC_EQUAL        0x55
+#define SC_BKSLASH      0x5D
+#define SC_SLASH        0X4A
+#define SC_SPACE        0X29
+#define SC_TAB          0X0D
+#define SC_LBRACKET     0x54
+#define SC_RBRACKET     0x5B
+#define SC_ENTER        0x5A
+#define SC_CAPS 		0x58
+#define SC_NUMLOCK		0x77
+#define SC_SCROLLOCK    0x7E
+#define SC_LSHIFT		0x12
+#define SC_RSHIFT       0x59
+#define SC_LCTRL		0x14
+#define SC_RCTRL        (XT_BIT|0x14)
+#define SC_LALT         0x11
+#define SC_RALT         (XT_BIT|0x11)
+#define SC_BKSP         0x66
+#define SC_ESC  	    0x76
+#define SC_F1			0x05
+#define SC_F2			0x06
+#define SC_F3			0x04
+#define SC_F4			0x0c
+#define SC_F5			0x03
+#define SC_F6			0x0b
+#define SC_F7			0x83
+#define SC_F8			0x0a
+#define SC_F9			0x01
+#define SC_F10			0x09
+#define SC_F11			0x78
+#define SC_F12			0x07
+#define SC_PRN			(XT_BIT|0x12) // touche PrtSc enfoncée 4 codes: 0xe0,0x12,0xe0,0x7c 
+                                      // relâchée 6 codes: 0xe0,0xf0,0x7c,0xe0,0xf0,0x12
+#define SC_PAUSE		0xe1 // touche Pause séquence de 8 codes 0xe1,0x14,0x77,0xe1,0xf0,0x14,0xf0,0x77
+#define SC_UP_ARROW		(XT_BIT|0x75)
+#define SC_DOWN_ARROW	(XT_BIT|0x72)
+#define SC_LEFT_ARROW	(XT_BIT|0x6B)
+#define SC_RIGHT_ARROW	(XT_BIT|0x74)
+#define SC_INSERT		(XT_BIT|0x70)
+#define SC_HOME			(XT_BIT|0x6c)
+#define	SC_PGUP			(XT_BIT|0x7d)
+#define SC_PGDN			(XT_BIT|0x7a)
+#define	SC_DEL			(XT_BIT|0x71)
+#define SC_END			(XT_BIT|0x69)
+#define SC_KPDIV		(XT_BIT|0x4a)
+#define SC_KPMUL		0x7c
+#define SC_KPMINUS		0x7b
+#define SC_KPPLUS		0x79
+#define SC_KPENTER		(XT_BIT|0x5a)
+#define SC_KPDOT		0x71
+#define SC_KP0			0x70
+#define SC_KP1			0x69
+#define SC_KP2			0x72
+#define SC_KP3			0x7a
+#define SC_KP4			0x6b
+#define SC_KP5			0x73
+#define SC_KP6			0x74
+#define SC_KP7			0x6c
+#define SC_KP8			0x75
+#define SC_KP9			0x7d
 
 // réponses du clavier aux commandes
 #define KBD_ACK   0xFA   // ACK confirmation envoyé par le clavier
@@ -132,7 +182,6 @@ extern volatile unsigned short key_state; // état des touches d'alteration: shif
 // keyboard API
 void KeyboardInit();  // initialisation E/S et RAZ clavier
 unsigned char KbdKey();  // obtient la transcription du code en ASCII
-int KbdSend(char cmd);  // envoie une commande au clavier
 
 #ifdef	__cplusplus
 }
