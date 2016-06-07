@@ -126,15 +126,14 @@ static void page_down();
 static void word_right();
 static void word_left();
 static void goto_line();
-static uint8_t get_line_forward(uint8_t* line, uint16_t from);
-static uint8_t get_line_back(uint8_t* line, uint16_t from);
+static uint8_t get_line_forward(uint8_t* line, uint32_t from);
+static uint8_t get_line_back(uint8_t* line, uint32_t from);
 static void jump_to_line(uint16_t line_no);
 
 
 static void print_line(uint8_t line){
     set_curpos(0,line);
     clear_eol();
-//    set_curpos(0,line);
     print(comm_channel,(char*)&screen[line]);
 }
 
@@ -147,6 +146,7 @@ static void ed_error(const char *msg, int code){//static uint8_t *llen;
     println(comm_channel,msg);
     print(comm_channel,"error code: ");
     print_int(comm_channel,code,0);
+    prompt_continue();
 }
 
 //si fichier modifié confirme 
@@ -205,8 +205,8 @@ static void leave_editor(){
 }
  
 static void list_files(){
-    clear_screen();
     invert_video(true);
+    clear_screen();
     listDir(".");
     prompt_continue();
     invert_video(false);
@@ -427,7 +427,7 @@ static void load_file(const char* name){
     FIL fh;
     int count, line_no=0;
     uint16_t saddr;
-    char c=0, buffer[CHAR_PER_LINE];
+    char prev_c=0, c=0, buffer[CHAR_PER_LINE];
     reader_t r;
     
     new_file();
@@ -451,19 +451,20 @@ static void load_file(const char* name){
         c=reader_getc(&r);
         switch(c){
             case -1:
-            case '\r':
-            case '\n':
+            case CR:
+            case LF:
                 break;
             default:
                 if (c>=32 && c<(32+FONT_SIZE)) buffer[count++]=c; else buffer[count++]=' ';
         }
-        if ((c=='\n') || (count==(CHAR_PER_LINE-1))){
+        if ((c==CR) || ((c==LF) && (prev_c!=CR)) || (count==(CHAR_PER_LINE-1))){
             buffer[count++]=0;
             line_no++;
             sram_write_block(saddr,(uint8_t*)buffer,count);
             saddr+=count;
             count=0;
         }
+        prev_c=c;
     }
     if (count){
         sram_write_block(saddr,(uint8_t*)buffer,count);
@@ -505,25 +506,25 @@ static void open_file(){
 
 inline static void replace_nulls(uint8_t *buffer,int len){
     int i;
-    for(i=0;i<=len;i++) if (!buffer[i]) buffer[i]='\r';
+    for(i=0;i<=len;i++) if (!buffer[i]) buffer[i]=CR;
 }//f
 
 static void save_file(const char* name){
 #define BUFFER_SIZE 128
     uint8_t buffer[BUFFER_SIZE];
     int size;
-    uint16_t saddr=0;
+    uint32_t saddr=0;
     FRESULT result;
     FIL fh;
 
-    if ((result=f_open(&fh,name,FA_WRITE+FA_CREATE_NEW))){
+    if ((result=f_open(&fh,name,FA_WRITE+FA_CREATE_ALWAYS))){
         ed_error("failed to create file!\n",result);
         return;
     }
     invert_video(true);
     clear_screen();
     print(comm_channel,"saving file...\n");
-    while (!result && (saddr < state.gap_first)){
+    while ((result==FR_OK) && (saddr < state.gap_first)){
         size=min(BUFFER_SIZE,state.gap_first-saddr);
         sram_read_block(saddr,buffer,size);
         saddr+=size;
@@ -531,7 +532,7 @@ static void save_file(const char* name){
         result=f_write(&fh,buffer,size,&size);
     }
     saddr=state.tail;
-    while(saddr < ED_BUFF_SIZE){
+    while((result==FR_OK) && saddr < ED_BUFF_SIZE){
         size=min(BUFFER_SIZE,ED_BUFF_SIZE-saddr);
         sram_read_block(saddr,buffer,size);
         saddr+=size;
@@ -539,6 +540,10 @@ static void save_file(const char* name){
         result=f_write(&fh,buffer,size,&size);
     }
     f_close(&fh);
+    if (result){
+        ed_error("diksI/O error...\n",result);
+        return;
+    }
     state.flags.modified=false;
     state.flags.new=0;
     strcpy(fname,name);
@@ -627,19 +632,18 @@ static void editor_init(){
 
 
 void editor(const char* name){
-    short key;
+    unsigned short key;
     FATFS fh;
     FRESULT result;
     
     state.flags.modified=false;
     editor_init();
     if (name){
-        open_file(name);
+        load_file(name);
     }
     quit=false;
     while(!quit){
         key=wait_key(comm_channel);
-        if (key<0) continue;
         switch(key){
             case VK_UP:
                 line_up();
@@ -765,7 +769,7 @@ void editor(const char* name){
 //   line-> buffer recevant la ligne
 //   from -> adresse SRAM début ligne courante
 // retourne la longueur de la ligne
-uint8_t get_line_back(uint8_t *line, uint16_t from){
+uint8_t get_line_back(uint8_t *line, uint32_t from){
     int j,size;
 
     if (from==0){
@@ -801,7 +805,7 @@ uint8_t get_line_back(uint8_t *line, uint16_t from){
 //   from -> adresse SRAM début de ligne
 //   line -> buffer recevant la ligne
 // retourne la longueur de la ligne
-uint8_t get_line_forward(uint8_t *line, uint16_t from){
+uint8_t get_line_forward(uint8_t *line, uint32_t from){
     int j,size;
     
     if (from <= state.gap_first){
@@ -829,7 +833,6 @@ static void update_display(){
     uint16_t from;
     uint8_t scr_line=0, llen=0;
  
-//    _disable_video();
     clear_screen();
     memset(screen,0,SCREEN_SIZE);
     from=state.scr_first;
@@ -845,7 +848,6 @@ static void update_display(){
         }
     }
     set_curpos(state.scr_col,state.scr_line);
-//    _enable_video();
 }//f();
 
 

@@ -78,8 +78,8 @@ extern unsigned char comm_channel;
     void show_cursor(BOOL); // affiche ou masque le curseur texte
     void set_cursor(cursor_t shape); // défini la  forme du curseur
     void crlf(void); // déplace le curseur à la ligne suivante
-    unsigned short get_key(dev_t channel); // lecture touches clavier
-    unsigned short wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
+    unsigned char get_key(dev_t channel); // lecture touches clavier
+    unsigned char wait_key(dev_t channel); // attend qu'une touche soit enfoncée.
     unsigned char readline(dev_t channel, unsigned char *ibuff,unsigned char max_char); // lit une ligne au clavier, retourne la longueur de texte.
     void invert_video(unsigned char invert); // inverse vidéo des caractèrs noir/blanc
     void println(dev_t channel, const char *str);

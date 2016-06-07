@@ -177,7 +177,11 @@ void put_char(dev_t channel, char c){
 }//put_char()
 
 void clear_screen(){
-    memset(video_bmp,0,HRES/8*VRES);
+    if (flags&INV_VID){
+        memset(video_bmp,255,HRES/8*VRES);
+    }else{
+        memset(video_bmp,0,HRES/8*VRES);
+    }
     cx=0;
     cy=0;
 } // clear_screen()
@@ -254,14 +258,18 @@ void set_tab_width(unsigned char width){
 
 void clear_eol(void){
     int x,y;
-    x=cx;
+    
     y=cy;
-    while (cx<(CHAR_WIDTH*(CHAR_PER_LINE-2))){
-        put_char(LOCAL_CON, 32);
+    while (y<(cy+CHAR_HEIGHT)){
+        x=cx;
+        while (x<HRES){
+            if (flags & INV_VID)
+                setPixel(x++,y);
+            else
+                clearPixel(x++,y);
+        }
+        y++;
     }
-    put_char(LOCAL_CON, 32);
-    cx=x;
-    cy=y;
 }// clear_eol()
 
 text_coord_t get_curpos(){
@@ -349,7 +357,7 @@ void set_cursor(cursor_t shape){
     }
 }// set_cursor()
 
-unsigned short get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
+unsigned char get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'il n'y a pas de touche ou touche relâchée.
     char key;
     if (channel==LOCAL_CON){
         key=KbdKey();
@@ -362,21 +370,19 @@ unsigned short get_key(dev_t channel){ // lecture touche clavier, retourne 0 s'i
     return key;
 }//get_key()
 
-unsigned short wait_key(dev_t channel){ // attend qu'une touche soit enfoncée et retourne sa valeur.
+unsigned char wait_key(dev_t channel){ // attend qu'une touche soit enfoncée et retourne sa valeur.
     unsigned short key;
     unsigned int t0;
-    t0=ticks()+500;
+    
     if (channel==LOCAL_CON){
+        show_cursor(TRUE);
+        t0=ticks()+500;
         while (!(key=get_key(channel))){
             if (ticks()==t0){
-                if (flags & CUR_SHOW){
-                    show_cursor(FALSE);
-                }else{
-                    show_cursor(TRUE);
-                }
+                show_cursor(!(flags&CUR_SHOW));
                 t0=ticks()+500;
             }
-        };
+        }//while
         show_cursor(FALSE);
     }else{
         key=UartWaitch(STDIN,0);

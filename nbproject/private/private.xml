@@ -5,17 +5,16 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/jacques/github/vpc-32/shell.c</file>
-            <file>file:/home/jacques/github/vpc-32/hardware/HardwareProfile.c</file>
+            <file>file:/home/jacques/github/vpc-32/console.h</file>
+            <file>file:/home/jacques/github/vpc-32/hardware/spiram/spiram.c</file>
+            <file>file:/home/jacques/github/vpc-32/graphics.h</file>
+            <file>file:/home/jacques/github/vpc-32/hardware/Pinguino/ff.c</file>
             <file>file:/home/jacques/github/vpc-32/editor.c</file>
-            <file>file:/home/jacques/github/vpc-32/hardware/ps2_kbd/keyboard.h</file>
-            <file>file:/home/jacques/github/vpc-32/hardware/sound/sound.c</file>
             <file>file:/home/jacques/github/vpc-32/hardware/ps2_kbd/QWERTY.h</file>
-            <file>file:/home/jacques/github/vpc-32/hardware/ps2_kbd/QWERTY.c</file>
-            <file>file:/opt/microchip/xc32/v1.40/pic32mx/include/proc/p32mx170f256b.h</file>
-            <file>file:/home/jacques/github/vpc-32/hardware/HardwareProfile.h</file>
             <file>file:/home/jacques/github/vpc-32/hardware/ps2_kbd/keyboard.c</file>
-            <file>file:/home/jacques/github/vpc-32/vpc-32.c</file>
             <file>file:/home/jacques/github/vpc-32/console.c</file>
+            <file>file:/home/jacques/github/vpc-32/hardware/serial_comm/serial_comm.h</file>
+            <file>file:/home/jacques/github/vpc-32/hardware/Pinguino/ff.h</file>
         </group>
     </open-files>
 </project-private>

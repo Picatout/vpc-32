@@ -376,7 +376,7 @@ void more(int i){ // affiche à l'écran le contenu d'un fichier texte
                     rbuff=buff;
                     for(;n;n--){
                         c=*rbuff++;
-                        if ((c!=TAB && c!=CR) && (c<32 || c>126)) {c=32;}
+                        if ((c!=TAB && c!=CR && c!=LF) && (c<32 || c>126)) {c=32;}
                         put_char(comm_channel,c);
                         if (comm_channel==LOCAL_CON){
                             cpos=get_curpos();
