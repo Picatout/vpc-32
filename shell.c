@@ -39,6 +39,7 @@
  */
 
 #include <string.h>
+
 #include "hardware/HardwareProfile.h"
 #include "hardware/ps2_kbd/keyboard.h"
 #include "console.h"
@@ -108,13 +109,13 @@ static input_buff_t cmd_line;
 static char *cmd_tokens[MAX_TOKEN];
 
 typedef enum CMDS {CMD_BASIC,CMD_CD, CMD_CLEAR,CMD_CPY,CMD_DEL,CMD_DIR,CMD_ED,CMD_EXPR,
-                   CMD_FREE,CMD_FORMAT,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
+                   CMD_FREE,CMD_FORMAT,CMD_HDUMP,CMD_HELP,CMD_MKDIR,CMD_MORE, CMD_PUTS,
                    CMD_REBOOT,CMD_RCV,CMD_REN,CMD_SND
                    } cmds_t;
 
-#define CMD_LEN 18
+#define CMD_LEN 19
 const char *commands[CMD_LEN]={"basic","cd","cls","copy","del","dir","edit",
-    "expr","free","format","help","mkdir","more","puts","reboot","receive",
+    "expr","free","format","hdump","help","mkdir","more","puts","reboot","receive",
     "ren","send"};
 
 int cmd_search(char *target){
@@ -347,6 +348,83 @@ void receive(int i){ // reçois un fichier via uart
    }
 }//receive()
 
+void cmd_hdump(int i){ // affiche un fichier en hexadécimal
+    FIL *fh;
+    unsigned char *fmt, *buff, *rbuff, c,key,line[10];
+    int n,col=0,scr_line=0;
+    unsigned addr=0;
+    
+    if (!SDCardReady){
+        if (!mount(0)){
+            print_error_msg(ERR_NO_SDCARD,NULL,0);
+            return;
+        }else{
+            SDCardReady=TRUE;
+        }
+    }
+    FRESULT error=FR_OK;
+    if (i==2){
+        fh=malloc(sizeof(FIL));
+        if (fh && ((error=f_open(fh,cmd_tokens[1],FA_READ))==FR_OK)){
+            if (comm_channel==LOCAL_CON) clear_screen();
+            buff=malloc(512);
+            fmt=malloc(64);
+            if (fmt && buff){
+                key=0;
+                line[8]=CR;
+                line[9]=0;
+                while (key!=ESC && f_read(fh,buff,512,&n)==FR_OK){
+                    if (!n) break;
+                    rbuff=buff;
+                    for(;n && key!=ESC;n--){
+                        if (!col){
+                            sprintf(fmt,"%08X  ",addr);
+                            print(comm_channel,fmt);
+                        }
+                        c=*rbuff++;
+                        sprintf(fmt,"%02X ",c);
+                        //print_hex(comm_channel,c,2); put_char(comm_channel,32);
+                        if (c>=32) line[col]=c; else line[col]=32;
+                        print(comm_channel,fmt);
+                        col++;
+                        if (col==8){
+                            print(comm_channel,line);
+                            col=0;
+                            addr+=8;
+                            scr_line++;
+                            if (scr_line==(LINE_PER_SCREEN-1)){
+                                print(comm_channel,"more...");
+                                key=wait_key(comm_channel);
+                                clear_screen();
+                                scr_line=0;
+                            }
+                        }
+                    }
+                }
+                if (col){
+                    strcpy(fmt,"   ");
+                    while (col<8){
+                        print(comm_channel,fmt);
+                        line[col]=32;
+                        col++;
+                    }
+                    print(comm_channel,line);
+                }
+                f_close(fh);
+                free(fh);
+                free(buff);
+                free(fmt);
+            }else{
+                print_error_msg(ERR_ALLOC,"Can't display file.\r",0);
+            }
+        }else{
+            print_error_msg(ERR_FIO,"File open failed.\r",error);
+        }
+   }else{
+       print_error_msg(ERR_USAGE, "USAGE: more file_name\r",0);
+   }
+}//f
+
 
 void more(int i){ // affiche à l'écran le contenu d'un fichier texte
     FIL *fh;
@@ -560,6 +638,9 @@ void execute_cmd(int i){
                 break;
             case CMD_MORE:
                 more(i);
+                break;
+            case CMD_HDUMP:
+                cmd_hdump(i);
                 break;
             case CMD_PUTS: // affiche un texte à l'écran
                 cmd_puts();
