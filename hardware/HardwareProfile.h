@@ -27,11 +27,11 @@
 #define	HARDWAREPROFILE_H
 
 #include <p32xxxx.h>
-
+//#include <uart.h>
 
 #define VPC_32
 
-#define STDIO   UART2
+#define STDIO   1 //UART2
 #define STDOUT  STDIO
 #define STDIN   STDIO
 #define STDERR  STDIO

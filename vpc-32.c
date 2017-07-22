@@ -136,25 +136,25 @@ void main(void) {
 #if defined _DEBUG_
     test_pattern();
 #endif
-    UartPrint(STDOUT,"video initialization\r");
+    UartPrint(STDOUT,"video initialization\n");
     VideoInit();
     delay_ms(500);
-    UartPrint(STDOUT,"keyboard initialization: ");
+    UartPrint(STDOUT,"keyboard initialization\n");
     KeyboardInit();
     text_coord_t cpos;
-    UartPrint(STDOUT,"SD initialization: ");
+    UartPrint(STDOUT,"SD initialization\n");
     if (!mount(0)){
-        UartPrint(STDOUT,"Failed\r");
+        UartPrint(STDOUT,"Failed\n");
         SDCardReady=FALSE;
     }else{
-        UartPrint(STDOUT,"succeeded\r");
+        UartPrint(STDOUT,"succeeded\n");
         SDCardReady=TRUE;
     }
-    UartPrint(STDOUT,"SRAM initialization\r");
+    UartPrint(STDOUT,"SRAM initialization\n");
     sram_init();
-    UartPrint(STDOUT,"sound initialization.\r");
+    UartPrint(STDOUT,"sound initialization.\n");
     tune((unsigned int*)&e3k[0]);
-    UartPrint(STDOUT,"initialization completed.\r");
+    UartPrint(STDOUT,"initialization completed.\n");
     set_cursor(CR_BLOCK); // sauvegare video_buffer dans SRAM
     clear_screen();
 #if defined _DEBUG_

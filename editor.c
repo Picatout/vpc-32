@@ -86,10 +86,10 @@ typedef struct editor_state{
 } ed_state_t;
 
 
-//static char *split_buffer; // ligne en edition
+
 static ed_state_t state;
 
-static char fname[32];
+static char fname[32]; // nom du fichier en édition
 
 typedef struct search_struct{
    bool ignore_case;
@@ -138,11 +138,11 @@ static void print_line(uint8_t line){
 }
 
 static void prompt_continue(){
-    print(comm_channel,"\nany key...");//static uint8_t *llen;
+    print(comm_channel,"\nany key...");
     wait_key(comm_channel);
 }
 
-static void ed_error(const char *msg, int code){//static uint8_t *llen;
+static void ed_error(const char *msg, int code){
     println(comm_channel,msg);
     print(comm_channel,"error code: ");
     print_int(comm_channel,code,0);
@@ -187,7 +187,6 @@ static void new_file(){
         state.flags.new=1;
         state.flags.modified=false;
         state.tail=MAX_SIZE;
-        clear_screen();
         fname[0]=0;
         search_info.target[0]=0;
         search_info.ignore_case=false;
@@ -216,7 +215,7 @@ static void list_files(){
     update_display();
 }//f
 
-//initialement le curseur est au début de la ligne
+//initialement le curseur est au début de la cible
 static void mark_target(){
     int i,len;
 
@@ -425,13 +424,16 @@ static bool get_file_name(char *name){
 }//f()
 
 static void load_file(const char *name){
-    uint32_t saddr,fsize;
+    uint32_t saddr=0,fsize;
     FRESULT result;
     FIL fh;
-    int count, line_no=0;
-    char prev_c=0, c=0, buffer[CHAR_PER_LINE];
+    int count=0; 
+    unsigned char  c=0, buffer[CHAR_PER_LINE];
+    bool line_break=false;
     reader_t r;
-    
+
+//    put_char(STDIO,FF);// debug only
+   
     new_file();
     strcpy(fname,name);
     result=f_open(&fh,fname,FA_READ);
@@ -443,9 +445,8 @@ static void load_file(const char *name){
         ed_error("File too big!\n",0);
         return;
     }
-    count=0;
+    fsize=fh.fsize;
     state.tail=MAX_SIZE;
-    saddr=0;
     print(comm_channel,"loading file...\n");
     print_int(comm_channel,fsize,0);
     print(comm_channel," bytes");
@@ -453,26 +454,36 @@ static void load_file(const char *name){
     while (!r.eof){
         c=reader_getc(&r);
         switch(c){
-            case -1:
+            case 255:  
+                break;
             case CR:
             case LF:
+                line_break=true;
                 break;
-            default:
-                if (c>=32 && c<(32+FONT_SIZE)) buffer[count++]=c; else buffer[count++]=' ';
+            default: 
+                if ((c>=32) && (c<(32+FONT_SIZE))){
+                    buffer[count++]=c;
+                   // put_char(STDIO,c); // debug only
+                }else {
+                    buffer[count++]=' ';
+                   // put_char(STDIO,' '); //debug only
+                    print_int(STDIO,c,0); // debug only
+                }
+                if (count==(CHAR_PER_LINE-1)) line_break=true;
         }//switch(c)
-        if ((c==CR) || ((c==LF) && (prev_c!=CR)) || (count==(CHAR_PER_LINE-1))){
+        if (line_break ){
+            //put_char(STDIO,LF); //debug only
             buffer[count++]=0;
-            line_no++;
             sram_write_block(saddr,(uint8_t*)buffer,count);
             saddr+=count;
             count=0;
-        }
-        prev_c=c;
-    }
+            line_break=false;
+        };
+    }//while(!r.eof)
     if (count){
         sram_write_block(saddr,(uint8_t*)buffer,count);
         saddr+=count;
-        line_no++;
+        //line_no++;
     }
     f_close(&fh);
     invert_video(false);
@@ -773,7 +784,7 @@ void editor(const char* name){
 //   from -> adresse SRAM début ligne courante
 // retourne la longueur de la ligne
 uint8_t get_line_back(uint8_t *line, uint32_t from){
-    int j,size;
+    int j=0,size;
 
     if (from==0){
         line[0]=0;
@@ -781,18 +792,18 @@ uint8_t get_line_back(uint8_t *line, uint32_t from){
     }
     if (from<=state.gap_first){
         size=min(CHAR_PER_LINE,from);
-        sram_read_block(from-size,line+(CHAR_PER_LINE-size),size);
+        sram_read_block(from-size,line,size);
     }else{
         size=min(from-state.tail,CHAR_PER_LINE);
-        sram_read_block(from-size,line+(CHAR_PER_LINE-size),size);
-        if (size<CHAR_PER_LINE && state.gap_first>0){
+        if (size<CHAR_PER_LINE){
             j=min(CHAR_PER_LINE-size,state.gap_first);
-            size+=j;
-            sram_read_block(state.gap_first-j,line+(CHAR_PER_LINE-size),j);
+            sram_read_block(state.gap_first-j,line,j);
         }
+        sram_read_block(from-size,line+j,size);
+        size+=j;
     }
-    if (size<CHAR_PER_LINE) line[CHAR_PER_LINE-size-1]=0;
-    j=CHAR_PER_LINE-1;
+    if (size<CHAR_PER_LINE) line[size]=0;
+    j=size-1;
     if (!line[j]){
         j--;
     }
@@ -847,7 +858,8 @@ static void update_display(){
     }
     if (from<state.tail) from=state.tail;
     while (from<MAX_SIZE && scr_line<LINE_PER_SCREEN){
-        llen=get_line_forward((uint8_t*)&screen[scr_line],from);
+        llen=get_line_forward((uint8_t*)&screen[scr_line],from); //print(STDIO,&screen[scr_line]);put_char(STDIO,LF);
+        if (!llen) break;
         print_line(scr_line);
         scr_line++;
         from+=llen+1;
@@ -950,6 +962,7 @@ static void delete_at(){
     if (state.tail==MAX_SIZE) return;
     sram_write_byte(state.tail++,0);
     state.fsize--;
+    state.flags.modified=true;
     if (state.scr_col<strlen((char*)&screen[state.scr_line])){
         strcpy((char*)&screen[state.scr_line][state.scr_col],
                 (char*)&screen[state.scr_line][state.scr_col+1]);
@@ -1024,7 +1037,6 @@ static void insert_char(char c){
         print_line(state.scr_line);
         state.scr_col++;
         set_curpos(state.scr_col,state.scr_line);
-        state.flags.modified=true;
     }else{
         sram_write_byte(state.gap_first++,0);
         sram_write_byte(state.gap_first++,c);
@@ -1035,9 +1047,9 @@ static void insert_char(char c){
             state.scr_first+=strlen((char*)&screen[0])+1;
             state.scr_line=LAST_LINE;
         }
-        state.flags.modified=true;
         update_display();
     }
+    state.flags.modified=true;
 }//f()
 
 static void replace_char(char c){
@@ -1045,7 +1057,7 @@ static void replace_char(char c){
     llen=strlen((char*)&screen[state.scr_line]);
     if (state.scr_col<llen){
         sram_write_byte(state.gap_first++,c);
-        state.tail++;
+        sram_write_byte(state.tail++,0);
         screen[state.scr_line][state.scr_col]=c;
         put_char(comm_channel,c);
         state.scr_col++;
@@ -1106,8 +1118,6 @@ static void line_end(){
 static void file_home(){
     uint8_t size, maxlen, line[CHAR_PER_LINE];
     if (state.fsize==MAX_SIZE){
-        state.scr_first=0;
-        state.gap_first=0;
         state.tail=0;
     }else{
         maxlen=min(CHAR_PER_LINE,state.tail - state.gap_first);
@@ -1119,8 +1129,9 @@ static void file_home(){
             state.tail-=size;
             sram_write_block(state.tail,line,size);
         }
-        state.scr_first=0;
     }
+    state.scr_first=0;
+    state.gap_first=0;
     state.scr_col=0;
     state.scr_line=0;
     update_display();
@@ -1129,14 +1140,14 @@ static void file_home(){
 static void file_end(){
     int size;
     uint8_t maxlen, line[CHAR_PER_LINE];
-    
+
     if (state.gap_first==state.fsize) return;
     if (state.fsize==MAX_SIZE){
         state.scr_first=MAX_SIZE-1;
-        state.gap_first=MAX_SIZE-1;
+        state.gap_first=MAX_SIZE;
         state.tail=MAX_SIZE;
     }else{
-        maxlen=min(CHAR_PER_LINE,state.tail - state.gap_first);
+        maxlen=min(CHAR_PER_LINE,state.tail - state.gap_first); 
         while (state.gap_first < state.fsize){
             size=min(maxlen,MAX_SIZE-state.tail);
             sram_read_block(state.tail,line,size);
@@ -1146,8 +1157,17 @@ static void file_end(){
             state.gap_first+=size;
         }
         state.scr_first=state.gap_first;
+        size=get_line_back(line,state.gap_first);
+        if (size){
+            state.scr_first-=size;
+            state.gap_first-=size;
+            sram_clear_block(state.gap_first,size);
+            state.tail-=size;
+            sram_write_block(state.tail,line,size);
+        }
         state.scr_col=0;
         state.scr_line=0;
+        
     }
     update_display();
 }//f()
@@ -1157,12 +1177,10 @@ static void page_up(){
 
     while (state.scr_line) line_up();
     i=LINE_PER_SCREEN;
-//    dis_video=true;
     while (state.scr_first && i){
         line_up();
         i--;
     }
-//    dis_video=false;
 }
 
 static void page_down(){
@@ -1181,27 +1199,30 @@ static void word_right(){
     uint8_t c, scr_col;
     uint8_t line[CHAR_PER_LINE];
     
-    if (state.scr_col==strlen((char*)&screen[state.scr_line])) return;
-    scr_col=state.scr_col;
-    c=screen[state.scr_line][scr_col++];
-    if (!isalnum(c)){
-        while (c && !isalnum(c)){
-            c=screen[state.scr_line][scr_col++];;
-        }
+    if (state.scr_col==strlen((char*)&screen[state.scr_line])){
+        line_down();
     }else{
-        while (c  && isalnum(c)){
-            c=screen[state.scr_line][scr_col++];
-        }    
-    }
-    scr_col--;
-    if (scr_col>state.scr_col){
-        sram_read_block(state.tail,line,scr_col-state.scr_col);
-        sram_clear_block(state.tail,scr_col-state.scr_col);
-        state.tail+=scr_col-state.scr_col;
-        sram_write_block(state.gap_first,line,scr_col-state.scr_col);
-        state.gap_first+=scr_col-state.scr_col;
-        state.scr_col=scr_col;
-        set_curpos(scr_col,state.scr_line);
+        scr_col=state.scr_col;
+        c=screen[state.scr_line][scr_col++];
+        if (!isalnum(c)){
+            while (c && !isalnum(c)){
+                c=screen[state.scr_line][scr_col++];;
+            }
+        }else{
+            while (c  && isalnum(c)){
+                c=screen[state.scr_line][scr_col++];
+            }    
+        }
+        scr_col--;
+        if (scr_col>state.scr_col){
+            sram_read_block(state.tail,line,scr_col-state.scr_col);
+            sram_clear_block(state.tail,scr_col-state.scr_col);
+            state.tail+=scr_col-state.scr_col;
+            sram_write_block(state.gap_first,line,scr_col-state.scr_col);
+            state.gap_first+=scr_col-state.scr_col;
+            state.scr_col=scr_col;
+            set_curpos(scr_col,state.scr_line);
+        }
     }
 }
 
@@ -1209,34 +1230,39 @@ static void word_left(){
     uint8_t c, scr_col, diff;
     uint8_t line[CHAR_PER_LINE];
     
-    if (!state.scr_col) return;
-    scr_col=state.scr_col-1;
-    c=screen[state.scr_line][scr_col];
-    if (!isalnum(c)){
-        while (scr_col && !isalnum(c)){
-           --scr_col;
-           c=screen[state.scr_line][scr_col];
-        }
+    if (!state.scr_col){
+        line_up();
+        line_end();
     }else{
-        while (scr_col && isalnum(c)){
-           --scr_col;
-           c=screen[state.scr_line][scr_col];
-            
+        scr_col=state.scr_col-1;
+        c=screen[state.scr_line][scr_col];
+        if (!isalnum(c)){
+            while (scr_col && !isalnum(c)){
+               --scr_col;
+               c=screen[state.scr_line][scr_col];
+            }
+        }else{
+            while (scr_col && isalnum(c)){
+               --scr_col;
+               c=screen[state.scr_line][scr_col];
+
+            }
         }
-    }
-    if (scr_col) scr_col++;
-    if (scr_col<state.scr_col){
-        diff=state.scr_col-scr_col;
-        state.gap_first-=diff;
-        sram_read_block(state.gap_first,line,diff);
-        sram_clear_block(state.gap_first,diff);
-        state.tail-=diff;
-        sram_write_block(state.tail,line,diff);
-        state.scr_col=scr_col;
-        set_curpos(scr_col,state.scr_line);
+        if (scr_col) scr_col++;
+        if (scr_col<state.scr_col){
+            diff=state.scr_col-scr_col;
+            state.gap_first-=diff;
+            sram_read_block(state.gap_first,line,diff);
+            sram_clear_block(state.gap_first,diff);
+            state.tail-=diff;
+            sram_write_block(state.tail,line,diff);
+            state.scr_col=scr_col;
+            set_curpos(scr_col,state.scr_line);
+        }
     }
 }
 
+//move cursor to line_no
 static void jump_to_line(uint16_t line_no){
     uint16_t llen,count;
     uint8_t line[CHAR_PER_LINE];
@@ -1248,7 +1274,6 @@ static void jump_to_line(uint16_t line_no){
         while(state.scr_line<line_no) line_down();
         return;
     }
-//    _disable_video();
     count=0;
     while ((state.tail<MAX_SIZE) && (count<line_no)){
         llen=get_line_forward(line,state.tail);
@@ -1263,6 +1288,7 @@ static void jump_to_line(uint16_t line_no){
     update_display();
 }//f
 
+// ask for target line number
 static void goto_line(){
     uint8_t llen;
     char line[16];
@@ -1280,5 +1306,4 @@ static void goto_line(){
     }else{
         print_line(0);
     }
-    
 }
